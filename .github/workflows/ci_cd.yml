@@ -104,8 +104,8 @@ jobs:
 
       - name: build doc
         run: |
-          xvfb-run make -C doc html SPHINXOPTS='-j auto'
-          xvfb-run make -C doc pdf SPHINXOPTS='-j auto'
+          /install/ansys_inc/v232/aisol/.workbench_lite xvfb-run make -C doc html SPHINXOPTS='-j auto'
+          /install/ansys_inc/v232/aisol/.workbench_lite xvfb-run make -C doc pdf SPHINXOPTS='-j auto'
 
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v3
