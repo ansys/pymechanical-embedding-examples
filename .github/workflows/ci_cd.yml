@@ -54,7 +54,8 @@ jobs:
 
   doc-build:
     name: Documentation building
-    runs-on: public-ubuntu-latest-8-cores
+    # runs-on: public-ubuntu-latest-8-cores # uncomment when I actually need it
+    runs-on: ubuntu-latest
     container:
       image: ghcr.io/pyansys/pymechanical/mechanical:v23.2.0
       options: --entrypoint /bin/bash
