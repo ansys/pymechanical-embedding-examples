@@ -63,9 +63,10 @@ jobs:
     needs: []
 
     steps:
-      - name: Print distro
+      - name: Install dependencies
         run: |
-          cat /etc/*-release
+          apt update
+          apt install -y lsb-release
 
       - name: "Install Git and checkout project"
         uses: actions/checkout@v3
