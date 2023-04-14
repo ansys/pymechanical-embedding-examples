@@ -103,9 +103,11 @@ jobs:
             doc-build-v${{ env.RESET_DOC_BUILD_CACHE }}-${{ env.PYMECHANICAL_VERSION }}
 
       - name: build doc
+        env:
+          SPHINXOPTS: '-j auto'
         run: |
-          /install/ansys_inc/v232/aisol/.workbench_lite xvfb-run make -C doc html SPHINXOPTS='-j auto'
-          /install/ansys_inc/v232/aisol/.workbench_lite xvfb-run make -C doc pdf SPHINXOPTS='-j auto'
+          /install/ansys_inc/v232/aisol/.workbench_lite xvfb-run make -C doc html
+          /install/ansys_inc/v232/aisol/.workbench_lite xvfb-run make -C doc pdf
 
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v3
