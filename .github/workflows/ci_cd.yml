@@ -65,20 +65,16 @@ jobs:
       - name: Install system dependencies
         run: |
           apt update
-          apt install -y lsb-release
+          apt install -y lsb-release python3-pip
           apt install -y zip pandoc libgl1-mesa-glx xvfb texlive-latex-extra latexmk nodejs npm graphviz
+          pip3 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org pip setuptools
           npm install -g @mermaid-js/mermaid-cli
 
       - name: "Install Git and checkout project"
         uses: actions/checkout@v3
 
-      - name: "Set up Python using cache"
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
       - name: Install Python requirements
-        run: pip install -r requirements/requirements_doc.txt
+        run: pip3 install -r requirements/requirements_doc.txt
 
       # - name: Test virtual framebuffer
       #  run: |
