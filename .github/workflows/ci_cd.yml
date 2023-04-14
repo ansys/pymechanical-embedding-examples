@@ -102,16 +102,11 @@ jobs:
           restore-keys: |
             doc-build-v${{ env.RESET_DOC_BUILD_CACHE }}-${{ env.PYMECHANICAL_VERSION }}
 
-      - name: "Run Ansys documentation building action"
-        uses: pyansys/actions/doc-build@v4
-        with:
-          requires-xvfb: true
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          checkout: false
-          skip-install: true
-          sphinxopts: -j auto
-          use-python-cache: False
-      
+      - name: build doc
+        run: |
+          xvfb-run make -C doc html SPHINXOPTS='-j auto'
+          xvfb-run make -C doc pdf SPHINXOPTS='-j auto'
+
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v3
         with:
