@@ -65,9 +65,9 @@ jobs:
       - name: Install system dependencies
         run: |
           apt update
-          apt install -y lsb-release python3-pip python-is-python3
+          apt install -y sudo curl lsb-release python3-pip python-is-python3
           apt install -y zip pandoc libgl1-mesa-glx xvfb texlive-latex-extra latexmk nodejs npm graphviz
-          pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org pip setuptools
+          # pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org
           npm install -g @mermaid-js/mermaid-cli
 
       - name: "Install Git and checkout project"
