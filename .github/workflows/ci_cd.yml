@@ -54,16 +54,17 @@ jobs:
 
   doc-build:
     name: Documentation building
-    needs: [style, doc-style]
     runs-on: public-ubuntu-latest-8-cores
     container:
       image: ghcr.io/pyansys/pymechanical/mechanical:v23.2.0
       options: --entrypoint /bin/bash
+    #needs: [style, doc-style]
+    needs: []
 
     steps:
       - name: "Install Git and checkout project"
         uses: actions/checkout@v3
-     
+
       - name: "Set up Python using cache"
         uses: actions/setup-python@v4
         with:
