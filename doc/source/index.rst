@@ -17,7 +17,7 @@ The problems demonstrate how to use the embedding feature of PyMechanical to
 effectively and accurately solve interdisciplinary problems from a variety of
 industries and engineering fields.
 
-Summary of the exposed Basic Exmamples
+Summary of the exposed Basic Examples
 --------------------------------------
 
 .. include:: ./basic_examples/index.rst
