@@ -58,10 +58,14 @@ jobs:
     container:
       image: ghcr.io/pyansys/pymechanical/mechanical:v23.2.0
       options: --entrypoint /bin/bash
-    #needs: [style, doc-style]
+    #needs: [style, doc-style] # uncomment when code style vale check is fixed.
     needs: []
 
     steps:
+      - name: Print distro
+        run: |
+          cat /etc/*-release
+
       - name: "Install Git and checkout project"
         uses: actions/checkout@v3
 
