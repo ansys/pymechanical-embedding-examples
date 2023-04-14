@@ -65,27 +65,20 @@ jobs:
       - name: Install system dependencies
         run: |
           apt update
-          apt install -y lsb-release python3-pip
+          apt install -y lsb-release python3-pip python-is-python3
           apt install -y zip pandoc libgl1-mesa-glx xvfb texlive-latex-extra latexmk nodejs npm graphviz
-          pip3 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org pip setuptools
+          pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org pip setuptools
           npm install -g @mermaid-js/mermaid-cli
 
       - name: "Install Git and checkout project"
         uses: actions/checkout@v3
 
       - name: Install Python requirements
-        run: pip3 install -r requirements/requirements_doc.txt
+        run: pip install -r requirements/requirements_doc.txt
 
       # - name: Test virtual framebuffer
       #  run: |
       #    xvfb-run python .ci/display_test.py
-
-      - name: Login in Github Container registry
-        uses: docker/login-action@v2.1.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Retrieve PyMechanial version
         run: |

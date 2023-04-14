@@ -1,10 +1,11 @@
-#PyMechanical dependencies
-numpy==1.24.2
-pandas==1.5.3
-plotly==5.14.1
-pythreejs==2.4.2
+#PyMechanical
+ansys-mechanical-core==0.7.2
 
 # Documentation dependencies
+numpy==1.24.2
+pythreejs==2.4.2
+plotly==5.14.1
+pandas==1.5.3
 Sphinx==5.3.0
 numpydoc==1.5.0
 ansys-sphinx-theme==0.9.7
