@@ -31,7 +31,8 @@ jobs:
     name: Code style
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Install Git and checkout project
+        uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -61,7 +62,6 @@ jobs:
       image: ghcr.io/pyansys/pymechanical/mechanical:v23.2.0
       options: --entrypoint /bin/bash
     #needs: [style, doc-style] # uncomment when code style vale check is fixed.
-    needs: []
 
     steps:
       - name: Install system dependencies
@@ -72,7 +72,7 @@ jobs:
           # pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org
           npm install -g @mermaid-js/mermaid-cli
 
-      - name: "Install Git and checkout project"
+      - name: Install Git and checkout project
         uses: actions/checkout@v3
 
       - name: Install Python requirements
@@ -107,7 +107,7 @@ jobs:
       - name: build doc
         env:
           SPHINXOPTS: '-j auto'
-          ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 2
+          ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: "2"
         run: |
           /install/ansys_inc/v232/aisol/.workbench_lite xvfb-run make -C doc html
           /install/ansys_inc/v232/aisol/.workbench_lite xvfb-run make -C doc pdf
@@ -137,15 +137,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: documentation-pdf
-          path: doc/_build/latex/pymapdl*.pdf
+          path: doc/_build/latex/*.pdf
           retention-days: 7
-
-      - name: Display files structure
-        if: always()
-        run: |
-          mkdir logs-build-docs
-          echo "::group:: Display files structure" && ls -R && echo "::endgroup::"
-          ls -R > ./logs-build-docs/files_structure.txt
 
   release:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
