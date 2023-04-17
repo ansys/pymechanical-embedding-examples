@@ -144,12 +144,6 @@ jobs:
           mkdir logs-build-docs
           echo "::group:: Display files structure" && ls -R && echo "::endgroup::"
           ls -R > ./logs-build-docs/files_structure.txt
-      
-      - name: Display docker files structures
-        if: always()
-        run: |
-          echo "::group:: Display files structure" && docker exec mapdl /bin/bash -c "ls -R" && echo "::endgroup::"
-          docker exec mapdl /bin/bash -c "ls -R" > ./logs-build-docs/docker_files_structure.txt
 
   release:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
