@@ -53,8 +53,10 @@ jobs:
 
   doc-build:
     name: Documentation building
-    # runs-on: public-ubuntu-latest-8-cores # uncomment when I actually need it
-    runs-on: ubuntu-latest
+    # Switch to ubuntu-latest when experimenting with the pipeline.
+    # The doc build mostly works there but running mechanical is extremely slow (5 hours for one simple example).
+    runs-on: public-ubuntu-latest-8-cores
+    # runs-on: ubuntu-latest
     container:
       image: ghcr.io/pyansys/pymechanical/mechanical:v23.2.0
       options: --entrypoint /bin/bash
