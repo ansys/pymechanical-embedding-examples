@@ -121,8 +121,13 @@ Run solution
 Solve model
 ~~~~~~~~~~~
 
+Note - this only changes the solver settings in order to run on CI/CD of github infrastructure.
+
 .. code-block:: python
 
+    config = ExtAPI.Application.SolveConfigurations["My Computer"]
+    config.SolveProcessSettings.MaxNumberOfCores = 1
+    config.SolveProcessSettings.DistributeSolution = False
     Model.Solve()
 
 Postprocessing

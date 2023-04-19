@@ -95,6 +95,9 @@ pressure.Magnitude.Inputs[0].DiscreteValues = [Quantity("0 [s]"), Quantity("1 [s
 pressure.Magnitude.Output.DiscreteValues = [Quantity("0 [Pa]"), Quantity("15 [MPa]")]
 
 # Solve model
+config = ExtAPI.Application.SolveConfigurations["My Computer"]
+config.SolveProcessSettings.MaxNumberOfCores = 1
+config.SolveProcessSettings.DistributeSolution = False
 Model.Solve()
 
 # Evaluate results, export screenshots
