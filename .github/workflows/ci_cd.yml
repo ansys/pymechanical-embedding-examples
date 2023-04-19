@@ -60,7 +60,7 @@ jobs:
     container:
       image: ghcr.io/pyansys/pymechanical/mechanical:v23.2.0
       options: --entrypoint /bin/bash
-    #needs: [style, doc-style] # uncomment when code style vale check is fixed.
+    needs: [style, doc-style]
 
     steps:
       - name: Install system dependencies
