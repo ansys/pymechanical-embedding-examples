@@ -107,6 +107,8 @@ jobs:
       - name: build doc
         env:
           SPHINXOPTS: '-j auto'
+          # LD_PRELOAD is needed until .workbench_lite is updated to include it.
+          LD_PRELOAD: libstdc++.so.6.0.28
           LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
           ANSYSCL232_DIR: /install/ansys_inc/v232/licensingclient
           ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
