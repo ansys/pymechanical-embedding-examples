@@ -36,6 +36,7 @@ jobs:
         uses: pyansys/actions/code-style@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          use-python-cache: false
 
   doc-style:
     name: Documentation Style Check
