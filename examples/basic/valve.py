@@ -9,12 +9,11 @@ import os
 import ansys.mechanical.core as mech
 from ansys.mechanical.core.examples import delete_downloads, download_file
 
+# Embed Mechanical and set global variables
+
 app = mech.App(
     version=232
-)  # starts a non-graphical Mechanical session within the python.exe
-
-# update global variables to get access to the same Model, DataModel, etc
-# variables as in the Mechanical scripting console​
+)
 globals().update(mech.global_variables(app))
 print(app)
 
