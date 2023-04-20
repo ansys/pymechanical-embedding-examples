@@ -2,6 +2,7 @@
 from datetime import datetime
 import os
 
+import ansys.mechanical.core
 from ansys_sphinx_theme import ansys_favicon
 from ansys_sphinx_theme import pyansys_logo_black as logo
 import numpy as np
@@ -118,8 +119,16 @@ pyvista.FIGURE_PATH = os.path.join(os.path.abspath("./images/"), "auto-generated
 if not os.path.exists(pyvista.FIGURE_PATH):
     os.makedirs(pyvista.FIGURE_PATH)
 
+# configure pymechanical for embedding
+ansys.mechanical.core.BUILDING_GALLERY = True
+app = ansys.mechanical.core.App(version=232)
+if "PYMECHANICAL_BUILDING_GALLERY_GITHUB" in os.environ:
+    config = app.ExtAPI.Application.SolveConfigurations["My Computer"]
+    config.SolveProcessSettings.MaxNumberOfCores = 1
+    config.SolveProcessSettings.DistributeSolution = False
+
 # static path
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

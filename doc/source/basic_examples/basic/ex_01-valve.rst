@@ -45,14 +45,18 @@ Configure graphics for image export
 
 .. code-block:: python
 
-    ExtAPI.Graphics.Camera.SetSpecificViewOrientation(Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso)
+    ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
+        Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
+    )
     ExtAPI.Graphics.Camera.SetFit()
     image_export_format = Ansys.Mechanical.DataModel.Enums.GraphicsImageExportFormat.PNG
     settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
-    settings_720p.Resolution = Ansys.Mechanical.DataModel.Enums.GraphicsResolutionType.EnhancedResolution
+    settings_720p.Resolution = (
+        Ansys.Mechanical.DataModel.Enums.GraphicsResolutionType.EnhancedResolution
+    )
     settings_720p.Background = Ansys.Mechanical.DataModel.Enums.GraphicsBackgroundType.White
     settings_720p.Width = 1280
-    settings_720p.Capture =  Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType.ImageOnly
+    settings_720p.Capture = Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType.ImageOnly
     settings_720p.Height = 720
     settings_720p.CurrentGraphicsDisplay = False
 
@@ -63,12 +67,18 @@ Import geometry
 
     geometry_file = geometry_path
     geometry_import = Model.GeometryImportGroup.AddGeometryImport()
-    geometry_import_format = Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
+    geometry_import_format = (
+        Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
+    )
     geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
     geometry_import_preferences.ProcessNamedSelections = True
-    geometry_import.Import(geometry_file, geometry_import_format, geometry_import_preferences)
+    geometry_import.Import(
+        geometry_file, geometry_import_format, geometry_import_preferences
+    )
 
-    ExtAPI.Graphics.ExportImage(os.path.join(os.getcwd(), "geometry.png"), image_export_format, settings_720p)
+    ExtAPI.Graphics.ExportImage(
+        os.path.join(os.getcwd(), "geometry.png"), image_export_format, settings_720p
+    )
 
 .. image-sg:: /basic_examples/basic/images/sphx_glr_embedding_basic_01_geometry.png
    :alt: 21 valve geometry
@@ -83,8 +93,15 @@ Assign materials
 
     material_assignment = Model.Materials.AddMaterialAssignment()
     material_assignment.Material = "Structural Steel"
-    sel = ExtAPI.SelectionManager.CreateSelectionInfo(Ansys.ACT.Interfaces.Common.SelectionTypeEnum.GeometryEntities)
-    sel.Ids = [body.GetGeoBody().Id for body in Model.Geometry.GetChildren(Ansys.Mechanical.DataModel.Enums.DataModelObjectCategory.Body, True)]
+    sel = ExtAPI.SelectionManager.CreateSelectionInfo(
+        Ansys.ACT.Interfaces.Common.SelectionTypeEnum.GeometryEntities
+    )
+    sel.Ids = [
+        body.GetGeoBody().Id
+        for body in Model.Geometry.GetChildren(
+            Ansys.Mechanical.DataModel.Enums.DataModelObjectCategory.Body, True
+        )
+    ]
     material_assignment.Location = sel
 
 Define mesh settings,  generate mesh
@@ -93,10 +110,12 @@ Define mesh settings,  generate mesh
 .. code-block:: python
 
     mesh = Model.Mesh
-    mesh.ElementSize = Quantity(25,  "mm")
+    mesh.ElementSize = Quantity(25, "mm")
     mesh.GenerateMesh()
     Tree.Activate([mesh])
-    ExtAPI.Graphics.ExportImage(os.path.join(os.getcwd(), "mesh.png"), image_export_format, settings_720p)
+    ExtAPI.Graphics.ExportImage(
+        os.path.join(os.getcwd(), "mesh.png"), image_export_format, settings_720p
+    )
 
 Define boundary conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -107,7 +126,9 @@ Define boundary conditions
     fixed_support.Location = ExtAPI.DataModel.GetObjectsByName("NSFixedSupportFaces")[0]
 
     frictionless_support = analysis.AddFrictionlessSupport()
-    frictionless_support.Location = ExtAPI.DataModel.GetObjectsByName("NSFrictionlessSupportFaces")[0]
+    frictionless_support.Location = ExtAPI.DataModel.GetObjectsByName(
+        "NSFrictionlessSupportFaces"
+    )[0]
 
     pressure = analysis.AddPressure()
     pressure.Location = ExtAPI.DataModel.GetObjectsByName("NSInsideFaces")[0]
@@ -121,8 +142,14 @@ Run solution
 Solve model
 ~~~~~~~~~~~
 
+.. note::
+   The following code only changes the solver settings so that they run on the CI/CD of the GitHub infrastructure.
+
 .. code-block:: python
 
+    config = ExtAPI.Application.SolveConfigurations["My Computer"]
+    config.SolveProcessSettings.MaxNumberOfCores = 1
+    config.SolveProcessSettings.DistributeSolution = False
     Model.Solve()
 
 Postprocessing
@@ -139,9 +166,13 @@ Evaluate results, export screenshots
     solution.EvaluateAllResults()
 
     Tree.Activate([deformation])
-    ExtAPI.Graphics.ExportImage(os.path.join(os.getcwd(), "deformation.png"), image_export_format, settings_720p)
+    ExtAPI.Graphics.ExportImage(
+        os.path.join(os.getcwd(), "deformation.png"), image_export_format, settings_720p
+    )
     Tree.Activate([stress])
-    ExtAPI.Graphics.ExportImage(os.path.join(os.getcwd(), "stress.png"), image_export_format, settings_720p)
+    ExtAPI.Graphics.ExportImage(
+        os.path.join(os.getcwd(), "stress.png"), image_export_format, settings_720p
+    )
 
 .. image-sg:: /basic_examples/basic/images/sphx_glr_embedding_basic_01_deformation.png
    :alt: 21 valve deformation
@@ -158,11 +189,15 @@ Export stress animation
 
 .. code-block:: python
 
-    animation_export_format = Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.MP4
+    animation_export_format = (
+        Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.MP4
+    )
     settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
     settings_720p.Width = 1280
     settings_720p.Height = 720
-    stress.ExportAnimation(os.path.join(os.getcwd(), "Valve.mp4"), animation_export_format, settings_720p)
+    stress.ExportAnimation(
+        os.path.join(os.getcwd(), "Valve.mp4"), animation_export_format, settings_720p
+    )
 
 Cleanup
 -------
