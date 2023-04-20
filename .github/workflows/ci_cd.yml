@@ -117,6 +117,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: documentation-html
+      - name: Install Git
+        run: sudo apt-get update && sudo apt-get install -y git
       - name: Deploy to GitHub Pages
         #if: contains(github.ref, 'refs/heads/main')
         uses: JamesIves/github-pages-deploy-action@v4
