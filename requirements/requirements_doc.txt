@@ -1,5 +1,5 @@
 #PyMechanical
-ansys-mechanical-core==0.7.2
+ansys-mechanical-core==0.7.3
 
 # Documentation dependencies
 ansys-sphinx-theme==0.9.7
