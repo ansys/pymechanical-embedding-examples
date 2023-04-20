@@ -122,14 +122,3 @@ jobs:
           folder: doc/_build/html
           clean: true
           single-commit: true
-
-      - name: Build PDF Documentation
-        working-directory: doc
-        run: make pdf
-
-      - name: Upload PDF Documentation
-        uses: actions/upload-artifact@v3
-        with:
-          name: documentation-pdf
-          path: doc/_build/latex/*.pdf
-          retention-days: 7
