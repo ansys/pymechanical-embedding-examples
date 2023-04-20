@@ -121,7 +121,8 @@ Run solution
 Solve model
 ~~~~~~~~~~~
 
-Note - this only changes the solver settings in order to run on CI/CD of github infrastructure.
+.. note::
+   The following code only changes the solver settings so that they run on the CI/CD of the GitHub infrastructure.
 
 .. code-block:: python
 
