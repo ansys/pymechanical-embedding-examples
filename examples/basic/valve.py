@@ -11,9 +11,7 @@ from ansys.mechanical.core.examples import delete_downloads, download_file
 
 # Embed Mechanical and set global variables
 
-app = mech.App(
-    version=232
-)
+app = mech.App(version=232)
 globals().update(mech.global_variables(app))
 print(app)
 
