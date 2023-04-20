@@ -113,7 +113,9 @@ jobs:
           path: doc/_build/html
           retention-days: 7
 
-      - name: Deploy
+      - name: Install Git
+        run: sudo apt-get update && sudo apt-get install -y git
+      - name: Deploy using Deploy Token
         #if: contains(github.ref, 'refs/heads/main')
         uses: JamesIves/github-pages-deploy-action@v4
         with:
