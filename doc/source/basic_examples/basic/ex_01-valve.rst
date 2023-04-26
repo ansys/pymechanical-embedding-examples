@@ -202,8 +202,8 @@ Export stress animation
 .. raw:: html
 
     <video width="100%" height="auto" > <source
-    src="https://github.com/pyansys/pymechanical-embedding-examples/tree/main/doc/source/animations/valve.mp4"
-    type="video/mp4" style="margin-left: -220px; margin-right: -10.5%">
+    src="https://github.com/pyansys/pymechanical-embedding-examples/tree/main/doc/source/animations/Valve.mp4"
+    type="video/mp4">
     Your browser does not support the video tag. </video>
 
 Cleanup

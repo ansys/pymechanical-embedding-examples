@@ -128,7 +128,7 @@ if "PYMECHANICAL_BUILDING_GALLERY_GITHUB" in os.environ:
     config.SolveProcessSettings.DistributeSolution = False
 
 # static path
-# html_static_path = ["_static"]
+html_static_path = ["_static"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
