@@ -21,8 +21,8 @@ Summary of the exposed basic examples
 --------------------------------------
 
 .. include:: ./basic_examples/index.rst
-  :start-line: 11
-  :end-line: 130
+  :start-line: 7
+  :end-line: 33
 
 .. === EXAMPLES ===
 
