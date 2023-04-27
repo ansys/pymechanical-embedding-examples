@@ -202,7 +202,7 @@ Export stress animation
 .. raw:: html
 
     <video width="100%" height="auto" > <source
-    src="https://embedding.examples.mechanical.docs.pyansys.com/_static/Valve.mp4"
+    src="../../animations/Valve.mp4"
     type="video/mp4">
     Your browser does not support the video tag. </video>
 
