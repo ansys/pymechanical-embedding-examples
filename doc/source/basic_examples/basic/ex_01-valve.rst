@@ -199,6 +199,13 @@ Export stress animation
         os.path.join(os.getcwd(), "Valve.mp4"), animation_export_format, settings_720p
     )
 
+.. raw:: html
+
+    <video width="640" height="480" controls=""> <source
+    src="https://embedding.examples.mechanical.docs.pyansys.com/_static/videos/Valve.mp4"
+    type="video/mp4">
+    Your browser does not support the video tag. </video>
+
 Cleanup
 -------
 
