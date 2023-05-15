@@ -2,7 +2,7 @@
 ansys-mechanical-core==0.7.3
 
 # Documentation dependencies
-ansys-sphinx-theme==0.9.7
+ansys-sphinx-theme==0.9.9
 jupyter_sphinx==0.4.0
 jupyterlab>=3.2.8
 numpy==1.24.3
