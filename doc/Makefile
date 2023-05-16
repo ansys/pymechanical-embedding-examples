@@ -15,7 +15,7 @@ help:
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option. $(O) is meant as a shortcut for $(SPHINXOPTS).
-# leading hyphen is due to https://github.com/pyansys/pymechanical/issues/85
+# leading hyphen is due to https://github.com/ansys/pymechanical/issues/85
 # because a crash on shutdown causes `make` to think that the sphinx build
 # fails. This hides other issues.
 %: Makefile
