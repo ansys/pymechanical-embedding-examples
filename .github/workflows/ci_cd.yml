@@ -124,6 +124,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: documentation-html
+          path: documentation-html
+
+      - name: List all files
+        run: ls -R .
 
       - name: Deploy to GitHub Pages
         if: contains(github.ref, 'refs/heads/main')
