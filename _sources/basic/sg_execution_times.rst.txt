@@ -1,0 +1,13 @@
+
+:orphan:
+
+.. _sphx_glr_basic_sg_execution_times:
+
+
+Computation times
+=================
+**00:04.418** total execution time for **basic** files:
+
++-----------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_basic_valve.py` (``valve.py``) | 00:04.418 | 0.0 MB |
++-----------------------------------------------+-----------+--------+

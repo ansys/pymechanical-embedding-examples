@@ -1,0 +1,687 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Valve expansion &#8212; PyMechanical Embedding Examples</title>
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/ansys_sphinx_theme.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    
+        <link href="../../_static/css/breadcrumbs.css" rel="stylesheet">
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/thebelab-helper.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/table.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'basic_examples/basic/ex_01-valve';</script>
+    <link rel="icon" href="../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Basic Examples" href="../index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container"><!-- Debugging: html_theme_options =  -->
+
+  <!-- If there is no MiliSearch enabled, use the PyData search -->
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+  </div>
+  
+    
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/pyansys-logo-black-cropped.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/pyansys-logo-black-cropped.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Basic Examples
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples/discussions" title="Support" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa fa-comment fa-fw"></i></span>
+            <label class="sr-only">Support</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+
+    
+
+    
+    <div class="container-xl">
+    <div class="row">
+        <div class="col-12 col-md-3" id="breadcrumbs-spacer"></div>
+        <div class="col-12 col-md-11 col-xl-9" id="breadcrumbs">
+          
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+    
+        <li class="nav-item nav-item-additional-breadcrumb"><a href="https://docs.pyansys.com/">PyAnsys</a> » </li>
+    
+        <li class="nav-item nav-item-additional-breadcrumb"><a href="https://mechanical.docs.pyansys.com/">PyMechanical</a> » </li>
+    
+    
+        <li class="nav-item nav-item-0"><a href="../../index.html">PyMechanical Embedding Examples</a> » </li>
+    
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Basic Examples</a> » </li>
+        <li class="nav-item nav-item-this"><a href="">Valve expansion</a></li> 
+      </ul>
+    </div>
+        </div>
+  </div>
+</div>
+    
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Basic Examples
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples/discussions" title="Support" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa fa-comment fa-fw"></i></span>
+            <label class="sr-only">Support</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Valve expansion</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="valve-expansion">
+<span id="sphx-glr-ex-01-valve-py"></span><h1>Valve expansion<a class="headerlink" href="#valve-expansion" title="Permalink to this heading">#</a></h1>
+<p>This examples shows how to use the embedding feature of PyMechanical.</p>
+<section id="setting-up-model">
+<h2>Setting up model<a class="headerlink" href="#setting-up-model" title="Permalink to this heading">#</a></h2>
+<section id="embed-mechanical-and-set-global-variables">
+<h3>Embed Mechanical and set global variables<a class="headerlink" href="#embed-mechanical-and-set-global-variables" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">ansys.mechanical.core</span> <span class="k">as</span> <span class="nn">mech</span>
+<span class="kn">from</span> <span class="nn">ansys.mechanical.core.examples</span> <span class="kn">import</span> <span class="n">download_file</span><span class="p">,</span> <span class="n">delete_downloads</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">mech</span><span class="o">.</span><span class="n">App</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="mi">232</span><span class="p">)</span>
+<span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mech</span><span class="o">.</span><span class="n">global_variables</span><span class="p">(</span><span class="n">app</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Ansys Mechanical [Ansys Mechanical Enterprise]
+Product Version:232
+</pre></div>
+</div>
+</section>
+<section id="download-example-file-and-add-structural-static-analysis">
+<h3>Download example file and add structural static analysis<a class="headerlink" href="#download-example-file-and-add-structural-static-analysis" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">geometry_path</span> <span class="o">=</span> <span class="n">download_file</span><span class="p">(</span><span class="s2">&quot;Valve.pmdb&quot;</span><span class="p">,</span> <span class="s2">&quot;pymechanical&quot;</span><span class="p">,</span> <span class="s2">&quot;embedding&quot;</span><span class="p">)</span>
+<span class="n">analysis</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">AddStaticStructuralAnalysis</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="configure-graphics-for-image-export">
+<h3>Configure graphics for image export<a class="headerlink" href="#configure-graphics-for-image-export" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtAPI</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">Camera</span><span class="o">.</span><span class="n">SetSpecificViewOrientation</span><span class="p">(</span>
+    <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Enums</span><span class="o">.</span><span class="n">ViewOrientationType</span><span class="o">.</span><span class="n">Iso</span>
+<span class="p">)</span>
+<span class="n">ExtAPI</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">Camera</span><span class="o">.</span><span class="n">SetFit</span><span class="p">()</span>
+<span class="n">image_export_format</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Enums</span><span class="o">.</span><span class="n">GraphicsImageExportFormat</span><span class="o">.</span><span class="n">PNG</span>
+<span class="n">settings_720p</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">GraphicsImageExportSettings</span><span class="p">()</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Resolution</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Enums</span><span class="o">.</span><span class="n">GraphicsResolutionType</span><span class="o">.</span><span class="n">EnhancedResolution</span>
+<span class="p">)</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Background</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Enums</span><span class="o">.</span><span class="n">GraphicsBackgroundType</span><span class="o">.</span><span class="n">White</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Width</span> <span class="o">=</span> <span class="mi">1280</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Capture</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Enums</span><span class="o">.</span><span class="n">GraphicsCaptureType</span><span class="o">.</span><span class="n">ImageOnly</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Height</span> <span class="o">=</span> <span class="mi">720</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">CurrentGraphicsDisplay</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</section>
+<section id="import-geometry">
+<h3>Import geometry<a class="headerlink" href="#import-geometry" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">geometry_file</span> <span class="o">=</span> <span class="n">geometry_path</span>
+<span class="n">geometry_import</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">GeometryImportGroup</span><span class="o">.</span><span class="n">AddGeometryImport</span><span class="p">()</span>
+<span class="n">geometry_import_format</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Enums</span><span class="o">.</span><span class="n">GeometryImportPreference</span><span class="o">.</span><span class="n">Format</span><span class="o">.</span><span class="n">Automatic</span>
+<span class="p">)</span>
+<span class="n">geometry_import_preferences</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">Utilities</span><span class="o">.</span><span class="n">GeometryImportPreferences</span><span class="p">()</span>
+<span class="n">geometry_import_preferences</span><span class="o">.</span><span class="n">ProcessNamedSelections</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">geometry_import</span><span class="o">.</span><span class="n">Import</span><span class="p">(</span>
+    <span class="n">geometry_file</span><span class="p">,</span> <span class="n">geometry_import_format</span><span class="p">,</span> <span class="n">geometry_import_preferences</span>
+<span class="p">)</span>
+
+<span class="n">ExtAPI</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">ExportImage</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;geometry.png&quot;</span><span class="p">),</span> <span class="n">image_export_format</span><span class="p">,</span> <span class="n">settings_720p</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_embedding_basic_01_geometry.png" srcset="../../_images/sphx_glr_embedding_basic_01_geometry.png" alt="21 valve geometry" class = "sphx-glr-single-img"/></section>
+<section id="assign-materials">
+<h3>Assign materials<a class="headerlink" href="#assign-materials" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">material_assignment</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Materials</span><span class="o">.</span><span class="n">AddMaterialAssignment</span><span class="p">()</span>
+<span class="n">material_assignment</span><span class="o">.</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;Structural Steel&quot;</span>
+<span class="n">sel</span> <span class="o">=</span> <span class="n">ExtAPI</span><span class="o">.</span><span class="n">SelectionManager</span><span class="o">.</span><span class="n">CreateSelectionInfo</span><span class="p">(</span>
+    <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Interfaces</span><span class="o">.</span><span class="n">Common</span><span class="o">.</span><span class="n">SelectionTypeEnum</span><span class="o">.</span><span class="n">GeometryEntities</span>
+<span class="p">)</span>
+<span class="n">sel</span><span class="o">.</span><span class="n">Ids</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">GetGeoBody</span><span class="p">()</span><span class="o">.</span><span class="n">Id</span>
+    <span class="k">for</span> <span class="n">body</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">Geometry</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">(</span>
+        <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Enums</span><span class="o">.</span><span class="n">DataModelObjectCategory</span><span class="o">.</span><span class="n">Body</span><span class="p">,</span> <span class="kc">True</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+<span class="n">material_assignment</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">sel</span>
+</pre></div>
+</div>
+</section>
+<section id="define-mesh-settings-generate-mesh">
+<h3>Define mesh settings,  generate mesh<a class="headerlink" href="#define-mesh-settings-generate-mesh" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mesh</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Mesh</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">ElementSize</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="s2">&quot;mm&quot;</span><span class="p">)</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">GenerateMesh</span><span class="p">()</span>
+<span class="n">Tree</span><span class="o">.</span><span class="n">Activate</span><span class="p">([</span><span class="n">mesh</span><span class="p">])</span>
+<span class="n">ExtAPI</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">ExportImage</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;mesh.png&quot;</span><span class="p">),</span> <span class="n">image_export_format</span><span class="p">,</span> <span class="n">settings_720p</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="define-boundary-conditions">
+<h3>Define boundary conditions<a class="headerlink" href="#define-boundary-conditions" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fixed_support</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">AddFixedSupport</span><span class="p">()</span>
+<span class="n">fixed_support</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">ExtAPI</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">GetObjectsByName</span><span class="p">(</span><span class="s2">&quot;NSFixedSupportFaces&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">frictionless_support</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">AddFrictionlessSupport</span><span class="p">()</span>
+<span class="n">frictionless_support</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">ExtAPI</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">GetObjectsByName</span><span class="p">(</span>
+    <span class="s2">&quot;NSFrictionlessSupportFaces&quot;</span>
+<span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">pressure</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">AddPressure</span><span class="p">()</span>
+<span class="n">pressure</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">ExtAPI</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">GetObjectsByName</span><span class="p">(</span><span class="s2">&quot;NSInsideFaces&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">pressure</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0 [s]&quot;</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;1 [s]&quot;</span><span class="p">)]</span>
+<span class="n">pressure</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0 [Pa]&quot;</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;15 [MPa]&quot;</span><span class="p">)]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="run-solution">
+<h2>Run solution<a class="headerlink" href="#run-solution" title="Permalink to this heading">#</a></h2>
+<section id="solve-model">
+<h3>Solve model<a class="headerlink" href="#solve-model" title="Permalink to this heading">#</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following code only changes the solver settings so that they run on the CI/CD of the GitHub infrastructure.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config</span> <span class="o">=</span> <span class="n">ExtAPI</span><span class="o">.</span><span class="n">Application</span><span class="o">.</span><span class="n">SolveConfigurations</span><span class="p">[</span><span class="s2">&quot;My Computer&quot;</span><span class="p">]</span>
+<span class="n">config</span><span class="o">.</span><span class="n">SolveProcessSettings</span><span class="o">.</span><span class="n">MaxNumberOfCores</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">config</span><span class="o">.</span><span class="n">SolveProcessSettings</span><span class="o">.</span><span class="n">DistributeSolution</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">Model</span><span class="o">.</span><span class="n">Solve</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="postprocessing">
+<h2>Postprocessing<a class="headerlink" href="#postprocessing" title="Permalink to this heading">#</a></h2>
+<section id="evaluate-results-export-screenshots">
+<h3>Evaluate results, export screenshots<a class="headerlink" href="#evaluate-results-export-screenshots" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solution</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">Solution</span>
+<span class="n">deformation</span> <span class="o">=</span> <span class="n">solution</span><span class="o">.</span><span class="n">AddTotalDeformation</span><span class="p">()</span>
+<span class="n">stress</span> <span class="o">=</span> <span class="n">solution</span><span class="o">.</span><span class="n">AddEquivalentStress</span><span class="p">()</span>
+<span class="n">solution</span><span class="o">.</span><span class="n">EvaluateAllResults</span><span class="p">()</span>
+
+<span class="n">Tree</span><span class="o">.</span><span class="n">Activate</span><span class="p">([</span><span class="n">deformation</span><span class="p">])</span>
+<span class="n">ExtAPI</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">ExportImage</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;deformation.png&quot;</span><span class="p">),</span> <span class="n">image_export_format</span><span class="p">,</span> <span class="n">settings_720p</span>
+<span class="p">)</span>
+<span class="n">Tree</span><span class="o">.</span><span class="n">Activate</span><span class="p">([</span><span class="n">stress</span><span class="p">])</span>
+<span class="n">ExtAPI</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">ExportImage</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;stress.png&quot;</span><span class="p">),</span> <span class="n">image_export_format</span><span class="p">,</span> <span class="n">settings_720p</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_embedding_basic_01_deformation.png" srcset="../../_images/sphx_glr_embedding_basic_01_deformation.png" alt="21 valve deformation" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_embedding_basic_01_stress.png" srcset="../../_images/sphx_glr_embedding_basic_01_stress.png" alt="21 valve stress" class = "sphx-glr-single-img"/></section>
+<section id="export-stress-animation">
+<h3>Export stress animation<a class="headerlink" href="#export-stress-animation" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">animation_export_format</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Enums</span><span class="o">.</span><span class="n">GraphicsAnimationExportFormat</span><span class="o">.</span><span class="n">MP4</span>
+<span class="p">)</span>
+<span class="n">settings_720p</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">AnimationExportSettings</span><span class="p">()</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Width</span> <span class="o">=</span> <span class="mi">1280</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Height</span> <span class="o">=</span> <span class="mi">720</span>
+<span class="n">stress</span><span class="o">.</span><span class="n">ExportAnimation</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;Valve.mp4&quot;</span><span class="p">),</span> <span class="n">animation_export_format</span><span class="p">,</span> <span class="n">settings_720p</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<video width="640" height="480" controls=""> <source
+src="https://embedding.examples.mechanical.docs.pyansys.com/_static/videos/Valve.mp4"
+type="video/mp4">
+Your browser does not support the video tag. </video></section>
+</section>
+<section id="cleanup">
+<h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this heading">#</a></h2>
+<section id="save-project">
+<h3>Save project<a class="headerlink" href="#save-project" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;Valve.mechdat&quot;</span><span class="p">))</span>
+<span class="n">app</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="delete-example-file">
+<h3>Delete example file<a class="headerlink" href="#delete-example-file" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">delete_downloads</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-model">Setting up model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#embed-mechanical-and-set-global-variables">Embed Mechanical and set global variables</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#download-example-file-and-add-structural-static-analysis">Download example file and add structural static analysis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configure-graphics-for-image-export">Configure graphics for image export</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#import-geometry">Import geometry</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#assign-materials">Assign materials</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-mesh-settings-generate-mesh">Define mesh settings,  generate mesh</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-boundary-conditions">Define boundary conditions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-solution">Run solution</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solve-model">Solve model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#postprocessing">Postprocessing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-results-export-screenshots">Evaluate results, export screenshots</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#export-stress-animation">Export stress animation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cleanup">Cleanup</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#save-project">Save project</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#delete-example-file">Delete example file</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/basic_examples/basic/ex_01-valve.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright (c) 2023 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+    Built with the <a href="https://sphinxdocs.ansys.com/version/stable/index.html">Ansys Sphinx Theme</a> 0.9.9.
+    <br>Last updated on <span id="date"></span></br>
+</p>
+<script>
+  var options = { day: 'numeric', month: 'long', year: 'numeric' };
+  var lastModifiedDate = new Date(document.lastModified);
+  var date = lastModifiedDate.toLocaleDateString('en-US', options);
+  document.getElementById("date").innerHTML = date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
