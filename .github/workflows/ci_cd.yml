@@ -102,7 +102,7 @@ jobs:
           ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
         run: |
           xvfb-run /install/ansys_inc/v232/aisol/.workbench_lite make -C doc html > doc_build_ouput.txt
-          cat pytest_output.txt
+          cat doc_build_ouput.txt
           #
           # Check if Error occurred
           #
