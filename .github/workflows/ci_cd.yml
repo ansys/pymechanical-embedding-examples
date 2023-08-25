@@ -101,7 +101,19 @@ jobs:
           ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
           ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
         run: |
-          xvfb-run /install/ansys_inc/v232/aisol/.workbench_lite make -C doc html
+          xvfb-run /install/ansys_inc/v232/aisol/.workbench_lite make -C doc html > doc_build_ouput.txt
+          cat pytest_output.txt
+          #
+          # Check if Error occurred
+          #
+          output=$(grep -c "Error" doc_build_ouput || true)
+          if [ $output -eq 0 ]; then
+            echo "Documentation building succeeded"
+            exit 0
+          else
+            echo "Documentation building failed"
+            exit 1
+          fi
 
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v3
