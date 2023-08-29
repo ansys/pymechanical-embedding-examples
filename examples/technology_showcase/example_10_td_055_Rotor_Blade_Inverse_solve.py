@@ -53,12 +53,12 @@ from Ansys.Mechanical.DataModel.Enums import *
 from Ansys.Mechanical.DataModel.MechanicalEnums import *
 
 ###############################################################################
-# Download required Mechdat files
+# Download required geometry files
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Download the required files. Print the file path for the Mechdat file.
 
-mechdat_path = download_file(
-    "example_10_td_055_Rotor_Blade.mechdat", "pymechanical", "embedding"
+geometry_path = download_file(
+    "example_10_td_055_Rotor_Blade_Geom.pmdb", "pymechanical", "embedding"
 )
 
 ###############################################################################
@@ -99,13 +99,28 @@ settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
 ###################################################################################
-# Import Mechdat file
+# Import geometry
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Reads Geometry from Mechdat file
+# Reads Geometry file
 
-mechdat_file = os.path.join(os.getcwd(), mechdat_path)
-mechdat_file = mechdat_file.replace("\\", "//")
-app.open(mechdat_file)
+geometry_import_group = Model.GeometryImportGroup
+geometry_import = geometry_import_group.AddGeometryImport()
+geometry_import_format = (
+    Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
+)
+geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
+geometry_import_preferences.ProcessNamedSelections = True
+geometry_import_preferences.NamedSelectionKey = ""
+geometry_import_preferences.ProcessMaterialProperties = True
+geometry_import_preferences.ProcessCoordinateSystems = True
+geometry_import.Import(
+    geometry_path, geometry_import_format, geometry_import_preferences
+)
+
+ExtAPI.Graphics.Camera.SetFit()
+ExtAPI.Graphics.ExportImage(
+    os.path.join(os.getcwd(), "geometry.png"), image_export_format, settings_720p
+)
 
 ###################################################################################
 # Assign materials
