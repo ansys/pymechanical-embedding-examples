@@ -129,11 +129,11 @@ if not os.path.exists(pyvista.FIGURE_PATH):
 
 # configure pymechanical for embedding
 ansys.mechanical.core.BUILDING_GALLERY = True
-app = ansys.mechanical.core.App(version=232)
-if "PYMECHANICAL_BUILDING_GALLERY_GITHUB" in os.environ:
-    config = app.ExtAPI.Application.SolveConfigurations["My Computer"]
-    config.SolveProcessSettings.MaxNumberOfCores = 1
-    config.SolveProcessSettings.DistributeSolution = False
+# if "PYMECHANICAL_BUILDING_GALLERY_GITHUB" in os.environ:
+#     app = ansys.mechanical.core.App(version=232)
+#     config = app.ExtAPI.Application.SolveConfigurations["My Computer"]
+#     config.SolveProcessSettings.MaxNumberOfCores = 1
+#     config.SolveProcessSettings.DistributeSolution = False
 
 # static path
 html_static_path = ["_static"]
