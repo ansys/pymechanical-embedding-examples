@@ -59,7 +59,7 @@ jobs:
       - name: Install system dependencies
         run: |
           apt update
-          apt install -y sudo curl lsb-release python3-pip python-is-python3
+          apt install -y sudo curl lsb-release
           apt install -y zip pandoc libgl1-mesa-glx mesa-utils xvfb texlive-latex-extra latexmk nodejs npm graphviz
           apt install -y tini
           # pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org
@@ -68,8 +68,16 @@ jobs:
       - name: Install Git and checkout project
         uses: actions/checkout@v3
 
-      - name: Install Python requirements
-        run: pip install -r requirements/requirements_doc.txt
+      - name: PyAnsys code style checks
+        uses: ansys/actions/code-style@v4
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          use-python-cache: false
+
+      - name: Upgrade pip and install requirements
+        run: |
+            pip install --upgrade pip
+            pip install -r requirements/requirements_doc.txt
 
       - name: Retrieve PyMechanial version
         run: |
