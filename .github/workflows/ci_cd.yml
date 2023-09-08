@@ -65,18 +65,16 @@ jobs:
           # pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org
           npm install -g @mermaid-js/mermaid-cli
 
-      - name: Install Git and checkout project
-        uses: actions/checkout@v3
-
       - name: Install python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          cache: 'pip' # caching pip dependencies
 
-      - name: Upgrade pip and install requirements
+      - name: Install Git and checkout project
+        uses: actions/checkout@v3
+
+      - name: Install requirements
         run: |
-            pip install --upgrade pip
             pip install -r requirements/requirements_doc.txt
 
       - name: Retrieve PyMechanial version
