@@ -2,7 +2,6 @@
 from datetime import datetime
 import os
 
-import ansys.mechanical.core
 from ansys_sphinx_theme import ansys_favicon
 from ansys_sphinx_theme import pyansys_logo_black as logo
 import numpy as np
@@ -72,7 +71,7 @@ sphinx_gallery_conf = {
     # directory where function granular galleries are stored
     "backreferences_dir": None,
     # Modules for which function level galleries are created. In
-    "doc_module": "ansys-mapdl-core",
+    "doc_module": "ansys.mechanical.core",
     "image_scrapers": ("pyvista", "matplotlib"),
     "ignore_pattern": "flycheck*",
     "thumbnail_size": (350, 350),
@@ -126,14 +125,6 @@ except AttributeError:
 pyvista.FIGURE_PATH = os.path.join(os.path.abspath("./images/"), "auto-generated/")
 if not os.path.exists(pyvista.FIGURE_PATH):
     os.makedirs(pyvista.FIGURE_PATH)
-
-# configure pymechanical for embedding
-ansys.mechanical.core.BUILDING_GALLERY = True
-if "PYMECHANICAL_BUILDING_GALLERY_GITHUB" in os.environ:
-    app = ansys.mechanical.core.App(version=232)
-    config = app.ExtAPI.Application.SolveConfigurations["My Computer"]
-    config.SolveProcessSettings.MaxNumberOfCores = 1
-    config.SolveProcessSettings.DistributeSolution = False
 
 # static path
 html_static_path = ["_static"]
