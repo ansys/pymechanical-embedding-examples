@@ -56,26 +56,25 @@ jobs:
     needs: [style, doc-style]
 
     steps:
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
       - name: Install system dependencies
         run: |
           apt update
-          apt install -y sudo curl lsb-release
+          apt install -y sudo curl lsb-release python3-pip python-is-python3
           apt install -y zip pandoc libgl1-mesa-glx mesa-utils xvfb texlive-latex-extra latexmk nodejs npm graphviz
           apt install -y tini
           # pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org
           npm install -g @mermaid-js/mermaid-cli
 
-      - name: Install python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
       - name: Install Git and checkout project
         uses: actions/checkout@v3
 
-      - name: Install requirements
-        run: |
-            pip install -r requirements/requirements_doc.txt
+      - name: Install Python requirements
+        run: pip install -r requirements/requirements_doc.txt
 
       - name: Retrieve PyMechanial version
         run: |
