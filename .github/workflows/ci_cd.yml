@@ -68,11 +68,11 @@ jobs:
       - name: Install Git and checkout project
         uses: actions/checkout@v3
 
-      - name: PyAnsys code style checks
-        uses: ansys/actions/code-style@v4
+      - name: Install python
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          use-python-cache: false
+          cache: 'pip' # caching pip dependencies
 
       - name: Upgrade pip and install requirements
         run: |
