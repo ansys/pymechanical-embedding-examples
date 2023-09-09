@@ -71,7 +71,7 @@ jobs:
       - name: Retrieve Py version
         run: |
           ls
-          python --version      
+          python --version
 
       - name: Install Python requirements
         run: |
