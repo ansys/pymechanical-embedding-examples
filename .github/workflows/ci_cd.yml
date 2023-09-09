@@ -53,20 +53,26 @@ jobs:
     container:
       image: ghcr.io/ansys/mechanical:23.2.0
       options: --entrypoint /bin/bash
+    strategy:
+      max-parallel: 2
+      fail-fast: false
+      matrix:
+        python-version: ['3.10']
     needs: [style, doc-style]
 
     steps:
+      - name: Install Git and checkout project
+        uses: actions/checkout@v3
+
       - name: Install system dependencies
         run: |
           apt update
-          apt install -y sudo curl lsb-release python3-pip python-is-python3
+          apt install -y sudo curl lsb-release python3-pip
           apt install -y zip pandoc libgl1-mesa-glx mesa-utils xvfb texlive-latex-extra latexmk nodejs npm graphviz
           apt install -y tini
-          # pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org
+          pip3 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org
+          pip3 install --upgrade pip
           npm install -g @mermaid-js/mermaid-cli
-
-      - name: Install Git and checkout project
-        uses: actions/checkout@v3
 
       - name: Retrieve Py version
         run: |
@@ -75,8 +81,7 @@ jobs:
 
       - name: Install Python requirements
         run: |
-          pip install -r requirements/requirements_doc.txt
-
+          pip3 install -r requirements/requirements_doc.txt
 
       - name: Retrieve PyMechanial version
         run: |
