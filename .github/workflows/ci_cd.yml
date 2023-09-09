@@ -68,11 +68,15 @@ jobs:
       - name: Install Git and checkout project
         uses: actions/checkout@v3
 
+      - name: Retrieve Py version
+        run: |
+          ls
+          python --version      
+
       - name: Install Python requirements
         run: |
           pip install -r requirements/requirements_doc.txt
-          ls
-          python --version
+
 
       - name: Retrieve PyMechanial version
         run: |
