@@ -60,14 +60,14 @@ jobs:
       - name: Install Git and checkout project
         uses: actions/checkout@v3
 
-      # - name: Set up Python
-      #   run: |
-      #     apt update
-      #     apt install -y python3.9 python3-pip
-      #     ln -s /usr/bin/python3.9 /usr/bin/python
-      #     python -m pip install --upgrade pip
-      #     python --version
-      #     pip3 --version
+      - name: Set up Python
+        run: |
+          apt update
+          apt install -y python${{ env.MAIN_PYTHON_VERSION }} python3-pip
+          ln -s /usr/bin/python3.9 /usr/bin/python
+          python -m pip install --upgrade pip
+          python --version
+          pip3 --version
 
       - name: Install system dependencies
         run: |
@@ -78,15 +78,8 @@ jobs:
           # pip3 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org
           npm install -g @mermaid-js/mermaid-cli
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.9
-
       - name: Install Python requirements
         run: |
-          ln -s /usr/bin/python3.9 /usr/bin/python
-          python -m pip install --upgrade pip
           pip3 install -r requirements/requirements_doc.txt
 
       - name: Retrieve PyMechanial version
