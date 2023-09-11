@@ -53,9 +53,10 @@ jobs:
     container:
       image: ghcr.io/ansys/mechanical:23.2.0
       options: --entrypoint /bin/bash
+    needs: [style, doc-style]
 
     steps:
-      
+
       - name: Install Git and checkout project
         uses: actions/checkout@v3
 
