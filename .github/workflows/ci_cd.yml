@@ -12,7 +12,7 @@ on:
       - main
 
 env:
-  MAIN_PYTHON_VERSION: '3.10'
+  MAIN_PYTHON_VERSION: '3.9'
   PYMECHANICAL_VERSION: '23.2'
   RESET_EXAMPLES_CACHE: 0
   RESET_DOC_BUILD_CACHE: 0
@@ -63,7 +63,7 @@ jobs:
       - name: Set up Python
         run: |
           apt update
-          apt install -y python${{ env.MAIN_PYTHON_VERSION }} python3-pip
+          apt install -y python3.9 python3-pip
           ln -s /usr/bin/python3.9 /usr/bin/python
           python -m pip install --upgrade pip
           python --version
