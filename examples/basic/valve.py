@@ -11,7 +11,6 @@ import ansys.mechanical.core as mech
 from ansys.mechanical.core.examples import delete_downloads, download_file
 
 # Embed Mechanical and set global variables
-
 app = mech.App(version=232)
 globals().update(mech.global_variables(app))
 print(app)
@@ -53,8 +52,8 @@ ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
 ###############################################################################
-# Export the geometry
-# --------------
+# Exported geometry
+# ~~~~~~~~~~~~~~~~~
 # .. image:: /_static/basic/valve/geometry.png
 
 
@@ -80,6 +79,10 @@ Tree.Activate([mesh])
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
 )
+###############################################################################
+# Meshing the geometry
+# ---------------------
+# .. image:: /_static/basic/valve/mesh.png
 
 # Define boundary conditions
 
@@ -103,7 +106,10 @@ config.SolveProcessSettings.MaxNumberOfCores = 1
 config.SolveProcessSettings.DistributeSolution = False
 Model.Solve()
 
-# Evaluate results, export screenshots
+###############################################################################
+# Evaluate results
+# -------------------------------------
+
 solution = analysis.Solution
 deformation = solution.AddTotalDeformation()
 stress = solution.AddEquivalentStress()
@@ -118,6 +124,13 @@ ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "stress.png"), image_export_format, settings_720p
 )
 
+################################################
+# Exported results
+# ~~~~~~~~~~~~~~~
+# .. image:: /_static/basic/valve/deformation.png
+# .. image:: /_static/basic/valve/stress.png
+
+
 # Export stress animation
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.MP4
@@ -129,6 +142,11 @@ settings_720p.Height = 720
 stress.ExportAnimation(
     os.path.join(cwd, "Valve.mp4"), animation_export_format, settings_720p
 )
+
+################################################
+# Exported animation
+# ~~~~~~~~~~~~~~~
+# .. video:: /_static/basic/valve/Valve.mp4
 
 # Save project
 app.save(os.path.join(cwd, "Valve.mechdat"))
