@@ -1,5 +1,7 @@
 """ .. _ref_basic_valve:
-Example: Basic Valve Implementation
+
+Basic Valve Implementation
+--------------------------
 
 This example demonstrates a basic implementation of a valve in Python.
 """
