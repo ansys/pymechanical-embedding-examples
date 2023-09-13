@@ -1,6 +1,3 @@
-.. _ref_technology_showcase_embedding_examples:
-
-=============================
 Technology showcase examples
 =============================
 

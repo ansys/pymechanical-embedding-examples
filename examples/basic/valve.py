@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jan 12 17:06:18 2023
+""" .. _ref_basic_valve:
+Example: Basic Valve Implementation
 
-@author: pmaroneh
+This example demonstrates a basic implementation of a valve in Python.
 """
 import os
 
@@ -51,6 +50,11 @@ geometry_import.Import(
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
+###############################################################################
+# Export the geometry
+# --------------
+# .. image:: /_static/basic/valve/geometry.png
+
 
 # Assign materials
 material_assignment = Model.Materials.AddMaterialAssignment()

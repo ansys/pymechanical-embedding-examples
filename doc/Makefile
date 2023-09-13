@@ -26,6 +26,7 @@ help:
 clean:
 	rm -rf $(BUILDDIR)/*
 	rm -rf $(SOURCEDIR)/examples
+	rm -rf source/examples/gallery_examples
 	find . -type d -name "_autosummary" -exec rm -rf {} +
 
 # Customized pdf fov svg format images
