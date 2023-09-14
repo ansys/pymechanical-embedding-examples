@@ -1,16 +1,14 @@
-PyMechanical Remote Sessions Examples
-=====================================
+PyMechanical Embedding Examples
+===============================
 
-These examples demonstrate the basic simulation capabilities of Ansys Mechanical using remote sessions.
-
-These examples use ``ansys-mechanical-core`` library.
+Embedding examples for `PyMechanical <_pymechanical_docs>`_ are contained in this repository.
 
 .. === EXAMPLES Gallery ===
 
 ..
    We have to include this rather than include it in a tree.
 
-.. include:: examples/gallery_examples/index.rst
+.. include:: examples/index.rst
    :start-line: 2
 
 .. === Include examples/index to avoid warning but it is not shown ===
