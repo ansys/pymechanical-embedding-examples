@@ -9,6 +9,5 @@ Embedding examples for `PyMechanical <_pymechanical_docs>`_ are contained in thi
 
 .. toctree::
    :hidden:
-   :includehidden:
 
    examples/index
