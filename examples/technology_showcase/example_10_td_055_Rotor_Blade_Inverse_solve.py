@@ -2,7 +2,7 @@
 
 Inverse-Solving Analysis of a Rotor Fan Blade with Disk
 ---------------------------------------------------------------------------------------
-Description:
+
 The NASA Rotor 67 fan bladed disk is a subsystem of a turbo fan’s compressor set used
 in aerospace engine applications. This sector model, representing a challenging industrial
 example for which the detailed geometry and flow information is available in the public
@@ -53,28 +53,20 @@ from Ansys.Mechanical.DataModel.Enums import *
 from Ansys.Mechanical.DataModel.MechanicalEnums import *
 
 ###############################################################################
-# Download required geometry files
+# Download required files
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Download the required files. Print the file path for the Mechdat file.
 
+# Download the Mechdat file.
 geometry_path = download_file(
     "example_10_td_055_Rotor_Blade_Geom.pmdb", "pymechanical", "embedding"
 )
 
-###############################################################################
-# Download required Material file
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Download the required files. Print the file path for the material file.
-
+# Download  the material file.
 mat_path = download_file(
     "example_10_td_055_Rotor_Blade_Mat_File.xml", "pymechanical", "embedding"
 )
 
-###############################################################################
-# Download required CFX Pressure file
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Download the required files. Print the file path for the CFX Pressure Data.
-
+# Download the CFX Pressure Data.
 cfx_data_path = download_file(
     "example_10_CFX_ExportResults_FT_10P_EO2.csv", "pymechanical", "embedding"
 )
@@ -121,6 +113,8 @@ ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
+########################################################
+# .. image:: /_static/technology_showcase/ex_10_rotor_blade/geometry.png
 
 ###################################################################################
 # Assign materials
@@ -144,7 +138,7 @@ PRT2_Blade_3.Material = "MAT1 (Setup, File1)"
 
 ###################################################################################
 # Define Units System and store variables
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Select MKS units
 ExtAPI.Application.ActiveUnitSystem = (
     Ansys.ACT.Interfaces.Common.MechanicalUnitSystem.StandardMKS
@@ -303,6 +297,8 @@ ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "blade_mesh.png"), image_export_format, settings_720p
 )
+########################################################
+# .. image:: /_static/technology_showcase/ex_10_rotor_blade/blade_mesh.png
 
 ###################################################################################
 # Define analysis settings
@@ -423,7 +419,7 @@ Imported_Pressure.ImportLoad()
 
 ###################################################################################
 # Postprocessing: Insert results objects
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SOLN = STAT_STRUC.Solution
 
 TOT_DEF1 = SOLN.AddTotalDeformation()
@@ -457,11 +453,11 @@ THERM_STRN2.DisplayTime = Quantity("2 [s]")
 SOLN.Solve(True)
 STAT_STRUC_SS = SOLN.Status
 
+
 ###################################################################################
 # Postprocessing
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Evaluate results, export screenshots
-
 Tree.Activate([TOT_DEF2])
 ExtAPI.Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
     Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.ExtraModelDisplay.NoWireframe
@@ -473,11 +469,31 @@ Tree.Activate([EQV_STRS2])
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "stress.png"), image_export_format, settings_720p
 )
+########################################################
+# .. image:: /_static/technology_showcase/ex_10_rotor_blade/deformation.png
+# .. image:: /_static/technology_showcase/ex_10_rotor_blade/stress.png
+
+#########################################
+# Export stress animation
+animation_export_format = (
+    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
+)
+settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
+settings_720p.Width = 1280
+settings_720p.Height = 720
+
+EQV_STRS2.ExportAnimation(
+    os.path.join(cwd, "rotor.gif"), animation_export_format, settings_720p
+)
+##########################################################
+# .. image:: /_static/technology_showcase/ex_10_rotor_blade/rotor.gif
+
 
 ###################################################################################
 # Cleanup
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~
 # Save project
+
 app.save(os.path.join(cwd, "blade_inverse.mechdat"))
 app.new()
 

@@ -167,3 +167,4 @@ doc/source/technology_showcase_examples/*.pickle
 # Results generated during doc build and example run locally
 examples/technology_showcase/out
 examples/basic/out
+/out

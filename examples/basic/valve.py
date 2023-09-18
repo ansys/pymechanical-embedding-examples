@@ -20,7 +20,9 @@ analysis = Model.AddStaticStructuralAnalysis()
 
 cwd = os.path.join(os.getcwd(), "out")
 
+##############################################
 # Configure graphics for image export
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
     Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
 )
@@ -48,16 +50,16 @@ geometry_import.Import(
     geometry_file, geometry_import_format, geometry_import_preferences
 )
 
+ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
 ###############################################################################
-# Exported geometry
-# ~~~~~~~~~~~~~~~~~
 # .. image:: /_static/basic/valve/geometry.png
 
-
-# Assign materials
+#########################
+# Assign materials and mesh the geometry
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 material_assignment = Model.Materials.AddMaterialAssignment()
 material_assignment.Material = "Structural Steel"
 sel = ExtAPI.SelectionManager.CreateSelectionInfo(
@@ -80,12 +82,11 @@ ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
 )
 ###############################################################################
-# Meshing the geometry
-# ---------------------
 # .. image:: /_static/basic/valve/mesh.png
 
+###############################################################################
 # Define boundary conditions
-
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 fixed_support = analysis.AddFixedSupport()
 fixed_support.Location = ExtAPI.DataModel.GetObjectsByName("NSFixedSupportFaces")[0]
 
@@ -106,10 +107,10 @@ config.SolveProcessSettings.MaxNumberOfCores = 1
 config.SolveProcessSettings.DistributeSolution = False
 Model.Solve()
 
-###############################################################################
-# Evaluate results
-# -------------------------------------
-
+###################################################################################
+# Postprocessing
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Evaluate results, export screenshots
 solution = analysis.Solution
 deformation = solution.AddTotalDeformation()
 stress = solution.AddEquivalentStress()
@@ -119,34 +120,28 @@ Tree.Activate([deformation])
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "deformation.png"), image_export_format, settings_720p
 )
+###################################################
+# .. image:: /_static/basic/valve/deformation.png
 Tree.Activate([stress])
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "stress.png"), image_export_format, settings_720p
 )
-
 ################################################
-# Exported results
-# ~~~~~~~~~~~~~~~
-# .. image:: /_static/basic/valve/deformation.png
 # .. image:: /_static/basic/valve/stress.png
-
 
 # Export stress animation
 animation_export_format = (
-    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.MP4
+    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
 )
 settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
 settings_720p.Width = 1280
 settings_720p.Height = 720
 
 stress.ExportAnimation(
-    os.path.join(cwd, "Valve.mp4"), animation_export_format, settings_720p
+    os.path.join(cwd, "Valve.gif"), animation_export_format, settings_720p
 )
-
-################################################
-# Exported animation
-# ~~~~~~~~~~~~~~~
-# .. video:: /_static/basic/valve/Valve.mp4
+##########################################################
+# .. image:: /_static/basic/valve/Valve.gif
 
 # Save project
 app.save(os.path.join(cwd, "Valve.mechdat"))

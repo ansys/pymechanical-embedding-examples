@@ -1,8 +1,8 @@
-.. _ref_example_gallery:
+.. _ref_examples:
 
 Examples
-========
-End-to-end examples show how you can use pymechanical.
+----------
+These end-to-end examples show how you can use ``ansys-mechanical-core``.
 
 .. note::
     Some examples require additional Python packages.
