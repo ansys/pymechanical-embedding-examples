@@ -82,7 +82,7 @@ cfx_data_path = download_file(
 ###################################################################################
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+cwd = os.path.join(os.getcwd(), "out")
 ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
     Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
 )
@@ -119,7 +119,7 @@ geometry_import.Import(
 
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
-    os.path.join(os.getcwd(), "geometry.png"), image_export_format, settings_720p
+    os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
 
 ###################################################################################
@@ -301,7 +301,7 @@ MSH.GenerateMesh()
 
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
-    os.path.join(os.getcwd(), "blade_mesh.png"), image_export_format, settings_720p
+    os.path.join(cwd, "blade_mesh.png"), image_export_format, settings_720p
 )
 
 ###################################################################################
@@ -467,18 +467,18 @@ ExtAPI.Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
     Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.ExtraModelDisplay.NoWireframe
 )
 ExtAPI.Graphics.ExportImage(
-    os.path.join(os.getcwd(), "deformation.png"), image_export_format, settings_720p
+    os.path.join(cwd, "deformation.png"), image_export_format, settings_720p
 )
 Tree.Activate([EQV_STRS2])
 ExtAPI.Graphics.ExportImage(
-    os.path.join(os.getcwd(), "stress.png"), image_export_format, settings_720p
+    os.path.join(cwd, "stress.png"), image_export_format, settings_720p
 )
 
 ###################################################################################
 # Cleanup
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Save project
-app.save(os.path.join(os.getcwd(), "blade_inverse.mechdat"))
+app.save(os.path.join(cwd, "blade_inverse.mechdat"))
 app.new()
 
 ###################################################################################

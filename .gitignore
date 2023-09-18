@@ -74,6 +74,7 @@ instance/
 
 # Sphinx documentation
 doc/_build/
+doc/source/examples
 
 # PyBuilder
 .pybuilder/
@@ -162,3 +163,7 @@ doc/source/technology_showcase_examples/*.ipynb
 doc/source/technology_showcase_examples/*.py
 doc/source/technology_showcase_examples/*.md5
 doc/source/technology_showcase_examples/*.pickle
+
+# Results generated during doc build and example run locally
+examples/technology_showcase/out
+examples/basic/out
