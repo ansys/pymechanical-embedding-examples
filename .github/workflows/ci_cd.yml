@@ -112,7 +112,6 @@ jobs:
           ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
           ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
         run: |
-          cat /install/ansys_inc/v232/aisol/.workbench_lite
           xvfb-run /install/ansys_inc/v232/aisol/.workbench_lite make -C doc html > doc_build_output.txt 2>&1 || true
           cat doc_build_output.txt
           #
