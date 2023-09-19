@@ -1,5 +1,5 @@
 #PyMechanical
-ansys-mechanical-core==0.10.1
+ansys-mechanical-core==0.10.2
 
 # Documentation dependencies
 ansys-sphinx-theme==0.10.5
@@ -9,14 +9,14 @@ numpy==1.25.2
 numpydoc==1.5.0
 pandas==2.1.0
 panel==1.2.2
-plotly==5.16.1
+plotly==5.17.0
 pypandoc==1.11
 pythreejs==2.4.2
-pyvista==0.42.1
-Sphinx==7.0.1
+pyvista==0.42.2
+Sphinx==7.2.6
 sphinx-copybutton==0.5.1
 sphinx-gallery==0.14.0
 sphinx-autobuild==2021.3.14
 sphinx-autodoc-typehints==1.24.0
-sphinx-notfound-page==0.8.3
+sphinx-notfound-page==1.0.0
 sphinxemoji==0.2.0
