@@ -2,6 +2,11 @@ PyMechanical Embedding Examples
 ===============================
 
 Embedding examples for `PyMechanical <_pymechanical_docs>`_ are contained in this repository.
+These end-to-end examples show how you can use ``ansys-mechanical-core``.
+
+.. note::
+    Some examples require additional Python packages.
+
 
 .. === EXAMPLES Gallery ===
 
@@ -10,12 +15,3 @@ Embedding examples for `PyMechanical <_pymechanical_docs>`_ are contained in thi
 
 .. include:: examples/index.rst
    :start-line: 2
-
-.. === Include examples/index to avoid warning but it is not shown ===
-
-
-.. toctree::
-   :hidden:
-   :includehidden:
-
-   examples/index.rst
