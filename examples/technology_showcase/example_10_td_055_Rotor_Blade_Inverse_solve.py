@@ -41,6 +41,8 @@ import os
 
 import ansys.mechanical.core as mech
 from ansys.mechanical.core.examples import delete_downloads, download_file
+from matplotlib import image as mpimg
+from matplotlib import pyplot as plt
 
 app = mech.App(version=232)
 globals().update(mech.global_variables(app))
@@ -51,6 +53,19 @@ from Ansys.ACT.Interfaces.Common import *
 from Ansys.ACT.Mechanical.Fields import *
 from Ansys.Mechanical.DataModel.Enums import *
 from Ansys.Mechanical.DataModel.MechanicalEnums import *
+
+# Use matlabplotlib to display the images.
+cwd = os.path.join(os.getcwd(), "out")
+
+
+def display_image(image_name):
+    path = os.path.join(os.path.join(cwd, image_name))
+    image = mpimg.imread(path)
+    plt.figure(figsize=(15, 15))
+    plt.axis("off")
+    plt.imshow(image)
+    plt.show()
+
 
 ###############################################################################
 # Download required geometry files
@@ -121,6 +136,7 @@ ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
+display_image("geometry.png")
 
 ###################################################################################
 # Assign materials
@@ -469,10 +485,13 @@ ExtAPI.Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "deformation.png"), image_export_format, settings_720p
 )
+display_image("deformation.png")
+
 Tree.Activate([EQV_STRS2])
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "stress.png"), image_export_format, settings_720p
 )
+display_image("stress.png")
 
 ###################################################################################
 # Cleanup
