@@ -1,8 +1,8 @@
 """ .. _ref_example_10_td_055:
 
 Inverse-Solving Analysis of a Rotor Fan Blade with Disk
----------------------------------------------------------
-
+---------------------------------------------------------------------------------------
+Description:
 The NASA Rotor 67 fan bladed disk is a subsystem of a turbo fan’s compressor set used
 in aerospace engine applications. This sector model, representing a challenging industrial
 example for which the detailed geometry and flow information is available in the public
@@ -36,12 +36,11 @@ Inverse-Solving Analysis: A nonlinear static analysis using inverse solving
 (for manufacturing) and the stress/strain results on the hot geometry.
 
 """
+
 import os
 
 import ansys.mechanical.core as mech
 from ansys.mechanical.core.examples import delete_downloads, download_file
-from matplotlib import image as mpimg
-from matplotlib import pyplot as plt
 
 app = mech.App(version=232)
 globals().update(mech.global_variables(app))
@@ -53,40 +52,37 @@ from Ansys.ACT.Mechanical.Fields import *
 from Ansys.Mechanical.DataModel.Enums import *
 from Ansys.Mechanical.DataModel.MechanicalEnums import *
 
-# Use matlabplotlib to display the images.
-cwd = os.path.join(os.getcwd(), "out")
+###############################################################################
+# Download required geometry files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Download the required files. Print the file path for the Mechdat file.
 
-
-def display_image(image_name):
-    path = os.path.join(os.path.join(cwd, image_name))
-    image = mpimg.imread(path)
-    plt.figure(figsize=(15, 15))
-    plt.axis("off")
-    plt.imshow(image)
-    plt.show()
-
-
-#############################
-# Download required files
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Download the Mechdat file.
 geometry_path = download_file(
     "example_10_td_055_Rotor_Blade_Geom.pmdb", "pymechanical", "embedding"
 )
 
-# Download  the material file.
+###############################################################################
+# Download required Material file
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Download the required files. Print the file path for the material file.
+
 mat_path = download_file(
     "example_10_td_055_Rotor_Blade_Mat_File.xml", "pymechanical", "embedding"
 )
 
-# Download the CFX Pressure Data.
+###############################################################################
+# Download required CFX Pressure file
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Download the required files. Print the file path for the CFX Pressure Data.
+
 cfx_data_path = download_file(
     "example_10_CFX_ExportResults_FT_10P_EO2.csv", "pymechanical", "embedding"
 )
 
-#######################################
+###################################################################################
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cwd = os.path.join(os.getcwd(), "out")
 ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
     Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
 )
@@ -102,9 +98,9 @@ settings_720p.Width = 1280
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
-####################
+###################################################################################
 # Import geometry
-# ~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Reads Geometry file
 
 geometry_import_group = Model.GeometryImportGroup
@@ -125,11 +121,10 @@ ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
-display_image("geometry.png")
 
-######################
+###################################################################################
 # Assign materials
-# ~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Import material from xml file and assign it to bodies
 
 materials = ExtAPI.DataModel.Project.Model.Materials
@@ -147,9 +142,9 @@ PRT2_Blade_1.Material = "MAT1 (Setup, File1)"
 PRT2_Blade_2.Material = "MAT1 (Setup, File1)"
 PRT2_Blade_3.Material = "MAT1 (Setup, File1)"
 
-#############################################
+###################################################################################
 # Define Units System and store variables
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Select MKS units
 ExtAPI.Application.ActiveUnitSystem = (
     Ansys.ACT.Interfaces.Common.MechanicalUnitSystem.StandardMKS
@@ -162,9 +157,9 @@ MESH = ExtAPI.DataModel.Project.Model.Mesh
 MAT_GRP = ExtAPI.DataModel.Project.Model.Materials
 CS = ExtAPI.DataModel.Project.Model.CoordinateSystems
 
-##########################
+###################################################################################
 # Define Named Selection
-# ~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create NS for Named Selection.
 
 NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
@@ -206,9 +201,9 @@ BLADE3_TARGET_NS = [
     x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade3_Target"
 ][0]
 
-##############################
+###################################################################################
 # Define coordinate system
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create Cylindrical coordinate system
 
 coordinate_systems = Model.CoordinateSystems
@@ -219,9 +214,9 @@ coord_system.CoordinateSystemType = (
 coord_system.OriginDefineBy = CoordinateSystemAlignmentType.Component
 coord_system.OriginDefineBy = CoordinateSystemAlignmentType.Fixed
 
-####################
+###################################################################################
 # Define Contacts
-# ~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Delete existing contacts and define connections.
 
 connections = ExtAPI.DataModel.Project.Model.Connections
@@ -239,7 +234,7 @@ CONT_REG1.TargetLocation = NS_GRP.Children[5]
 CONT_REG1.Behavior = ContactBehavior.AutoAsymmetric
 CONT_REG1.ContactFormulation = ContactFormulation.MPC
 
-#########################################
+###################################################################################
 # Define mesh settings, generate mesh
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -308,11 +303,10 @@ ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "blade_mesh.png"), image_export_format, settings_720p
 )
-display_image("blade_mesh.png")
 
-##############################
+###################################################################################
 # Define analysis settings
-# ~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Setup static structural settings with Inverse solve
 Model.AddStaticStructuralAnalysis()
 STAT_STRUC = Model.Analyses[0]
@@ -329,9 +323,9 @@ ANA_SETTINGS.NumberOfSubSteps = 20
 ANA_SETTINGS.InverseOption = True
 ANA_SETTINGS.LargeDeflection = True
 
-##############################
+###################################################################################
 # Define boundary conditions
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Apply Rotational velocity
 ROT_VEL = STAT_STRUC.AddRotationalVelocity()
 ROT_VEL.DefineBy = LoadDefineBy.Components
@@ -366,9 +360,9 @@ Thermal_Condition.Magnitude.Output.DiscreteValues = [
     Quantity("80 [C]"),
 ]
 
-#########################
+###################################################################################
 # Import CFX Pressure
-# ~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Import CFX Pressure data and apply it to structural blade surface
 Imported_Load_Group = STAT_STRUC.AddImportedLoadExternalData()
 
@@ -427,16 +421,9 @@ Imported_Pressure.InternalObject.ExternalLoadAppliedBy = 1
 app.execute_script(mech_command)
 Imported_Pressure.ImportLoad()
 
-Tree.Activate([Imported_Pressure])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "imported_pressure.png"), image_export_format, settings_720p
-)
-display_image("imported_pressure.png")
-
-###########################################
+###################################################################################
 # Postprocessing: Insert results objects
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SOLN = STAT_STRUC.Solution
 
 TOT_DEF1 = SOLN.AddTotalDeformation()
@@ -463,16 +450,18 @@ THERM_STRN1.DisplayTime = Quantity("1 [s]")
 THERM_STRN2 = SOLN.AddThermalStrain()
 THERM_STRN2.DisplayTime = Quantity("2 [s]")
 
-########################################
+###################################################################################
+# Run Solution: Inverse Simulation
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Solve inverse analysis on blade model
 SOLN.Solve(True)
 STAT_STRUC_SS = SOLN.Status
 
-#########################################
+###################################################################################
 # Postprocessing
-# ~~~~~~~~~~~~~~~
-# Total Deformation
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Evaluate results, export screenshots
+
 Tree.Activate([TOT_DEF2])
 ExtAPI.Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
     Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.ExtraModelDisplay.NoWireframe
@@ -480,24 +469,19 @@ ExtAPI.Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "deformation.png"), image_export_format, settings_720p
 )
-display_image("deformation.png")
-
-#########################################
-# Equivalent stress
 Tree.Activate([EQV_STRS2])
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "stress.png"), image_export_format, settings_720p
 )
-display_image("stress.png")
 
-###########################################
+###################################################################################
 # Cleanup
-# ~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Save project
 app.save(os.path.join(cwd, "blade_inverse.mechdat"))
 app.new()
 
-#############################
+###################################################################################
 # Delete example file
-# ~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 delete_downloads()
