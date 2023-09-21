@@ -36,11 +36,12 @@ Inverse-Solving Analysis: A nonlinear static analysis using inverse solving
 (for manufacturing) and the stress/strain results on the hot geometry.
 
 """
-
 import os
 
 import ansys.mechanical.core as mech
 from ansys.mechanical.core.examples import delete_downloads, download_file
+from matplotlib import image as mpimg
+from matplotlib import pyplot as plt
 
 app = mech.App(version=232)
 globals().update(mech.global_variables(app))
@@ -51,6 +52,19 @@ from Ansys.ACT.Interfaces.Common import *
 from Ansys.ACT.Mechanical.Fields import *
 from Ansys.Mechanical.DataModel.Enums import *
 from Ansys.Mechanical.DataModel.MechanicalEnums import *
+
+# Use matlabplotlib to display the images.
+cwd = os.path.join(os.getcwd(), "out")
+
+
+def display_image(image_name):
+    path = os.path.join(os.path.join(cwd, image_name))
+    image = mpimg.imread(path)
+    plt.figure(figsize=(15, 15))
+    plt.axis("off")
+    plt.imshow(image)
+    plt.show()
+
 
 #############################
 # Download required files
@@ -73,7 +87,6 @@ cfx_data_path = download_file(
 #######################################
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-cwd = os.path.join(os.getcwd(), "out")
 ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
     Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
 )
@@ -112,8 +125,7 @@ ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
-###########################################################################
-# .. image:: /_static/technology_showcase/ex_10_rotor_blade/geometry.png
+display_image("geometry.png")
 
 ######################
 # Assign materials
@@ -296,8 +308,7 @@ ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "blade_mesh.png"), image_export_format, settings_720p
 )
-###########################################################################
-# .. image:: /_static/technology_showcase/ex_10_rotor_blade/blade_mesh.png
+display_image("blade_mesh.png")
 
 ##############################
 # Define analysis settings
@@ -416,6 +427,13 @@ Imported_Pressure.InternalObject.ExternalLoadAppliedBy = 1
 app.execute_script(mech_command)
 Imported_Pressure.ImportLoad()
 
+Tree.Activate([Imported_Pressure])
+ExtAPI.Graphics.Camera.SetFit()
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "imported_pressure.png"), image_export_format, settings_720p
+)
+display_image("imported_pressure.png")
+
 ###########################################
 # Postprocessing: Insert results objects
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -451,11 +469,10 @@ THERM_STRN2.DisplayTime = Quantity("2 [s]")
 SOLN.Solve(True)
 STAT_STRUC_SS = SOLN.Status
 
-
-###################
+#########################################
 # Postprocessing
 # ~~~~~~~~~~~~~~~
-# Evaluate results, export screenshots
+# Total Deformation
 Tree.Activate([TOT_DEF2])
 ExtAPI.Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
     Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.ExtraModelDisplay.NoWireframe
@@ -463,40 +480,24 @@ ExtAPI.Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "deformation.png"), image_export_format, settings_720p
 )
+display_image("deformation.png")
+
+#########################################
+# Equivalent stress
 Tree.Activate([EQV_STRS2])
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "stress.png"), image_export_format, settings_720p
 )
-#############################################################################
-# .. image:: /_static/technology_showcase/ex_10_rotor_blade/deformation.png
-# .. image:: /_static/technology_showcase/ex_10_rotor_blade/stress.png
+display_image("stress.png")
 
-#########################################
-# Export stress animation
-Tree.Activate([EQV_STRS2])
-animation_export_format = (
-    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
-)
-settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
-settings_720p.Width = 1280
-settings_720p.Height = 720
-
-EQV_STRS2.ExportAnimation(
-    os.path.join(cwd, "rotor.gif"), animation_export_format, settings_720p
-)
-##########################################################
-# .. image:: /_static/technology_showcase/ex_10_rotor_blade/rotor.gif
-
-
-###########
+###########################################
 # Cleanup
 # ~~~~~~~~~
 # Save project
-
 app.save(os.path.join(cwd, "blade_inverse.mechdat"))
 app.new()
 
-#######################
+#############################
 # Delete example file
 # ~~~~~~~~~~~~~~~~~~~~~
 delete_downloads()
