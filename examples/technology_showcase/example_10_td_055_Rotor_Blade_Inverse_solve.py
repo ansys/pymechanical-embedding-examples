@@ -437,6 +437,13 @@ Imported_Pressure.InternalObject.ExternalLoadAppliedBy = 1
 app.execute_script(mech_command)
 Imported_Pressure.ImportLoad()
 
+Tree.Activate([Imported_Pressure])
+ExtAPI.Graphics.Camera.SetFit()
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "imported_pressure.png"), image_export_format, settings_720p
+)
+display_image("imported_pressure.png")
+
 ###################################################################################
 # Postprocessing: Insert results objects
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -485,10 +492,13 @@ ExtAPI.Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "deformation.png"), image_export_format, settings_720p
 )
+display_image("deformation.png")
+
 Tree.Activate([EQV_STRS2])
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "stress.png"), image_export_format, settings_720p
 )
+display_image("stress.png")
 
 ###################################################################################
 # Cleanup
