@@ -168,7 +168,7 @@ display_image("topo_opitimized_smooth.png")
 # Compare the results
 
 
-# Print topology density results 
+# Print topology density results
 print("Topology Density Results")
 print("Minimum Density: ", TOPO_DENS.Minimum)
 print("Maximum Density: ", TOPO_DENS.Maximum)
