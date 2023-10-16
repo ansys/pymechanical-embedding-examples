@@ -1,12 +1,11 @@
 """ .. _ref_topology_optimization:
 
 Topology Optimization of a Simple Cantilever
----------------------------------------------------------------------------------------
-Description:
+--------------------------------------------
 
-This example demonstrates the Structural Optimization of simple
-cantilver. The Structural Analysis is performed with basic constraints and
-load then transferred to topology optimization.
+This example demonstrates the structural topology optimization of a simple
+cantilever. The structural analysis is performed with basic constraints and
+load, which is then transferred to topology optimization.
 """
 
 import os
@@ -48,6 +47,7 @@ structural_analysis.Solve()
 
 ##############################################
 # Configure graphics for image export
+
 ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
     Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
 )
@@ -61,26 +61,33 @@ settings_720p.Width = 1280
 settings_720p.Capture = Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType.ImageOnly
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
+
 ###############################
 # Structural Analsys Results
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 structural_solution = structural_analysis.Solution
+
 ###############################
 # Total Deformation
+
 structural_solution.Children[1].Activate()
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "total_deformation.png"), image_export_format, settings_720p
 )
 display_image("total_deformation.png")
+
 ###############################
 # Equivalent Stress
+
 structural_solution.Children[2].Activate()
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "equivalent_stress.png"), image_export_format, settings_720p
 )
 display_image("equivalent_stress.png")
+
 ##############################################################
 # Topology Optimization
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -88,7 +95,7 @@ display_image("equivalent_stress.png")
 # Set MKS Unit System
 ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
-# Store all main tree nodes as variables"
+# Store all main tree nodes as variables
 GEOM = ExtAPI.DataModel.Project.Model.Geometry
 MSH = ExtAPI.DataModel.Project.Model.Mesh
 NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
@@ -140,11 +147,14 @@ TOPO_OPT.Solution.Solve(True)
 
 ##############################################################
 # Results
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~
+
 TOPO_OPT.Solution.Children[1].Activate()
 TOPO_DENS = TOPO_OPT.Solution.Children[1]
+
 ###################################
-# Adding smoothing the STL
+# Add smoothing to the STL
+
 TOPO_DENS.AddSmoothing()
 TOPO_OPT.Solution.EvaluateAllResults()
 TOPO_DENS.Children[0].Activate()
@@ -153,27 +163,26 @@ ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "topo_opitimized_smooth.png"), image_export_format, settings_720p
 )
 display_image("topo_opitimized_smooth.png")
+
 ##########################################################################
 # Compare the results
-TOPO_DENS_min = TOPO_DENS.Minimum
-TOPO_DENS_max = TOPO_DENS.Maximum
-TOPO_DENS_ov = TOPO_DENS.OriginalVolume.Value
-TOPO_DENS_fv = TOPO_DENS.FinalVolume.Value
-TOPO_DENS_pvo = TOPO_DENS.PercentVolumeOfOriginal
-TOPO_DENS_om = TOPO_DENS.OriginalMass.Value
-TOPO_DENS_fm = TOPO_DENS.FinalMass.Value
-TOPO_DENS_pmo = TOPO_DENS.PercentMassOfOriginal
-TOPO_DENS_itrn = TOPO_DENS.IterationNumber
-print("Original Volume for Topology Density Result", TOPO_DENS_ov)
-print("Final Volume for Topology Density Result", TOPO_DENS_fv)
-print("Percent Volume of Original for Topology Density Result", TOPO_DENS_pvo)
-print("Original Mass for Topology Density Result", TOPO_DENS_om)
-print("Final Mass for Topology Density Result", TOPO_DENS_fm)
-print("Percent Mass of Original for Topology Density Result", TOPO_DENS_pmo)
+
+
+# Print topology density results 
+print("Topology Density Results")
+print("Minimum Density: ", TOPO_DENS.Minimum)
+print("Maximum Density: ", TOPO_DENS.Maximum)
+print("Iteration Number: ", TOPO_DENS.IterationNumber)
+print("Original Volume: ", TOPO_DENS.OriginalVolume.Value)
+print("Final Volume: ", TOPO_DENS.FinalVolume.Value)
+print("Percent Volume of Original: ", TOPO_DENS.PercentVolumeOfOriginal)
+print("Original Mass: ", TOPO_DENS.OriginalMass.Value)
+print("Final Mass: ", TOPO_DENS.FinalMass.Value)
+print("Percent Mass of Original: ", TOPO_DENS.PercentMassOfOriginal)
 
 # Save project
 app.save(os.path.join(cwd, "cantilever_topology_optimization.mechdat"))
 app.new()
 
-# delete example file
+# Delete the example file
 delete_downloads()
