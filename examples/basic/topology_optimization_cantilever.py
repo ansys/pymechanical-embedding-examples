@@ -48,7 +48,6 @@ structural_analysis.Solve()
 
 ##############################################
 # Configure graphics for image export
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
     Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
 )
@@ -62,15 +61,19 @@ settings_720p.Width = 1280
 settings_720p.Capture = Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType.ImageOnly
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
-###################################################################################
+###############################
 # Structural Analsys Results
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 structural_solution = structural_analysis.Solution
+###############################
 # Total Deformation
 structural_solution.Children[1].Activate()
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "total_deformation.png"), image_export_format, settings_720p
 )
+display_image("total_deformation.png")
+###############################
 # Equivalent Stress
 structural_solution.Children[2].Activate()
 ExtAPI.Graphics.Camera.SetFit()
@@ -80,6 +83,7 @@ ExtAPI.Graphics.ExportImage(
 display_image("equivalent_stress.png")
 ##############################################################
 # Topology Optimization
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Set MKS Unit System
 ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
@@ -90,10 +94,9 @@ MSH = ExtAPI.DataModel.Project.Model.Mesh
 NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
 CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
 
-
 MY_TOTAL_VOL = GEOM.Volume.Value
 MY_TOTAL_MA = GEOM.Mass.Value
-# Get Structural Analysis and link to Topo
+# Get Structural Analysis and link to Topology optimization
 TOPO_OPT = ExtAPI.DataModel.Project.Model.AddTopologyOptimizationAnalysis()
 TOPO_OPT.TransferDataFrom(structural_analysis)
 
@@ -133,12 +136,14 @@ SYMM_MFG_CONSTRN.Axis = CoordinateSystemAxisType.PositiveYAxis
 SYMM_MFG_CONSTRN_axis = str(SYMM_MFG_CONSTRN.Axis)
 SYMM_MFG_CONSTRN.Axis = CoordinateSystemAxisType.PositiveXAxis
 
-
 TOPO_OPT.Solution.Solve(True)
 
-# Go to first Topology Density Result
+##############################################################
+# Results
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 TOPO_OPT.Solution.Children[1].Activate()
 TOPO_DENS = TOPO_OPT.Solution.Children[1]
+###################################
 # Adding smoothing the STL
 TOPO_DENS.AddSmoothing()
 TOPO_OPT.Solution.EvaluateAllResults()
