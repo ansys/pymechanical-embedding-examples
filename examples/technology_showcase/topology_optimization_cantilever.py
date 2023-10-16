@@ -1,21 +1,23 @@
-
 import os
+
 import ansys.mechanical.core as mech
 from ansys.mechanical.core.examples import delete_downloads, download_file
-
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
-#Embed Mechanical and set global variables
+
+# Embed Mechanical and set global variables
 app = mech.App(version=232)
 globals().update(mech.global_variables(app))
 print(app)
+from Ansys.ACT.Automation.Mechanical import *
 from Ansys.ACT.Interfaces.Common import *
 from Ansys.ACT.Mechanical.Fields import *
 from Ansys.Mechanical.DataModel.Enums import *
 from Ansys.Mechanical.DataModel.MechanicalEnums import *
-from Ansys.ACT.Automation.Mechanical import *
 
 cwd = os.path.join(os.getcwd(), "out")
+
+
 def display_image(image_name):
     path = os.path.join(os.path.join(cwd, image_name))
     image = mpimg.imread(path)
@@ -24,7 +26,10 @@ def display_image(image_name):
     plt.imshow(image)
     plt.show()
 
-structural_mechdat_file = download_file("cantilever.mechdat", "pymechanical", "embedding")
+
+structural_mechdat_file = download_file(
+    "cantilever.mechdat", "pymechanical", "embedding"
+)
 app.open(structural_mechdat_file)
 structural_analysis = ExtAPI.DataModel.Project.Model.Analyses[0]
 STRUCT_ID = structural_analysis.Id
@@ -77,50 +82,50 @@ CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
 
 MY_TOTAL_VOL = GEOM.Volume.Value
 MY_TOTAL_MA = GEOM.Mass.Value
-#Get Sturctural Analysis and link to Topo
+# Get Structural Analysis and link to Topo
 TOPO_OPT = ExtAPI.DataModel.Project.Model.AddTopologyOptimizationAnalysis()
 TOPO_OPT.TransferDataFrom(structural_analysis)
 
 # Set None for Optimization Region Boundary Condition Exclusion Region
-#Optimization Region
-OPT_REG=TOPO_OPT.Children[1]
+# Optimization Region
+OPT_REG = TOPO_OPT.Children[1]
 # OPT_REG.BoundaryCondition=BoundaryConditionType.None
 # Using getattr since pythonnet doesn not support enum None
-OPT_REG.BoundaryCondition=getattr(BoundaryConditionType,'None')
+OPT_REG.BoundaryCondition = getattr(BoundaryConditionType, "None")
 
-# Insert Volume Response Constraint Object for Topology Optimization" 
-#Delete Mass Response Constraint
-MASS_CONSTRN=TOPO_OPT.Children[3]
+# Insert Volume Response Constraint Object for Topology Optimization"
+# Delete Mass Response Constraint
+MASS_CONSTRN = TOPO_OPT.Children[3]
 MASS_CONSTRN.Delete()
-#Add Volume Response Constraint
-VOL_CONSTRN=TOPO_OPT.AddVolumeConstraint()
-#VOL_CONSTRN.DefineBy=ResponseConstraintDefineBy.Constant
-#VOL_CONSTRN.PercentageToRetain=50
+# Add Volume Response Constraint
+VOL_CONSTRN = TOPO_OPT.AddVolumeConstraint()
+# VOL_CONSTRN.DefineBy=ResponseConstraintDefineBy.Constant
+# VOL_CONSTRN.PercentageToRetain=50
 
-#Insert Member Size Manufacturing Constraint
-MEM_SIZE_MFG_CONSTRN=TOPO_OPT.AddMemberSizeManufacturingConstraint()
-MEM_SIZE_MFG_CONSTRN.Minimum=ManuMemberSizeControlledType.Manual
-MEM_SIZE_MFG_CONSTRN.MinSize=Quantity("2.4 [m]")
+# Insert Member Size Manufacturing Constraint
+MEM_SIZE_MFG_CONSTRN = TOPO_OPT.AddMemberSizeManufacturingConstraint()
+MEM_SIZE_MFG_CONSTRN.Minimum = ManuMemberSizeControlledType.Manual
+MEM_SIZE_MFG_CONSTRN.MinSize = Quantity("2.4 [m]")
 
 # Store Coordinate System ID for use in Symmetry Manufacturing Constraint
-Coordinate_Systems=DataModel.Project.Model.CoordinateSystems
-coord_sys7=Coordinate_Systems.Children[7]
+Coordinate_Systems = DataModel.Project.Model.CoordinateSystems
+coord_sys7 = Coordinate_Systems.Children[7]
 
-#Insert Symmetry Manufacturing Constraint
-SYMM_MFG_CONSTRN=TOPO_OPT.AddSymmetryManufacturingConstraint()
-SYMM_MFG_CONSTRN.CoordinateSystem=coord_sys7
+# Insert Symmetry Manufacturing Constraint
+SYMM_MFG_CONSTRN = TOPO_OPT.AddSymmetryManufacturingConstraint()
+SYMM_MFG_CONSTRN.CoordinateSystem = coord_sys7
 
 # Setting different Coordinate System Axis for Symmetry Manufacturing Constraint
 SYMM_MFG_CONSTRN_axis = str(SYMM_MFG_CONSTRN.Axis)
 # Verify default Axis for Symmetry Manufacturing Constraint", SYMM_MFG_CONSTRN_axis, "PositiveXAxis
-SYMM_MFG_CONSTRN.Axis=CoordinateSystemAxisType.PositiveYAxis
+SYMM_MFG_CONSTRN.Axis = CoordinateSystemAxisType.PositiveYAxis
 SYMM_MFG_CONSTRN_axis = str(SYMM_MFG_CONSTRN.Axis)
-SYMM_MFG_CONSTRN.Axis=CoordinateSystemAxisType.PositiveXAxis
+SYMM_MFG_CONSTRN.Axis = CoordinateSystemAxisType.PositiveXAxis
 
 
 TOPO_OPT.Solution.Solve(True)
 
-#Go to first Topology Density Result
+# Go to first Topology Density Result
 TOPO_OPT.Solution.Children[1].Activate()
 TOPO_DENS = TOPO_OPT.Solution.Children[1]
 # Adding smoothing the STL
