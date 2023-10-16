@@ -41,9 +41,11 @@ structural_mechdat_file = download_file(
     "cantilever.mechdat", "pymechanical", "embedding"
 )
 app.open(structural_mechdat_file)
-structural_analysis = ExtAPI.DataModel.Project.Model.Analyses[0]
-STRUCT_ID = structural_analysis.Id
-structural_analysis.Solve()
+STRUCT = ExtAPI.DataModel.Project.Model.Analyses[0]
+assert str(STRUCT.ObjectState) == "Solved"
+STRUCT_SLN = STRUCT.Solution
+STRUCT_SLN.Solve(True)
+assert str(STRUCT_SLN.Status) == "Done", "Solution status is not 'Done'"
 
 ##############################################
 # Configure graphics for image export
@@ -66,12 +68,10 @@ settings_720p.CurrentGraphicsDisplay = False
 # Structural Analsys Results
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-structural_solution = structural_analysis.Solution
-
 ###############################
 # Total Deformation
 
-structural_solution.Children[1].Activate()
+STRUCT_SLN.Children[1].Activate()
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "total_deformation.png"), image_export_format, settings_720p
@@ -81,7 +81,7 @@ display_image("total_deformation.png")
 ###############################
 # Equivalent Stress
 
-structural_solution.Children[2].Activate()
+STRUCT_SLN.Children[2].Activate()
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "equivalent_stress.png"), image_export_format, settings_720p
@@ -105,7 +105,8 @@ MY_TOTAL_VOL = GEOM.Volume.Value
 MY_TOTAL_MA = GEOM.Mass.Value
 # Get Structural Analysis and link to Topology optimization
 TOPO_OPT = ExtAPI.DataModel.Project.Model.AddTopologyOptimizationAnalysis()
-TOPO_OPT.TransferDataFrom(structural_analysis)
+TOPO_OPT.TransferDataFrom(STRUCT)
+assert str(TOPO_OPT.ObjectState) == "NotSolved"
 
 # Set None for Optimization Region Boundary Condition Exclusion Region
 # Optimization Region
@@ -143,14 +144,16 @@ SYMM_MFG_CONSTRN.Axis = CoordinateSystemAxisType.PositiveYAxis
 SYMM_MFG_CONSTRN_axis = str(SYMM_MFG_CONSTRN.Axis)
 SYMM_MFG_CONSTRN.Axis = CoordinateSystemAxisType.PositiveXAxis
 
-TOPO_OPT.Solution.Solve(True)
+TOPO_OPT_SLN = TOPO_OPT.Solution
+TOPO_OPT_SLN.Solve(True)
+assert str(TOPO_OPT_SLN.Status) == "Done", "Solution status is not 'Done'"
 
 ##############################################################
 # Results
 # ~~~~~~~
 
-TOPO_OPT.Solution.Children[1].Activate()
-TOPO_DENS = TOPO_OPT.Solution.Children[1]
+TOPO_OPT_SLN.Children[1].Activate()
+TOPO_DENS = TOPO_OPT_SLN.Children[1]
 
 ###################################
 # Add smoothing to the STL
