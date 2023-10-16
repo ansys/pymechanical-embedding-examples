@@ -1,3 +1,14 @@
+""" .. _ref_topology_optimization:
+
+Topology Optimization of a Simple Cantilever
+---------------------------------------------------------------------------------------
+Description:
+
+This example demonstrates the Structural Optimization of simple
+cantilver. The Structural Analysis is performed with basic constraints and
+load then transferred to topology optimization.
+"""
+
 import os
 
 import ansys.mechanical.core as mech
@@ -156,7 +167,7 @@ print("Final Mass for Topology Density Result", TOPO_DENS_fm)
 print("Percent Mass of Original for Topology Density Result", TOPO_DENS_pmo)
 
 # Save project
-app.save(os.path.join(os.getcwd(), "cantilever_topology_optimization.mechdat"))
+app.save(os.path.join(cwd, "cantilever_topology_optimization.mechdat"))
 app.new()
 
 # delete example file
