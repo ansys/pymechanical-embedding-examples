@@ -41,7 +41,8 @@ structural_mechdat_file = download_file(
     "cantilever.mechdat", "pymechanical", "embedding"
 )
 app.open(structural_mechdat_file)
-# STRUCT = ExtAPI.DataModel.Project.Model.Analyses[0]
+STRUCT = ExtAPI.DataModel.Project.Model.Analyses[0]
+STRUCT.Solve(True)
 # assert str(STRUCT.ObjectState) == "Solved"
 # STRUCT_SLN = STRUCT.Solution
 # STRUCT_SLN.Solve(True)
