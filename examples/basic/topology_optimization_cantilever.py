@@ -7,7 +7,6 @@ This example demonstrates the structural topology optimization of a simple
 cantilever. The structural analysis is performed with basic constraints and
 load, which is then transferred to topology optimization.
 """
-
 import os
 
 import ansys.mechanical.core as mech
@@ -19,13 +18,12 @@ from matplotlib import pyplot as plt
 app = mech.App(version=232)
 globals().update(mech.global_variables(app))
 print(app)
+
 from Ansys.ACT.Automation.Mechanical import *
 from Ansys.ACT.Interfaces.Common import *
 from Ansys.ACT.Mechanical.Fields import *
 from Ansys.Mechanical.DataModel.Enums import *
 from Ansys.Mechanical.DataModel.MechanicalEnums import *
-
-cwd = os.path.join(os.getcwd(), "out")
 
 
 def display_image(image_name):
@@ -36,6 +34,8 @@ def display_image(image_name):
     plt.imshow(image)
     plt.show()
 
+
+cwd = os.path.join(os.getcwd(), "out")
 
 structural_mechdat_file = download_file(
     "cantilever.mechdat", "pymechanical", "embedding"
@@ -100,9 +100,9 @@ GEOM = ExtAPI.DataModel.Project.Model.Geometry
 MSH = ExtAPI.DataModel.Project.Model.Mesh
 NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
 CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
-
 MY_TOTAL_VOL = GEOM.Volume.Value
 MY_TOTAL_MA = GEOM.Mass.Value
+
 # Get Structural Analysis and link to Topology optimization
 TOPO_OPT = ExtAPI.DataModel.Project.Model.AddTopologyOptimizationAnalysis()
 TOPO_OPT.TransferDataFrom(STRUCT)
@@ -119,6 +119,7 @@ OPT_REG.BoundaryCondition = getattr(BoundaryConditionType, "None")
 # Delete Mass Response Constraint
 MASS_CONSTRN = TOPO_OPT.Children[3]
 MASS_CONSTRN.Delete()
+
 # Add Volume Response Constraint
 VOL_CONSTRN = TOPO_OPT.AddVolumeConstraint()
 # VOL_CONSTRN.DefineBy=ResponseConstraintDefineBy.Constant
@@ -137,25 +138,21 @@ coord_sys7 = Coordinate_Systems.Children[7]
 SYMM_MFG_CONSTRN = TOPO_OPT.AddSymmetryManufacturingConstraint()
 SYMM_MFG_CONSTRN.CoordinateSystem = coord_sys7
 
-# Setting different Coordinate System Axis for Symmetry Manufacturing Constraint
-SYMM_MFG_CONSTRN_axis = str(SYMM_MFG_CONSTRN.Axis)
-# Verify default Axis for Symmetry Manufacturing Constraint", SYMM_MFG_CONSTRN_axis, "PositiveXAxis
-SYMM_MFG_CONSTRN.Axis = CoordinateSystemAxisType.PositiveYAxis
-SYMM_MFG_CONSTRN_axis = str(SYMM_MFG_CONSTRN.Axis)
-SYMM_MFG_CONSTRN.Axis = CoordinateSystemAxisType.PositiveXAxis
+########
+# Solve
 
 TOPO_OPT_SLN = TOPO_OPT.Solution
 TOPO_OPT_SLN.Solve(True)
 assert str(TOPO_OPT_SLN.Status) == "Done", "Solution status is not 'Done'"
 
-##############################################################
+##########
 # Results
 # ~~~~~~~
 
 TOPO_OPT_SLN.Children[1].Activate()
 TOPO_DENS = TOPO_OPT_SLN.Children[1]
 
-###################################
+###########################
 # Add smoothing to the STL
 
 TOPO_DENS.AddSmoothing()

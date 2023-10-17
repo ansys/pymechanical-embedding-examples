@@ -103,21 +103,6 @@ jobs:
       #     key: doc-build-v${{ env.RESET_DOC_BUILD_CACHE }}-${{ env.PYMECHANICAL_VERSION }}-${{ github.sha }}
       #     restore-keys: |
       #       doc-build-v${{ env.RESET_DOC_BUILD_CACHE }}-${{ env.PYMECHANICAL_VERSION }}
-      - name: test cantilever
-        env:
-          LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
-          ANSYSCL232_DIR: /install/ansys_inc/v232/licensingclient
-          ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
-          ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
-        run: |
-          xvfb-run /install/ansys_inc/v232/aisol/.workbench_lite python examples/basic/test.py || true
-
-      - name: Upload mechdat
-        uses: actions/upload-artifact@v3
-        with:
-          name: output
-          path: out
-          retention-days: 7
 
       - name: Build docs
         env:
