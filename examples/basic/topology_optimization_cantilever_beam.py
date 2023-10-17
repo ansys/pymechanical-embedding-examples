@@ -1,11 +1,11 @@
 """ .. _ref_topology_optimization:
 
-Topology Optimization of a Simple Cantilever Beam
---------------------------------------------
+Topology optimization of a simple cantilever beam
+-------------------------------------------------
 
 This example demonstrates the structural topology optimization of a simple
 cantilever beam. The structural analysis is performed with basic constraints and
-load, which is then transferred to topology optimization.
+load, which is then transferred to the topology optimization.
 """
 import os
 
@@ -65,11 +65,11 @@ settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
 ###############################
-# Structural Analsys Results
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Structural analsys results
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ###############################
-# Total Deformation
+# Total deformation
 
 STRUCT_SLN.Children[1].Activate()
 ExtAPI.Graphics.Camera.SetFit()
@@ -79,7 +79,7 @@ ExtAPI.Graphics.ExportImage(
 display_image("total_deformation.png")
 
 ###############################
-# Equivalent Stress
+# Equivalent stress
 
 STRUCT_SLN.Children[2].Activate()
 ExtAPI.Graphics.Camera.SetFit()
@@ -89,10 +89,10 @@ ExtAPI.Graphics.ExportImage(
 display_image("equivalent_stress.png")
 
 ##############################################################
-# Topology Optimization
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Topology optimization
+# ~~~~~~~~~~~~~~~~~~~~~
 
-# Set MKS Unit System
+# Set MKS unit system
 ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
 # Store all main tree nodes as variables
@@ -103,38 +103,38 @@ CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
 MY_TOTAL_VOL = GEOM.Volume.Value
 MY_TOTAL_MA = GEOM.Mass.Value
 
-# Get Structural Analysis and link to Topology optimization
+# Get structural analysis and link to topology optimization
 TOPO_OPT = ExtAPI.DataModel.Project.Model.AddTopologyOptimizationAnalysis()
 TOPO_OPT.TransferDataFrom(STRUCT)
 assert str(TOPO_OPT.ObjectState) == "NotSolved"
 
-# Set None for Optimization Region Boundary Condition Exclusion Region
-# Optimization Region
+# Set ``None`` for optimization region boundary condition exclusion region
+# Optimization region
 OPT_REG = TOPO_OPT.Children[1]
 # OPT_REG.BoundaryCondition=BoundaryConditionType.None
-# Using getattr since pythonnet doesn not support enum None
+# Using ``getattr`` because Python.Net does not support the ``None`` enum
 OPT_REG.BoundaryCondition = BoundaryConditionType.AllLoadsAndSupports
 
-# Insert Volume Response Constraint Object for Topology Optimization"
-# Delete Mass Response Constraint
+# Insert volume response constraint object for topology optimization
+# Delete mass response constraint
 MASS_CONSTRN = TOPO_OPT.Children[3]
 MASS_CONSTRN.Delete()
 
-# Add Volume Response Constraint
+# Add volume response constraint
 VOL_CONSTRN = TOPO_OPT.AddVolumeConstraint()
 # VOL_CONSTRN.DefineBy=ResponseConstraintDefineBy.Constant
 # VOL_CONSTRN.PercentageToRetain=50
 
-# Insert Member Size Manufacturing Constraint
+# Insert member size manufacturing constraint
 MEM_SIZE_MFG_CONSTRN = TOPO_OPT.AddMemberSizeManufacturingConstraint()
 MEM_SIZE_MFG_CONSTRN.Minimum = ManuMemberSizeControlledType.Manual
 MEM_SIZE_MFG_CONSTRN.MinSize = Quantity("2.4 [m]")
 
-# # Store Coordinate System ID for use in Symmetry Manufacturing Constraint
+# # Store coordinate system ID for use in symmetry manufacturing constraint
 # Coordinate_Systems = DataModel.Project.Model.CoordinateSystems
 # coord_sys7 = Coordinate_Systems.Children[7]
 
-# # Insert Symmetry Manufacturing Constraint
+# # Insert symmetry manufacturing constraint
 # SYMM_MFG_CONSTRN = TOPO_OPT.AddSymmetryManufacturingConstraint()
 # SYMM_MFG_CONSTRN.CoordinateSystem = coord_sys7
 
@@ -147,7 +147,7 @@ assert str(TOPO_OPT_SLN.Status) == "Done", "Solution status is not 'Done'"
 
 ###############################
 # Results
-# ~~~~~~~~
+# ~~~~~~~
 
 TOPO_OPT_SLN.Children[1].Activate()
 TOPO_DENS = TOPO_OPT_SLN.Children[1]
