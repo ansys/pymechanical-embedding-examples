@@ -1,6 +1,6 @@
 """ .. _ref_topology_optimization:
 
-Topology Optimization of a Simple Cantilever
+Topology Optimization of a Simple Cantilever Beam
 --------------------------------------------
 
 This example demonstrates the structural topology optimization of a simple
@@ -113,7 +113,7 @@ assert str(TOPO_OPT.ObjectState) == "NotSolved"
 OPT_REG = TOPO_OPT.Children[1]
 # OPT_REG.BoundaryCondition=BoundaryConditionType.None
 # Using getattr since pythonnet doesn not support enum None
-OPT_REG.BoundaryCondition = getattr(BoundaryConditionType, "None")
+OPT_REG.BoundaryCondition = BoundaryConditionType.AllLoadsAndSupports
 
 # Insert Volume Response Constraint Object for Topology Optimization"
 # Delete Mass Response Constraint
@@ -130,13 +130,13 @@ MEM_SIZE_MFG_CONSTRN = TOPO_OPT.AddMemberSizeManufacturingConstraint()
 MEM_SIZE_MFG_CONSTRN.Minimum = ManuMemberSizeControlledType.Manual
 MEM_SIZE_MFG_CONSTRN.MinSize = Quantity("2.4 [m]")
 
-# Store Coordinate System ID for use in Symmetry Manufacturing Constraint
-Coordinate_Systems = DataModel.Project.Model.CoordinateSystems
-coord_sys7 = Coordinate_Systems.Children[7]
+# # Store Coordinate System ID for use in Symmetry Manufacturing Constraint
+# Coordinate_Systems = DataModel.Project.Model.CoordinateSystems
+# coord_sys7 = Coordinate_Systems.Children[7]
 
-# Insert Symmetry Manufacturing Constraint
-SYMM_MFG_CONSTRN = TOPO_OPT.AddSymmetryManufacturingConstraint()
-SYMM_MFG_CONSTRN.CoordinateSystem = coord_sys7
+# # Insert Symmetry Manufacturing Constraint
+# SYMM_MFG_CONSTRN = TOPO_OPT.AddSymmetryManufacturingConstraint()
+# SYMM_MFG_CONSTRN.CoordinateSystem = coord_sys7
 
 ########
 # Solve
@@ -165,7 +165,7 @@ ExtAPI.Graphics.ExportImage(
 display_image("topo_opitimized_smooth.png")
 
 ##########################################################################
-# Compare the results
+# Review the results
 
 
 # Print topology density results
@@ -181,7 +181,7 @@ print("Final Mass: ", TOPO_DENS.FinalMass.Value)
 print("Percent Mass of Original: ", TOPO_DENS.PercentMassOfOriginal)
 
 # Save project
-app.save(os.path.join(cwd, "cantilever_topology_optimization.mechdat"))
+app.save(os.path.join(cwd, "cantilever_beam_topology_optimization.mechdat"))
 app.new()
 
 # Delete the example file
