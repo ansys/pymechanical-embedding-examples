@@ -145,9 +145,9 @@ TOPO_OPT_SLN = TOPO_OPT.Solution
 TOPO_OPT_SLN.Solve(True)
 assert str(TOPO_OPT_SLN.Status) == "Done", "Solution status is not 'Done'"
 
-##########
+###############################
 # Results
-# ~~~~~~~
+# ~~~~~~~~
 
 TOPO_OPT_SLN.Children[1].Activate()
 TOPO_DENS = TOPO_OPT_SLN.Children[1]
