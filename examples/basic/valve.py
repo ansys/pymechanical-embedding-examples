@@ -155,7 +155,10 @@ settings_720p.Height = 720
 stress.ExportAnimation(
     os.path.join(cwd, "Valve.gif"), animation_export_format, settings_720p
 )
-display_image("Valve.gif")
+
+############################################
+# .. image:: /_static/basic/Valve.gif
+
 
 # Save project
 app.save(os.path.join(cwd, "Valve.mechdat"))

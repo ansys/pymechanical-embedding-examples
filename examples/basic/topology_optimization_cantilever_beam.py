@@ -16,14 +16,8 @@ from matplotlib import pyplot as plt
 
 # Embed Mechanical and set global variables
 app = mech.App(version=232)
-globals().update(mech.global_variables(app))
+globals().update(mech.global_variables(app, True))
 print(app)
-
-from Ansys.ACT.Automation.Mechanical import *
-from Ansys.ACT.Interfaces.Common import *
-from Ansys.ACT.Mechanical.Fields import *
-from Ansys.Mechanical.DataModel.Enums import *
-from Ansys.Mechanical.DataModel.MechanicalEnums import *
 
 
 def display_image(image_name):
@@ -140,12 +134,13 @@ MEM_SIZE_MFG_CONSTRN.MinSize = Quantity("2.4 [m]")
 
 ########
 # Solve
+# ~~~~~
 
 TOPO_OPT_SLN = TOPO_OPT.Solution
 TOPO_OPT_SLN.Solve(True)
 assert str(TOPO_OPT_SLN.Status) == "Done", "Solution status is not 'Done'"
 
-###############################
+##########
 # Results
 # ~~~~~~~
 
@@ -164,9 +159,24 @@ ExtAPI.Graphics.ExportImage(
 )
 display_image("topo_opitimized_smooth.png")
 
-##########################################################################
-# Review the results
+###################################################################################
+# Export animation
+animation_export_format = (
+    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
+)
+settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
+settings_720p.Width = 1280
+settings_720p.Height = 720
 
+TOPO_DENS.ExportAnimation(
+    os.path.join(cwd, "Topo_opitimized.gif"), animation_export_format, settings_720p
+)
+
+#######################################
+# .. image:: /_static/basic/Topo_opitimized.gif
+
+#####################
+# Review the results
 
 # Print topology density results
 print("Topology Density Results")
