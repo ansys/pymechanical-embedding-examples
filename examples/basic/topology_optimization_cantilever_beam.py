@@ -2,6 +2,8 @@
 
 Topology optimization of a simple cantilever beam
 -------------------------------------------------
+**Author**:
+`Dipin Nair <https://github.com/dipinknair>`_
 
 This example demonstrates the structural topology optimization of a simple
 cantilever beam. The structural analysis is performed with basic constraints and
@@ -36,12 +38,17 @@ structural_mechdat_file = download_file(
 )
 app.open(structural_mechdat_file)
 STRUCT = ExtAPI.DataModel.Project.Model.Analyses[0]
+
+# sphinx_gallery_start_ignore
 assert str(STRUCT.ObjectState) == "Solved"
+# sphinx_gallery_end_ignore
 STRUCT_SLN = STRUCT.Solution
 STRUCT_SLN.Solve(True)
+# sphinx_gallery_start_ignore
 assert str(STRUCT_SLN.Status) == "Done", "Solution status is not 'Done'"
+# sphinx_gallery_end_ignore
 
-##############################################
+# %%
 # Configure graphics for image export
 
 ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
@@ -58,11 +65,11 @@ settings_720p.Capture = Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType.Ima
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
-###############################
+# %%
 # Structural analsys results
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-###############################
+# %%
 # Total deformation
 
 STRUCT_SLN.Children[1].Activate()
@@ -72,7 +79,7 @@ ExtAPI.Graphics.ExportImage(
 )
 display_image("total_deformation.png")
 
-###############################
+# %%
 # Equivalent stress
 
 STRUCT_SLN.Children[2].Activate()
@@ -82,7 +89,7 @@ ExtAPI.Graphics.ExportImage(
 )
 display_image("equivalent_stress.png")
 
-##############################################################
+# %%
 # Topology optimization
 # ~~~~~~~~~~~~~~~~~~~~~
 
@@ -100,7 +107,9 @@ MY_TOTAL_MA = GEOM.Mass.Value
 # Get structural analysis and link to topology optimization
 TOPO_OPT = ExtAPI.DataModel.Project.Model.AddTopologyOptimizationAnalysis()
 TOPO_OPT.TransferDataFrom(STRUCT)
+# sphinx_gallery_start_ignore
 assert str(TOPO_OPT.ObjectState) == "NotSolved"
+# sphinx_gallery_end_ignore
 
 # Set ``None`` for optimization region boundary condition exclusion region
 # Optimization region
@@ -132,22 +141,24 @@ MEM_SIZE_MFG_CONSTRN.MinSize = Quantity("2.4 [m]")
 # SYMM_MFG_CONSTRN = TOPO_OPT.AddSymmetryManufacturingConstraint()
 # SYMM_MFG_CONSTRN.CoordinateSystem = coord_sys7
 
-########
+# %%
 # Solve
 # ~~~~~
 
 TOPO_OPT_SLN = TOPO_OPT.Solution
 TOPO_OPT_SLN.Solve(True)
+# sphinx_gallery_start_ignore
 assert str(TOPO_OPT_SLN.Status) == "Done", "Solution status is not 'Done'"
+# sphinx_gallery_end_ignore
 
-##########
+# %%
 # Results
 # ~~~~~~~
 
 TOPO_OPT_SLN.Children[1].Activate()
 TOPO_DENS = TOPO_OPT_SLN.Children[1]
 
-###########################
+# %%
 # Add smoothing to the STL
 
 TOPO_DENS.AddSmoothing()
@@ -159,7 +170,7 @@ ExtAPI.Graphics.ExportImage(
 )
 display_image("topo_opitimized_smooth.png")
 
-###################################################################################
+# %%
 # Export animation
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
@@ -172,10 +183,10 @@ TOPO_DENS.ExportAnimation(
     os.path.join(cwd, "Topo_opitimized.gif"), animation_export_format, settings_720p
 )
 
-#######################################
+# %%
 # .. image:: /_static/basic/Topo_opitimized.gif
 
-#####################
+# %%
 # Review the results
 
 # Print topology density results
