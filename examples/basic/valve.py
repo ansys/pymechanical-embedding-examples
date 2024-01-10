@@ -2,8 +2,6 @@
 
 Basic Valve Implementation
 --------------------------
-**Author**:
-`Pernelle Marone Hitz <https://github.com/pmaroneh>`_
 
 This example demonstrates a basic implementation of a valve in Python.
 """

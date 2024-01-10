@@ -2,8 +2,6 @@
 
 Topology optimization of a simple cantilever beam
 -------------------------------------------------
-**Author**:
-`Dipin Nair <https://github.com/dipinknair>`_
 
 This example demonstrates the structural topology optimization of a simple
 cantilever beam. The structural analysis is performed with basic constraints and
