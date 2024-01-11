@@ -1,9 +1,9 @@
 """ .. _ref_contact:
 
-Basic Valve Implementation
+Contact debonding
 --------------------------
 
-This example demonstrates a basic implementation of a valve in Python.
+This example demonstrates a basic implementation contact debonding in Python.
 """
 import os
 
@@ -30,10 +30,7 @@ def display_image(image_name):
 cwd = os.path.join(os.getcwd(), "out")
 
 # IMPORT GEOMETRY AND Materials
-geometry_path = r"/install/ansys_inc/v241/aisol/pymechanical-embedding-examples/examples/basic/Contact_Debonding_Example.agdb"
-mat1_path = r"/install/ansys_inc/v241/aisol/pymechanical-embedding-examples/examples/basic/Contact_Debonding_Example_Mat1.xml"
-mat2_path = r"/install/ansys_inc/v241/aisol/pymechanical-embedding-examples/examples/basic/Contact_Debonding_Example_Mat2.xml"
-
+# Add geom from cloud
 
 # setup  graphics
 
