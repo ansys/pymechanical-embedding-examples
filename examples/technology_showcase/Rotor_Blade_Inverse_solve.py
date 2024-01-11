@@ -2,8 +2,6 @@
 
 Inverse-Solving analysis of a rotor fan blade with disk
 ---------------------------------------------------------------------------------------
-**Author**:
-`Vikas Namdeo <https://github.com/vnamdeo>`_
 
 This example demonstrates the inverse-solving analysis of a rotor fan blade with disk.
 The NASA Rotor 67 fan bladed disk is a subsystem of a turbo fan's compressor set used
