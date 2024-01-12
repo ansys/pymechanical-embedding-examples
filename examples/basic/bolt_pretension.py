@@ -85,18 +85,18 @@ display_image("geometry.png")
 # Import Material
 # ~~~~~~~~~~~~~~~
 
-mat_Copper_file_path = download_file(
-    "example_06_Mat_Copper.xml", "pymechanical", "00_basic"
-)
-mat_Steel_file_path = download_file(
-    "example_06_Mat_Steel.xml", "pymechanical", "00_basic"
-)
+# mat_Copper_file_path = download_file(
+#     "example_06_Mat_Copper.xml", "pymechanical", "00_basic"
+# )
+# mat_Steel_file_path = download_file(
+#     "example_06_Mat_Steel.xml", "pymechanical", "00_basic"
+# )
 
-MAT = ExtAPI.DataModel.Project.Model.Materials
-MAT.Import(mat_Copper_file_path)
-MAT.Import(mat_Steel_file_path)
-# sphinx_gallery_start_ignore
-assert str(MAT.ObjectState) == "FullyDefined", "Materials are not defined"
+# MAT = ExtAPI.DataModel.Project.Model.Materials
+# MAT.Import(mat_Copper_file_path)
+# MAT.Import(mat_Steel_file_path)
+# # sphinx_gallery_start_ignore
+# assert str(MAT.ObjectState) == "FullyDefined", "Materials are not defined"
 # sphinx_gallery_end_ignore
 
 # %%
@@ -182,23 +182,23 @@ shank_surface = [
 # %%
 # Assign material to bodies
 
-SURFACE1 = GEOM.Children[0].Children[0]
-SURFACE1.Material = "Steel"
+# SURFACE1 = GEOM.Children[0].Children[0]
+# SURFACE1.Material = "Steel"
 
-SURFACE2 = GEOM.Children[1].Children[0]
-SURFACE2.Material = "Copper"
+# SURFACE2 = GEOM.Children[1].Children[0]
+# SURFACE2.Material = "Copper"
 
-SURFACE3 = GEOM.Children[2].Children[0]
-SURFACE3.Material = "Copper"
+# SURFACE3 = GEOM.Children[2].Children[0]
+# SURFACE3.Material = "Copper"
 
-SURFACE4 = GEOM.Children[3].Children[0]
-SURFACE4.Material = "Steel"
+# SURFACE4 = GEOM.Children[3].Children[0]
+# SURFACE4.Material = "Steel"
 
-SURFACE5 = GEOM.Children[4].Children[0]
-SURFACE5.Material = "Steel"
+# SURFACE5 = GEOM.Children[4].Children[0]
+# SURFACE5.Material = "Steel"
 
-SURFACE6 = GEOM.Children[5].Children[0]
-SURFACE6.Material = "Steel"
+# SURFACE6 = GEOM.Children[5].Children[0]
+# SURFACE6.Material = "Steel"
 
 # %%
 # Define coordinate system
