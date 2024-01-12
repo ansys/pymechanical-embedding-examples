@@ -20,7 +20,6 @@ print(app)
 geometry_path = download_file("Valve.pmdb", "pymechanical", "embedding")
 analysis = Model.AddStaticStructuralAnalysis()
 
-# Use matlabplotlib to display the images.
 cwd = os.path.join(os.getcwd(), "out")
 
 
@@ -33,7 +32,7 @@ def display_image(image_name):
     plt.show()
 
 
-##############################################
+# %%
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
@@ -69,7 +68,7 @@ ExtAPI.Graphics.ExportImage(
 )
 display_image("geometry.png")
 
-#########################
+# %%
 # Assign materials and mesh the geometry
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 material_assignment = Model.Materials.AddMaterialAssignment()
@@ -95,9 +94,9 @@ ExtAPI.Graphics.ExportImage(
 )
 display_image("mesh.png")
 
-###############################################################################
+# %%
 # Define boundary conditions
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~
 fixed_support = analysis.AddFixedSupport()
 fixed_support.Location = ExtAPI.DataModel.GetObjectsByName("NSFixedSupportFaces")[0]
 
@@ -118,16 +117,16 @@ config.SolveProcessSettings.MaxNumberOfCores = 1
 config.SolveProcessSettings.DistributeSolution = False
 Model.Solve()
 
-###################################################################################
+# %%
 # Postprocessing
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~
 # Evaluate results, export screenshots
 solution = analysis.Solution
 deformation = solution.AddTotalDeformation()
 stress = solution.AddEquivalentStress()
 solution.EvaluateAllResults()
 
-###################################################################################
+# %%
 # Deformation
 Tree.Activate([deformation])
 ExtAPI.Graphics.ExportImage(
@@ -135,7 +134,7 @@ ExtAPI.Graphics.ExportImage(
 )
 display_image("deformation.png")
 
-###################################################################################
+# %%
 # Stress
 Tree.Activate([stress])
 ExtAPI.Graphics.ExportImage(
@@ -143,7 +142,7 @@ ExtAPI.Graphics.ExportImage(
 )
 display_image("stress.png")
 
-###################################################################################
+# %%
 # Export stress animation
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
@@ -156,7 +155,7 @@ stress.ExportAnimation(
     os.path.join(cwd, "Valve.gif"), animation_export_format, settings_720p
 )
 
-############################################
+# %%
 # .. image:: /_static/basic/Valve.gif
 
 
