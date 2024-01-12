@@ -97,7 +97,7 @@ display_image("geometry.png")
 # MAT.Import(mat_Steel_file_path)
 # # sphinx_gallery_start_ignore
 # assert str(MAT.ObjectState) == "FullyDefined", "Materials are not defined"
-# sphinx_gallery_end_ignore
+# # sphinx_gallery_end_ignore
 
 # %%
 # Define Analysis and unit system
