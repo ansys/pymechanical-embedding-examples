@@ -31,9 +31,7 @@ scripting commands that define and solve the bolt-pretension analysis.
 Deformation, equivalent sresses, contact and bolt results are then post-processed.
 
 """
-###############################################################################
-# Launch Mechanical
-# ~~~~~~~~~~~~~~~~~
+
 import os
 
 import ansys.mechanical.core as mech
@@ -45,8 +43,6 @@ from matplotlib import pyplot as plt
 app = mech.App(version=232)
 globals().update(mech.global_variables(app, True))
 print(app)
-
-# from Ansys.ACT.Automation.Mechanical import *
 
 
 def display_image(image_name):
@@ -60,14 +56,10 @@ def display_image(image_name):
 
 cwd = os.path.join(os.getcwd(), "out")
 
-geometry_path = download_file(
-    "example_06_bolt_pret_geom.agdb", "pymechanical", "00_basic"
-)
 
-
-##############################################
+# %%
 # Configure graphics for image export
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
     Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
 )
@@ -79,11 +71,17 @@ settings_720p.Resolution = (
 )
 settings_720p.Background = Ansys.Mechanical.DataModel.Enums.GraphicsBackgroundType.White
 settings_720p.Width = 1280
-settings_720p.Capture = Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType.ImageOnly
+# settings_720p.Capture = Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType.ImageOnly
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
+# %%
 # Import geometry
+# ~~~~~~~~~~~~~~~~
+
+geometry_path = download_file(
+    "example_06_bolt_pret_geom.agdb", "pymechanical", "00_basic"
+)
 geometry_file = geometry_path
 geometry_import = Model.GeometryImportGroup.AddGeometryImport()
 geometry_import_format = (
@@ -95,33 +93,52 @@ geometry_import_preferences.ProcessCoordinateSystems = True
 geometry_import.Import(
     geometry_file, geometry_import_format, geometry_import_preferences
 )
+# sphinx_gallery_start_ignore
+assert str(geometry_import.ObjectState) == "Solved", "Geometry Import unsuccessful"
+# sphinx_gallery_end_ignore
 
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
 display_image("geometry.png")
-########################
-# Material
-mat_cop_path = download_file("example_06_Mat_Copper.xml", "pymechanical", "00_basic")
-mat_Copper_file_path = mat_cop_path
 
-mat_st_path = download_file("example_06_Mat_Steel.xml", "pymechanical", "00_basic")
-mat_Steel_file_path = mat_st_path
+# %%
+# Import Material
+# ~~~~~~~~~~~~~~~
+
+mat_Copper_file_path = download_file(
+    "example_06_Mat_Copper.xml", "pymechanical", "00_basic"
+)
+mat_Steel_file_path = download_file(
+    "example_06_Mat_Steel.xml", "pymechanical", "00_basic"
+)
 
 MAT = ExtAPI.DataModel.Project.Model.Materials
 MAT.Import(mat_Copper_file_path)
 MAT.Import(mat_Steel_file_path)
+# sphinx_gallery_start_ignore
+assert str(MAT.ObjectState) == "FullyDefined", "Materials are not defined"
+# sphinx_gallery_end_ignore
+
+# %%
+# Define Analysis and unit system
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add Structural analysis
 
 Model.AddStaticStructuralAnalysis()
 STAT_STRUC = Model.Analyses[0]
 STAT_STRUC_SOLN = STAT_STRUC.Solution
 STAT_STRUC_ANA_SETTING = STAT_STRUC.Children[0]
 
-# Section 2: Set up the unit system.
+# %%
+# Set up the unit system.
+
 ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
 
-# Section 3: Store all main tree nodes as variables.
+# %%
+# Store all main tree nodes as variables
+
 MODEL = ExtAPI.DataModel.Project.Model
 GEOM = ExtAPI.DataModel.Project.Model.Geometry
 CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
@@ -129,7 +146,8 @@ CS_GRP = ExtAPI.DataModel.Project.Model.CoordinateSystems
 MSH = ExtAPI.DataModel.Project.Model.Mesh
 NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
 
-# Section 4: Store name selection.
+# %%
+# Store name selections
 block3_block2_cont_NS = [
     x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "block3_block2_cont"
 ][0]
@@ -183,7 +201,9 @@ shank_surface = [
     x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "shank_surface"
 ][0]
 
-# Section 5: Assign material to bodies.
+# %%
+# Assign material to bodies
+
 SURFACE1 = GEOM.Children[0].Children[0]
 SURFACE1.Material = "Steel"
 
@@ -202,7 +222,10 @@ SURFACE5.Material = "Steel"
 SURFACE6 = GEOM.Children[5].Children[0]
 SURFACE6.Material = "Steel"
 
-# Section 6: Define coordinate system.
+# %%
+# Define coordinate system
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
+
 coordinate_systems_17 = Model.CoordinateSystems
 coordinate_system_93 = coordinate_systems_17.AddCoordinateSystem()
 coordinate_system_93.OriginDefineBy = CoordinateSystemAlignmentType.Fixed
@@ -211,10 +234,16 @@ coordinate_system_93.OriginY = Quantity(100, "mm")
 coordinate_system_93.OriginZ = Quantity(50, "mm")
 coordinate_system_93.PrimaryAxis = CoordinateSystemAxisType.PositiveZAxis
 
-# Section 7: Change contact settings and add a command snippet to use the Archard Wear Model.
+# %%
+# Define Contacts
+# ~~~~~~~~~~~~~~~
+# Change contact settings and add a command snippet to use the Archard Wear Model.
+
 connections = ExtAPI.DataModel.Project.Model.Connections
 
-# Delete existing contacts.
+# %%
+# Delete existing contacts
+
 for connection in connections.Children:
     if connection.DataModelObjectCategory == DataModelObjectCategory.ConnectionGroup:
         connection.Delete()
@@ -227,7 +256,10 @@ CONT_REG1.FrictionCoefficient = 0.2
 CONT_REG1.SmallSliding = ContactSmallSlidingType.Off
 CONT_REG1.UpdateStiffness = UpdateContactStiffness.Never
 CMD1 = CONT_REG1.AddCommandSnippet()
-# Add missing contact keyopt and Archard Wear Model in workbench using a command snippet.
+
+# %%
+# Add missing contact keyopt and Archard Wear Model using a command snippet
+
 AWM = """keyopt,cid,9,5
 rmodif,cid,10,0.00
 rmodif,cid,23,0.001"""
@@ -248,7 +280,8 @@ CONT_REG3.FrictionCoefficient = 0.2
 CONT_REG3.SmallSliding = ContactSmallSlidingType.Off
 CONT_REG3.UpdateStiffness = UpdateContactStiffness.Never
 CMD3 = CONT_REG3.AddCommandSnippet()
-# Add missing contact keyopt and Archard Wear Model in workbench using a command snippet.
+
+# Add missing contact keyopt and Archard Wear Model using a command snippet
 AWM3 = """keyopt,cid,9,5
 rmodif,cid,10,0.00
 rmodif,cid,23,0.001"""
@@ -274,19 +307,15 @@ CONT_REG6.FrictionCoefficient = 0.2
 CONT_REG6.SmallSliding = ContactSmallSlidingType.Off
 CONT_REG6.UpdateStiffness = UpdateContactStiffness.Never
 CMD6 = CONT_REG6.AddCommandSnippet()
-# Add missing contact keyopt and Archard Wear Model in workbench using a command snippet.
+# Add missing contact keyopt and Archard Wear Model using a command snippet.
 AWM6 = """keyopt,cid,9,5
 rmodif,cid,10,0.00
 rmodif,cid,23,0.001"""
 CMD6.AppendText(AWM6)
 
-# Add contact tool.
-# CONT_TOOL = CONN_GRP.AddContactTool()
-# CONT_TOOL.AddPenetration()
-# CONT_TOOL.AddStatus()
-# CONT_TOOL.GenerateInitialContactResults()
-
-# Section 8: Generate mesh.
+# %%
+# Generate mesh
+# ~~~~~~~~~~~~~
 
 Hex_Method = MSH.AddAutomaticMethod()
 Hex_Method.Location = all_bodies
@@ -312,26 +341,44 @@ Sweep_Method.SourceLocation = shank_face
 Sweep_Method.TargetLocation = shank_face2
 
 MSH.GenerateMesh()
+# sphinx_gallery_start_ignore
+assert str(MSH.ObjectState) == "Solved", "Mesh could not be generated"
+# sphinx_gallery_end_ignore
 
-# Section 9: Set up analysis settings.
+ExtAPI.Graphics.Camera.SetFit()
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
+)
+display_image("mesh.png")
+
+# %%
+# Set up analysis settings
+# ~~~~~~~~~~~~~~~~~~~~~~~~
+
 STAT_STRUC_ANA_SETTING.NumberOfSteps = 4
 step_index_list = [1]
-# with Transaction():
-for step_index in step_index_list:
-    STAT_STRUC_ANA_SETTING.SetAutomaticTimeStepping(
-        step_index, AutomaticTimeStepping.Off
-    )
+
+with Transaction():
+    for step_index in step_index_list:
+        STAT_STRUC_ANA_SETTING.SetAutomaticTimeStepping(
+            step_index, AutomaticTimeStepping.Off
+        )
+
 STAT_STRUC_ANA_SETTING.Activate()
 step_index_list = [1]
-# with Transaction():
-for step_index in step_index_list:
-    STAT_STRUC_ANA_SETTING.SetNumberOfSubSteps(step_index, 2)
+
+with Transaction():
+    for step_index in step_index_list:
+        STAT_STRUC_ANA_SETTING.SetNumberOfSubSteps(step_index, 2)
+
 STAT_STRUC_ANA_SETTING.Activate()
 STAT_STRUC_ANA_SETTING.SolverType = SolverType.Direct
 STAT_STRUC_ANA_SETTING.SolverPivotChecking = SolverPivotChecking.Off
 
+# %%
+# Define loads and boundary conditions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Section 10: Insert loading and BC.
 FIX_SUP = STAT_STRUC.AddFixedSupport()
 FIX_SUP.Location = block2_surface
 
@@ -370,8 +417,15 @@ Bolt_Pretension.Preload.Output.DiscreteValues = [
 Bolt_Pretension.SetDefineBy(2, BoltLoadDefineBy.Lock)
 Bolt_Pretension.SetDefineBy(3, BoltLoadDefineBy.Lock)
 Bolt_Pretension.SetDefineBy(4, BoltLoadDefineBy.Lock)
+Tree.Activate([Bolt_Pretension])
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "bolt_pretension.png"), image_export_format, settings_720p
+)
+display_image("bolt_pretension.png")
 
-# Section 11: Insert results.
+# %%
+# Insert results
+# ~~~~~~~~~~~~~~
 
 Post_Contact_Tool = STAT_STRUC_SOLN.AddContactTool()
 Post_Contact_Tool.ScopingMethod = GeometryDefineByType.Worksheet
@@ -388,24 +442,65 @@ Force_Reaction_1.BoundaryConditionSelection = FIX_SUP
 Moment_Reaction_2 = STAT_STRUC_SOLN.AddMomentReaction()
 Moment_Reaction_2.BoundaryConditionSelection = FIX_SUP
 
-# Section 12: Set number of processors to 6 using DANSYS.
-# Num_Cores = STAT_STRUC.SolveConfiguration.SolveProcessSettings.MaxNumberOfCores
-# STAT_STRUC.SolveConfiguration.SolveProcessSettings.MaxNumberOfCores = 6
+# %%
+# Solve
+# ~~~~~
 
-# Section 13: Solve and validate the results.
 STAT_STRUC_SOLN.Solve(True)
 STAT_STRUC_SS = STAT_STRUC_SOLN.Status
+# sphinx_gallery_start_ignore
+assert str(STAT_STRUC_SS) == "Done", "Solution status is not 'Done'"
+# sphinx_gallery_end_ignore
+
+# %%
+# Results
+# ~~~~~~~
 
 Tree.Activate([Total_Deformation])
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "result.png"), image_export_format, settings_720p
+    os.path.join(cwd, "total_deformation.png"), image_export_format, settings_720p
 )
-display_image("result.png")
+display_image("total_deformation.png")
+Tree.Activate([Equivalent_stress_1])
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "equivalent_stress1.png"), image_export_format, settings_720p
+)
+display_image("equivalent_stress1.png")
+Tree.Activate([Equivalent_stress_2])
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "equivalent_stress2.png"), image_export_format, settings_720p
+)
+display_image("equivalent_stress2.png")
 
+# %%
+# Export animation
+
+Post_Contact_Tool.Children[0].Activate()
+animation_export_format = (
+    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
+)
+settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
+settings_720p.Width = 1280
+settings_720p.Height = 720
+
+Post_Contact_Tool.Children[0].ExportAnimation(
+    os.path.join(cwd, "contact_status.gif"), animation_export_format, settings_720p
+)
+
+# %%
+# .. image:: /_static/basic/contact_status.gif
+
+
+# %%
+# Cleanup
+# ~~~~~~~
 # Save project
-app.save(os.path.join(cwd, "bolt.mechdat"))
+
+app.save(os.path.join(cwd, "bolt_pretension.mechdat"))
 app.new()
 
+# %%
 # Delete the example file
+
 delete_downloads()
