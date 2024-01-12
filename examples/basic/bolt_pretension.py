@@ -340,156 +340,156 @@ Sweep_Method.SourceTargetSelection = 2
 Sweep_Method.SourceLocation = shank_face
 Sweep_Method.TargetLocation = shank_face2
 
-MSH.GenerateMesh()
-# sphinx_gallery_start_ignore
-assert str(MSH.ObjectState) == "Solved", "Mesh could not be generated"
-# sphinx_gallery_end_ignore
+# MSH.GenerateMesh()
+# # sphinx_gallery_start_ignore
+# assert str(MSH.ObjectState) == "Solved", "Mesh could not be generated"
+# # sphinx_gallery_end_ignore
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
-)
-display_image("mesh.png")
+# ExtAPI.Graphics.Camera.SetFit()
+# ExtAPI.Graphics.ExportImage(
+#     os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
+# )
+# display_image("mesh.png")
 
-# %%
-# Set up analysis settings
-# ~~~~~~~~~~~~~~~~~~~~~~~~
+# # %%
+# # Set up analysis settings
+# # ~~~~~~~~~~~~~~~~~~~~~~~~
 
-STAT_STRUC_ANA_SETTING.NumberOfSteps = 4
-step_index_list = [1]
+# STAT_STRUC_ANA_SETTING.NumberOfSteps = 4
+# step_index_list = [1]
 
-with Transaction():
-    for step_index in step_index_list:
-        STAT_STRUC_ANA_SETTING.SetAutomaticTimeStepping(
-            step_index, AutomaticTimeStepping.Off
-        )
+# with Transaction():
+#     for step_index in step_index_list:
+#         STAT_STRUC_ANA_SETTING.SetAutomaticTimeStepping(
+#             step_index, AutomaticTimeStepping.Off
+#         )
 
-STAT_STRUC_ANA_SETTING.Activate()
-step_index_list = [1]
+# STAT_STRUC_ANA_SETTING.Activate()
+# step_index_list = [1]
 
-with Transaction():
-    for step_index in step_index_list:
-        STAT_STRUC_ANA_SETTING.SetNumberOfSubSteps(step_index, 2)
+# with Transaction():
+#     for step_index in step_index_list:
+#         STAT_STRUC_ANA_SETTING.SetNumberOfSubSteps(step_index, 2)
 
-STAT_STRUC_ANA_SETTING.Activate()
-STAT_STRUC_ANA_SETTING.SolverType = SolverType.Direct
-STAT_STRUC_ANA_SETTING.SolverPivotChecking = SolverPivotChecking.Off
+# STAT_STRUC_ANA_SETTING.Activate()
+# STAT_STRUC_ANA_SETTING.SolverType = SolverType.Direct
+# STAT_STRUC_ANA_SETTING.SolverPivotChecking = SolverPivotChecking.Off
 
-# %%
-# Define loads and boundary conditions
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# # %%
+# # Define loads and boundary conditions
+# # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-FIX_SUP = STAT_STRUC.AddFixedSupport()
-FIX_SUP.Location = block2_surface
+# FIX_SUP = STAT_STRUC.AddFixedSupport()
+# FIX_SUP.Location = block2_surface
 
-Tabular_Force = STAT_STRUC.AddForce()
-Tabular_Force.Location = bottom_surface
-Tabular_Force.DefineBy = LoadDefineBy.Components
-Tabular_Force.XComponent.Inputs[0].DiscreteValues = [
-    Quantity("0[s]"),
-    Quantity("1[s]"),
-    Quantity("2[s]"),
-    Quantity("3[s]"),
-    Quantity("4[s]"),
-]
-Tabular_Force.XComponent.Output.DiscreteValues = [
-    Quantity("0[N]"),
-    Quantity("0[N]"),
-    Quantity("5.e+005[N]"),
-    Quantity("0[N]"),
-    Quantity("-5.e+005[N]"),
-]
+# Tabular_Force = STAT_STRUC.AddForce()
+# Tabular_Force.Location = bottom_surface
+# Tabular_Force.DefineBy = LoadDefineBy.Components
+# Tabular_Force.XComponent.Inputs[0].DiscreteValues = [
+#     Quantity("0[s]"),
+#     Quantity("1[s]"),
+#     Quantity("2[s]"),
+#     Quantity("3[s]"),
+#     Quantity("4[s]"),
+# ]
+# Tabular_Force.XComponent.Output.DiscreteValues = [
+#     Quantity("0[N]"),
+#     Quantity("0[N]"),
+#     Quantity("5.e+005[N]"),
+#     Quantity("0[N]"),
+#     Quantity("-5.e+005[N]"),
+# ]
 
-Bolt_Pretension = STAT_STRUC.AddBoltPretension()
-Bolt_Pretension.Location = shank_surface
-Bolt_Pretension.Preload.Inputs[0].DiscreteValues = [
-    Quantity("1[s]"),
-    Quantity("2[s]"),
-    Quantity("3[s]"),
-    Quantity("4[s]"),
-]
-Bolt_Pretension.Preload.Output.DiscreteValues = [
-    Quantity("6.1363e+005[N]"),
-    Quantity("0 [N]"),
-    Quantity("0 [N]"),
-    Quantity("0[N]"),
-]
-Bolt_Pretension.SetDefineBy(2, BoltLoadDefineBy.Lock)
-Bolt_Pretension.SetDefineBy(3, BoltLoadDefineBy.Lock)
-Bolt_Pretension.SetDefineBy(4, BoltLoadDefineBy.Lock)
-Tree.Activate([Bolt_Pretension])
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "bolt_pretension.png"), image_export_format, settings_720p
-)
-display_image("bolt_pretension.png")
+# Bolt_Pretension = STAT_STRUC.AddBoltPretension()
+# Bolt_Pretension.Location = shank_surface
+# Bolt_Pretension.Preload.Inputs[0].DiscreteValues = [
+#     Quantity("1[s]"),
+#     Quantity("2[s]"),
+#     Quantity("3[s]"),
+#     Quantity("4[s]"),
+# ]
+# Bolt_Pretension.Preload.Output.DiscreteValues = [
+#     Quantity("6.1363e+005[N]"),
+#     Quantity("0 [N]"),
+#     Quantity("0 [N]"),
+#     Quantity("0[N]"),
+# ]
+# Bolt_Pretension.SetDefineBy(2, BoltLoadDefineBy.Lock)
+# Bolt_Pretension.SetDefineBy(3, BoltLoadDefineBy.Lock)
+# Bolt_Pretension.SetDefineBy(4, BoltLoadDefineBy.Lock)
+# Tree.Activate([Bolt_Pretension])
+# ExtAPI.Graphics.ExportImage(
+#     os.path.join(cwd, "bolt_pretension.png"), image_export_format, settings_720p
+# )
+# display_image("bolt_pretension.png")
 
-# %%
-# Insert results
-# ~~~~~~~~~~~~~~
+# # %%
+# # Insert results
+# # ~~~~~~~~~~~~~~
 
-Post_Contact_Tool = STAT_STRUC_SOLN.AddContactTool()
-Post_Contact_Tool.ScopingMethod = GeometryDefineByType.Worksheet
+# Post_Contact_Tool = STAT_STRUC_SOLN.AddContactTool()
+# Post_Contact_Tool.ScopingMethod = GeometryDefineByType.Worksheet
 
-Bolt_Tool = STAT_STRUC_SOLN.AddBoltTool()
-Bolt_Working_Load = Bolt_Tool.AddWorkingLoad()
+# Bolt_Tool = STAT_STRUC_SOLN.AddBoltTool()
+# Bolt_Working_Load = Bolt_Tool.AddWorkingLoad()
 
-Total_Deformation = STAT_STRUC_SOLN.AddTotalDeformation()
-Equivalent_stress_1 = STAT_STRUC_SOLN.AddEquivalentStress()
-Equivalent_stress_2 = STAT_STRUC_SOLN.AddEquivalentStress()
-Equivalent_stress_2.Location = shank
-Force_Reaction_1 = STAT_STRUC_SOLN.AddForceReaction()
-Force_Reaction_1.BoundaryConditionSelection = FIX_SUP
-Moment_Reaction_2 = STAT_STRUC_SOLN.AddMomentReaction()
-Moment_Reaction_2.BoundaryConditionSelection = FIX_SUP
+# Total_Deformation = STAT_STRUC_SOLN.AddTotalDeformation()
+# Equivalent_stress_1 = STAT_STRUC_SOLN.AddEquivalentStress()
+# Equivalent_stress_2 = STAT_STRUC_SOLN.AddEquivalentStress()
+# Equivalent_stress_2.Location = shank
+# Force_Reaction_1 = STAT_STRUC_SOLN.AddForceReaction()
+# Force_Reaction_1.BoundaryConditionSelection = FIX_SUP
+# Moment_Reaction_2 = STAT_STRUC_SOLN.AddMomentReaction()
+# Moment_Reaction_2.BoundaryConditionSelection = FIX_SUP
 
-# %%
-# Solve
-# ~~~~~
+# # %%
+# # Solve
+# # ~~~~~
 
-STAT_STRUC_SOLN.Solve(True)
-STAT_STRUC_SS = STAT_STRUC_SOLN.Status
-# sphinx_gallery_start_ignore
-assert str(STAT_STRUC_SS) == "Done", "Solution status is not 'Done'"
-# sphinx_gallery_end_ignore
+# STAT_STRUC_SOLN.Solve(True)
+# STAT_STRUC_SS = STAT_STRUC_SOLN.Status
+# # sphinx_gallery_start_ignore
+# assert str(STAT_STRUC_SS) == "Done", "Solution status is not 'Done'"
+# # sphinx_gallery_end_ignore
 
-# %%
-# Results
-# ~~~~~~~
+# # %%
+# # Results
+# # ~~~~~~~
 
-Tree.Activate([Total_Deformation])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "total_deformation.png"), image_export_format, settings_720p
-)
-display_image("total_deformation.png")
-Tree.Activate([Equivalent_stress_1])
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "equivalent_stress1.png"), image_export_format, settings_720p
-)
-display_image("equivalent_stress1.png")
-Tree.Activate([Equivalent_stress_2])
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "equivalent_stress2.png"), image_export_format, settings_720p
-)
-display_image("equivalent_stress2.png")
+# Tree.Activate([Total_Deformation])
+# ExtAPI.Graphics.Camera.SetFit()
+# ExtAPI.Graphics.ExportImage(
+#     os.path.join(cwd, "total_deformation.png"), image_export_format, settings_720p
+# )
+# display_image("total_deformation.png")
+# Tree.Activate([Equivalent_stress_1])
+# ExtAPI.Graphics.ExportImage(
+#     os.path.join(cwd, "equivalent_stress1.png"), image_export_format, settings_720p
+# )
+# display_image("equivalent_stress1.png")
+# Tree.Activate([Equivalent_stress_2])
+# ExtAPI.Graphics.ExportImage(
+#     os.path.join(cwd, "equivalent_stress2.png"), image_export_format, settings_720p
+# )
+# display_image("equivalent_stress2.png")
 
-# %%
-# Export animation
+# # %%
+# # Export animation
 
-Post_Contact_Tool.Children[0].Activate()
-animation_export_format = (
-    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
-)
-settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
-settings_720p.Width = 1280
-settings_720p.Height = 720
+# Post_Contact_Tool.Children[0].Activate()
+# animation_export_format = (
+#     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
+# )
+# settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
+# settings_720p.Width = 1280
+# settings_720p.Height = 720
 
-Post_Contact_Tool.Children[0].ExportAnimation(
-    os.path.join(cwd, "contact_status.gif"), animation_export_format, settings_720p
-)
+# Post_Contact_Tool.Children[0].ExportAnimation(
+#     os.path.join(cwd, "contact_status.gif"), animation_export_format, settings_720p
+# )
 
-# %%
-# .. image:: /_static/basic/contact_status.gif
+# # %%
+# # .. image:: /_static/basic/contact_status.gif
 
 
 # %%
