@@ -13,7 +13,7 @@ from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 
 # Embed Mechanical and set global variables
-app = mech.App(version=241)
+app = mech.App(version=232)
 globals().update(mech.global_variables(app, True))
 print(app)
 
@@ -24,7 +24,7 @@ def display_image(image_name):
     plt.figure(figsize=(15, 15))
     plt.axis("off")
     plt.imshow(image)
-    plt.show()
+    # plt.show()
 
 
 cwd = os.path.join(os.getcwd(), "out")
@@ -32,6 +32,15 @@ cwd = os.path.join(os.getcwd(), "out")
 # IMPORT GEOMETRY AND Materials
 # Add geom from cloud
 
+geometry_path = download_file(
+    "Contact_Debonding_Example.agdb", "pymechanical", "embedding"
+)
+mat1_path = download_file(
+    "Contact_Debonding_Example_Mat1.xml", "pymechanical", "embedding"
+)
+mat2_path = download_file(
+    "Contact_Debonding_Example_Mat2.xml", "pymechanical", "embedding"
+)
 # setup  graphics
 
 ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
@@ -294,3 +303,6 @@ FORCE_REACTION.ExportAnimation(
 
 app.save(os.path.join(cwd, "debonding.mechdat"))
 app.new()
+
+# delete example file
+delete_downloads()
