@@ -7,10 +7,12 @@ This example demonstrates a basic implementation of a valve in Python.
 """
 import os
 
+from PIL import Image
 import ansys.mechanical.core as mech
 from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 # Embed Mechanical and set global variables
 app = mech.App(version=232)
@@ -24,11 +26,10 @@ cwd = os.path.join(os.getcwd(), "out")
 
 
 def display_image(image_name):
-    path = os.path.join(os.path.join(cwd, image_name))
-    image = mpimg.imread(path)
-    plt.figure(figsize=(15, 15))
-    plt.axis("off")
-    plt.imshow(image)
+    plt.figure(figsize=(16, 9))
+    plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
+    plt.xticks([])
+    plt.yticks([])
     plt.show()
 
 
@@ -154,12 +155,29 @@ settings_720p.Height = 720
 stress.ExportAnimation(
     os.path.join(cwd, "Valve.gif"), animation_export_format, settings_720p
 )
+gif = Image.open(os.path.join(cwd, "Valve.gif"))
+fig, ax = plt.subplots(figsize=(16, 9))
+ax.axis("off")
+img = ax.imshow(gif.convert("RGBA"))
+
+
+def update(frame):
+    gif.seek(frame)
+    img.set_array(gif.convert("RGBA"))
+    return [img]
+
+
+ani = FuncAnimation(
+    fig, update, frames=range(gif.n_frames), interval=100, repeat=True, blit=True
+)
+plt.show()
+
 
 # %%
-# .. image:: /_static/basic/Valve.gif
-
-
+# Cleanup
+# ~~~~~~~
 # Save project
+
 app.save(os.path.join(cwd, "Valve.mechdat"))
 app.new()
 

@@ -76,6 +76,8 @@ sphinx_gallery_conf = {
     "image_scrapers": ("pyvista", "matplotlib"),
     "ignore_pattern": "flycheck*",
     "thumbnail_size": (350, 350),
+    # embed gif in gallery
+    "matplotlib_animations": True,
 }
 
 # Intersphinx mapping
