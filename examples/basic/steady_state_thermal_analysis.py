@@ -17,7 +17,7 @@ from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 
 # Embed Mechanical and set global variables
-app = mech.App(version=232)
+app = mech.App(version=241)
 globals().update(mech.global_variables(app, True))
 print(app)
 
