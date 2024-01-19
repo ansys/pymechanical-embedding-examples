@@ -54,7 +54,7 @@ from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 
-app = mech.App(version=232)
+app = mech.App(version=241)
 globals().update(mech.global_variables(app, True))
 print(app)
 
