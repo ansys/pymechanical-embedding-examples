@@ -15,7 +15,7 @@ from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 # Embed Mechanical and set global variables
-app = mech.App(version=232)
+app = mech.App(version=241)
 globals().update(mech.global_variables(app))
 print(app)
 
