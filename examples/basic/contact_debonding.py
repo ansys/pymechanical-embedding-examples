@@ -13,18 +13,18 @@ from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 
 # Embed Mechanical and set global variables
-app = mech.App(version=232)
+app = mech.App(version=241)
 globals().update(mech.global_variables(app, True))
 print(app)
 
 
 def display_image(image_name):
-    path = os.path.join(os.path.join(cwd, image_name))
-    image = mpimg.imread(path)
-    plt.figure(figsize=(15, 15))
+    plt.figure(figsize=(16, 9))
+    plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
+    plt.xticks([])
+    plt.yticks([])
     plt.axis("off")
-    plt.imshow(image)
-    # plt.show()
+    plt.show()
 
 
 cwd = os.path.join(os.getcwd(), "out")
@@ -61,14 +61,10 @@ settings_720p.CurrentGraphicsDisplay = False
 # import geometry
 geometry_import_group = Model.GeometryImportGroup
 geometry_import = geometry_import_group.AddGeometryImport()
-geometry_import_format = (
-    Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
-)
+geometry_import_format = GeometryImportPreference.Format.Automatic
 geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
 geometry_import_preferences.ProcessNamedSelections = True
-geometry_import_preferences.AnalysisType = (
-    Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.AnalysisType.Type2D
-)
+geometry_import_preferences.AnalysisType = GeometryImportPreference.AnalysisType.Type2D
 geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
@@ -227,6 +223,7 @@ ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
 )
 display_image("mesh.png")
+
 # Scenario 7 Add Contact Debonding object
 MODEL.Activate()
 FRACTURE = MODEL.AddFracture()
@@ -288,9 +285,7 @@ display_image("contact_force.png")
 
 # %%
 # Export animation
-animation_export_format = (
-    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
-)
+animation_export_format = GraphicsAnimationExportFormat.GIF
 settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
 settings_720p.Width = 1280
 settings_720p.Height = 720
@@ -301,7 +296,7 @@ FORCE_REACTION.ExportAnimation(
 
 ## add messages in between
 
-app.save(os.path.join(cwd, "debonding.mechdat"))
+app.save(os.path.join(cwd, "contact_debonding.mechdat"))
 app.new()
 
 # delete example file
