@@ -7,10 +7,12 @@ This example demonstrates a basic implementation contact debonding in Python.
 """
 import os
 
+from PIL import Image
 import ansys.mechanical.core as mech
 from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 # Embed Mechanical and set global variables
 app = mech.App(version=241)
