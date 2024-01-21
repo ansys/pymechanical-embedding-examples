@@ -41,8 +41,8 @@ mat1_path = download_file(
 mat2_path = download_file(
     "Contact_Debonding_Example_Mat2.xml", "pymechanical", "embedding"
 )
-# setup  graphics
 
+# setup  graphics
 ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
     Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
 )
@@ -59,15 +59,21 @@ settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
 # import geometry
-geometry_import_group = Model.GeometryImportGroup
-geometry_import = geometry_import_group.AddGeometryImport()
-geometry_import_format = GeometryImportPreference.Format.Automatic
+# Import geometry
+geometry_file = geometry_path
+geometry_import = Model.GeometryImportGroup.AddGeometryImport()
+geometry_import_format = (
+    Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
+)
 geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
 geometry_import_preferences.ProcessNamedSelections = True
-geometry_import_preferences.AnalysisType = GeometryImportPreference.AnalysisType.Type2D
-geometry_import.Import(
-    geometry_path, geometry_import_format, geometry_import_preferences
+geometry_import_preferences.AnalysisType = (
+    Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.AnalysisType.Type2D
 )
+geometry_import.Import(
+    geometry_file, geometry_import_format, geometry_import_preferences
+)
+
 
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
@@ -285,7 +291,9 @@ display_image("contact_force.png")
 
 # %%
 # Export animation
-animation_export_format = GraphicsAnimationExportFormat.GIF
+animation_export_format = (
+    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
+)
 settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
 settings_720p.Width = 1280
 settings_720p.Height = 720
