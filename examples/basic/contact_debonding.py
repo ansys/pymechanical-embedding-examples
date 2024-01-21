@@ -301,6 +301,22 @@ settings_720p.Height = 720
 FORCE_REACTION.ExportAnimation(
     os.path.join(cwd, "force.gif"), animation_export_format, settings_720p
 )
+gif = Image.open(os.path.join(cwd, "force.gif"))
+fig, ax = plt.subplots(figsize=(16, 9))
+ax.axis("off")
+img = ax.imshow(gif.convert("RGBA"))
+
+
+def update(frame):
+    gif.seek(frame)
+    img.set_array(gif.convert("RGBA"))
+    return [img]
+
+
+ani = FuncAnimation(
+    fig, update, frames=range(gif.n_frames), interval=100, repeat=True, blit=True
+)
+plt.show()
 
 ## add messages in between
 
