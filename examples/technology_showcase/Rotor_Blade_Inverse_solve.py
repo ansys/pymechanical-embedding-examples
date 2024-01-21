@@ -54,7 +54,7 @@ from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 
-app = mech.App(version=232)
+app = mech.App(version=241)
 globals().update(mech.global_variables(app, True))
 print(app)
 
@@ -62,11 +62,10 @@ cwd = os.path.join(os.getcwd(), "out")
 
 
 def display_image(image_name):
-    path = os.path.join(os.path.join(cwd, image_name))
-    image = mpimg.imread(path)
-    plt.figure(figsize=(15, 15))
-    plt.axis("off")
-    plt.imshow(image)
+    plt.figure(figsize=(16, 9))
+    plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
+    plt.xticks([])
+    plt.yticks([])
     plt.show()
 
 
