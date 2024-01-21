@@ -58,16 +58,15 @@ geometry_path = download_file("LONGBAR.x_t", "pymechanical", "embedding")
 # %%
 # Import the geometry
 
-geometry_import_group = Model.GeometryImportGroup
-geometry_import = geometry_import_group.AddGeometryImport()
-geometry_import_format = (
-    Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
-)
-geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
-geometry_import_preferences.ProcessNamedSelections = True
-geometry_import.Import(
-    geometry_path, geometry_import_format, geometry_import_preferences
-)
+ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+ExtAPI.Graphics.Camera.SetFit()
+image_export_format = GraphicsImageExportFormat.PNG
+settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
+settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
+settings_720p.Background = GraphicsBackgroundType.White
+settings_720p.Width = 1280
+settings_720p.Height = 720
+settings_720p.CurrentGraphicsDisplay = False
 
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
@@ -191,6 +190,7 @@ BODY1.Generate()
 
 # %%
 # Create construction geometry
+
 CONST_GEOM = MODEL.AddConstructionGeometry()
 Path = CONST_GEOM.AddPath()
 Path.StartYCoordinate = Quantity(2, "m")
@@ -204,7 +204,7 @@ CONST_GEOM.UpdateAllSolids()
 # %%
 # Define boundary condition and add results
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Add temperature conditions
+# Add temperature boundary conditions
 
 TEMP = STAT_THERM.AddTemperature()
 TEMP.Location = FACE1
@@ -214,8 +214,8 @@ TEMP2 = STAT_THERM.AddTemperature()
 TEMP2.Location = FACE2
 TEMP2.Magnitude.Output.DiscreteValues = [Quantity("22[C]"), Quantity("60[C]")]
 
-# Geometry Selection
-# selection.UpdateSelection(ExtAPI, [], SelectionTypeEnum.GeometryEntities)
+# %%
+# Add temperature boundary conditions
 STAT_THERM_SOLN = DataModel.Project.Model.Analyses[0].Solution
 TEMP_RST = STAT_THERM_SOLN.AddTemperature()
 
