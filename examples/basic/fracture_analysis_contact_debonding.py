@@ -1,9 +1,12 @@
 """ .. _ref_contact:
 
-Contact debonding
---------------------------
+Fracture Analysis - Contact debonding
+-------------------------------------
 
-This example demonstrates a basic implementation contact debonding in Python.
+This example demonstrates  will demonstrate
+Contact Debonding in ANSYS Mechanical using the
+Cohesive Zone Material (CZM) method by displacing two
+two-dimensional parts on a double cantilever beam.
 """
 import os
 
@@ -31,8 +34,24 @@ def display_image(image_name):
 
 cwd = os.path.join(os.getcwd(), "out")
 
-# IMPORT GEOMETRY AND Materials
-# Add geom from cloud
+
+# %%
+# Configure graphics for image export
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Front)
+
+image_export_format = GraphicsImageExportFormat.PNG
+settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
+settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
+settings_720p.Background = GraphicsBackgroundType.White
+settings_720p.Width = 1280
+settings_720p.Height = 720
+settings_720p.CurrentGraphicsDisplay = False
+
+# %%
+# Download geometry and materials files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 geometry_path = download_file(
     "Contact_Debonding_Example.agdb", "pymechanical", "embedding"
@@ -44,24 +63,11 @@ mat2_path = download_file(
     "Contact_Debonding_Example_Mat2.xml", "pymechanical", "embedding"
 )
 
-# setup  graphics
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
-    Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
-)
-ExtAPI.Graphics.Camera.SetFit()
-image_export_format = Ansys.Mechanical.DataModel.Enums.GraphicsImageExportFormat.PNG
-settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
-settings_720p.Resolution = (
-    Ansys.Mechanical.DataModel.Enums.GraphicsResolutionType.EnhancedResolution
-)
-settings_720p.Background = Ansys.Mechanical.DataModel.Enums.GraphicsBackgroundType.White
-settings_720p.Width = 1280
-# settings_720p.Capture = Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType.ImageOnly
-settings_720p.Height = 720
-settings_720p.CurrentGraphicsDisplay = False
 
-# import geometry
-# Import geometry
+# %%
+# Import the geometry and material
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import material
 geometry_file = geometry_path
 geometry_import = Model.GeometryImportGroup.AddGeometryImport()
 geometry_import_format = (
@@ -76,21 +82,24 @@ geometry_import.Import(
     geometry_file, geometry_import_format, geometry_import_preferences
 )
 
-
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
 display_image("geometry.png")
-# Scenario 1 Store main Tree Object items
+
+# %%
+# Material import , named selections, materials and connections
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import materials
 
 MODEL = Model
 GEOMETRY = Model.Geometry
-PART = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Part 2"][0]
-
 MAT_GRP = MODEL.Materials
 MAT_GRP.Import(mat1_path)
 MAT_GRP.Import(mat2_path)
+
+PART = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Part 2"][0]
 MAT_BODY = [
     i
     for i in MAT_GRP.GetChildren[Ansys.ACT.Automation.Mechanical.Material](True)
@@ -101,6 +110,9 @@ MAT_CZM = [
     for i in MAT_GRP.GetChildren[Ansys.ACT.Automation.Mechanical.Material](True)
     if i.Name == "CZM Crack Material"
 ][0]
+
+# %%
+# Connections
 
 connections = MODEL.AddConnections()
 CONNECTIONS_GRP = connections.AddConnectionGroup()
@@ -121,7 +133,8 @@ CONTACT_REGION = [
     if i.Name == "Contact Region"
 ][0]
 
-MESH = Model.Mesh
+# %%
+# Named selections
 
 NAMED_SELECTIONS = ExtAPI.DataModel.Project.Model.NamedSelections
 NS_EDGE_HIGH = [
@@ -181,30 +194,42 @@ NS_FACES_BOTH = [
     if i.Name == "Both_Faces"
 ][0]
 
+# %%
+# Define static structural analysis and settings
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 MODEL.AddStaticStructuralAnalysis()
 STATIC_STRUCTURAL = ExtAPI.DataModel.AnalysisByName("Static Structural")
 ANALYSIS_SETTINGS = STATIC_STRUCTURAL.AnalysisSettings
 SOLUTION = STATIC_STRUCTURAL.Solution
+MESH = Model.Mesh
 
-# Scenario 2 Set Display Unit
+# Set Unit System
+
 ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
 
-# Scenario 3 Set 2D Behavior
+# Set 2D Behavior
+
 GEOMETRY.Activate()
 GEOMETRY.Model2DBehavior = Model2DBehavior.PlaneStrain
 
-# Scenario 4 Assign Material
+# Assign Material
+
 PART.Activate()
 PART.Material = MAT_BODY.Name
 
-# Scenario 5 Define Contact Region
+# Define Contact Region
+
 CONTACT_REGION.Activate()
 CONTACT_REGION.SourceLocation = NS_EDGE_HIGH
 CONTACT_REGION.TargetLocation = NS_EDGE_LOW
 CONTACT_REGION.ContactType = ContactType.Bonded
 CONTACT_REGION.ContactFormulation = ContactFormulation.PurePenalty
 
-# Scenario 6 Define Mesh controls and generate mesh
+# %%
+# Define mesh controls and generate mesh
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 MESH.Activate()
 MESH.ElementOrder = ElementOrder.Quadratic
 MESH.UseAdaptiveSizing = False
@@ -226,13 +251,17 @@ FACE_MESHING.Method = FaceMeshingMethod.Quadrilaterals
 
 MESH.Activate()
 MESH.GenerateMesh()
+
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
 )
 display_image("mesh.png")
 
-# Scenario 7 Add Contact Debonding object
+# %%
+# Add Contact Debonding object
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 MODEL.Activate()
 FRACTURE = MODEL.AddFracture()
 
@@ -240,7 +269,10 @@ CONTACT_DEBONDING = FRACTURE.AddContactDebonding()
 CONTACT_DEBONDING.Material = MAT_CZM.Name
 CONTACT_DEBONDING.ContactRegion = CONTACT_REGION
 
-# Scenario 8 Define Analysis Settings
+# %%
+# Define Analysis Settings
+# ~~~~~~~~~~~~~~~~~~~~~~~~
+
 ANALYSIS_SETTINGS.Activate()
 ANALYSIS_SETTINGS.AutomaticTimeStepping = AutomaticTimeStepping.On
 ANALYSIS_SETTINGS.DefineBy = TimeStepDefineByType.Substeps
@@ -249,10 +281,17 @@ ANALYSIS_SETTINGS.InitialSubsteps = 100
 ANALYSIS_SETTINGS.MinimumSubsteps = 100
 ANALYSIS_SETTINGS.LargeDeflection = True
 
-# Scenario 9 Define boundary conditions
+# %%
+# Define boundary conditions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add fixed support
+
 STATIC_STRUCTURAL.Activate()
 FIXED_SUPPORT = STATIC_STRUCTURAL.AddFixedSupport()
 FIXED_SUPPORT.Location = NS_EDGES_FIXED
+
+# %%
+# Add displacement
 
 STATIC_STRUCTURAL.Activate()
 DISPLACEMENT = STATIC_STRUCTURAL.AddDisplacement()
@@ -266,7 +305,18 @@ DISPLACEMENT2.Location = NS_VERTEX_DISP2
 DISPLACEMENT2.DefineBy = LoadDefineBy.Components
 DISPLACEMENT2.YComponent.Output.DiscreteValues = [Quantity("-10 [mm]")]
 
-# Scenario 10 Add results
+STATIC_STRUCTURAL.Activate()
+
+ExtAPI.Graphics.Camera.SetFit()
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "boundary_conditions.png"), image_export_format, settings_720p
+)
+display_image("boundary_conditions.png")
+
+# %%
+# Add results
+# ~~~~~~~~~~~
+
 SOLUTION.Activate()
 DIRECTIONAL_DEFORMATION = SOLUTION.AddDirectionalDeformation()
 DIRECTIONAL_DEFORMATION.NormalOrientation = NormalOrientationType.YAxis
@@ -274,25 +324,52 @@ DIRECTIONAL_DEFORMATION.NormalOrientation = NormalOrientationType.YAxis
 FORCE_REACTION = SOLUTION.AddForceReaction()
 FORCE_REACTION.BoundaryConditionSelection = DISPLACEMENT
 
-# Scenario 11 Solve and review results
+# %%
+# Solve
+# ~~~~~
+
 STATIC_STRUCTURAL.Activate()
-STATIC_STRUCTURAL.Solve(True)
+SOLUTION.Solve(True)
+
+# sphinx_gallery_start_ignore
+assert str(SOLUTION.Status) == "Done", "Solution status is not 'Done'"
+# sphinx_gallery_end_ignore
+
+# %%
+# Messages and warning
+# ~~~~~~~~~~~~~~~~~~~~
+
+listMessages = ExtAPI.Application.Messages
+for message in listMessages:
+    print(f"[{message.Severity}] {message.DisplayString}")
+
+# %%
+# Display results
+# ~~~~~~~~~~~~~~~
+# Directional deformation
 
 DIRECTIONAL_DEFORMATION.Activate()
-MIN_DIRECTIONAL_DEFORMATION = DIRECTIONAL_DEFORMATION.Minimum.Value
-MAX_DIRECTIONAL_DEFORMATION = DIRECTIONAL_DEFORMATION.Maximum.Value
+
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "directional_deformation.png"), image_export_format, settings_720p
+)
+display_image("directional_deformation.png")
+
+# %%
+# Force reaction
 
 FORCE_REACTION.Activate()
-Y_AXIS_FORCE_REACTION = FORCE_REACTION.YAxis.Value
-MOT_Y_AXIS_FORCE_REACTION = FORCE_REACTION.MaximumYAxis.Value
+
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "contact_force.png"), image_export_format, settings_720p
+    os.path.join(cwd, "force_reaction.png"), image_export_format, settings_720p
 )
-display_image("contact_force.png")
+display_image("force_reaction.png")
 
 # %%
 # Export animation
+# ~~~~~~~~~~~~~~~~
+
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
 )
@@ -320,7 +397,6 @@ ani = FuncAnimation(
 )
 plt.show()
 
-## add messages in between
 
 app.save(os.path.join(cwd, "contact_debonding.mechdat"))
 app.new()
