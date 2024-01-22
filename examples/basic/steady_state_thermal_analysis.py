@@ -11,10 +11,12 @@ thermal loads on a system or component.
 """
 import os
 
+from PIL import Image
 import ansys.mechanical.core as mech
 from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 # Embed Mechanical and set global variables
 app = mech.App(version=241)
@@ -28,6 +30,8 @@ cwd = os.path.join(os.getcwd(), "out")
 def display_image(image_name):
     plt.figure(figsize=(16, 9))
     plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
+    plt.xticks([])
+    plt.yticks([])
     plt.axis("off")
     plt.show()
 
@@ -44,7 +48,6 @@ settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
 settings_720p.Background = GraphicsBackgroundType.White
 settings_720p.Width = 1280
 settings_720p.Height = 720
-settings_720p.Capture = GraphicsCaptureType.ImageOnly
 settings_720p.CurrentGraphicsDisplay = False
 
 
@@ -58,15 +61,16 @@ geometry_path = download_file("LONGBAR.x_t", "pymechanical", "embedding")
 # %%
 # Import the geometry
 
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
-ExtAPI.Graphics.Camera.SetFit()
-image_export_format = GraphicsImageExportFormat.PNG
-settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
-settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
-settings_720p.Background = GraphicsBackgroundType.White
-settings_720p.Width = 1280
-settings_720p.Height = 720
-settings_720p.CurrentGraphicsDisplay = False
+geometry_import_group = Model.GeometryImportGroup
+geometry_import = geometry_import_group.AddGeometryImport()
+geometry_import_format = (
+    Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
+)
+geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
+geometry_import_preferences.ProcessNamedSelections = True
+geometry_import.Import(
+    geometry_path, geometry_import_format, geometry_import_preferences
+)
 
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
@@ -214,27 +218,6 @@ TEMP2 = STAT_THERM.AddTemperature()
 TEMP2.Location = FACE2
 TEMP2.Magnitude.Output.DiscreteValues = [Quantity("22[C]"), Quantity("60[C]")]
 
-# %%
-# Add temperature boundary conditions
-STAT_THERM_SOLN = DataModel.Project.Model.Analyses[0].Solution
-TEMP_RST = STAT_THERM_SOLN.AddTemperature()
-
-STAT_THERM_SOLN.Solve(True)
-
-TEMP_RST2 = STAT_THERM_SOLN.AddTemperature()
-TEMP_RST2.Location = BODY1
-TEMP_RST2.EvaluateAllResults()
-
-TEMP_RST3 = STAT_THERM_SOLN.AddTemperature()
-TEMP_RST3.Location = Path
-
-
-TEMP_RST4 = STAT_THERM_SOLN.AddTemperature()
-TEMP_RST4.Location = SURF
-
-
-ANLYS_SET = STAT_THERM.AnalysisSettings
-ANLYS_SET.NumberOfSteps = 2
 TEMP.Magnitude.Inputs[0].DiscreteValues = [
     Quantity("0 [sec]"),
     Quantity("1 [sec]"),
@@ -257,46 +240,6 @@ TEMP2.Magnitude.Output.DiscreteValues = [
     Quantity("80[C]"),
 ]
 
-# Maximum Over Time
-TEMP_RST.By = SetDriverStyle.MaximumOverTime
-ANLYS_SET.CalculateVolumeEnergy = True
-
-
-# Total Heat Flux
-TOT_HFLUX = STAT_THERM_SOLN.AddTotalHeatFlux()
-TOT_HFLUX = STAT_THERM_SOLN.AddTotalHeatFlux()
-TOT_HFLUX.ThermalResultType = TotalOrDirectional.Directional
-TOT_HFLUX.NormalOrientation = NormalOrientationType.ZAxis
-
-LCS2.PrimaryAxisDefineBy = CoordinateSystemAlignmentType.GlobalZ
-TOT_HFLUX.CoordinateSystem = LCS2
-TOT_HFLUX.DisplayOption = ResultAveragingType.Averaged
-
-
-# Thermal Error
-THERM_ERROR = STAT_THERM_SOLN.AddThermalError()
-
-# Temperature Probe
-TEMP_PROBE = STAT_THERM_SOLN.AddTemperatureProbe()
-TEMP_PROBE.GeometryLocation = FACE1
-TEMP_PROBE.LocationMethod = LocationDefinitionMethod.CoordinateSystem
-TEMP_PROBE.CoordinateSystemSelection = LCS2
-
-
-# Heat Flux Probe
-HFLUX_PROBE = STAT_THERM_SOLN.AddHeatFluxProbe()
-HFLUX_PROBE.LocationMethod = LocationDefinitionMethod.CoordinateSystem
-HFLUX_PROBE.CoordinateSystemSelection = LCS2
-HFLUX_PROBE.ResultSelection = ProbeDisplayFilter.ZAxis
-
-
-# Reaction Probe
-ANLYS_SET.NodalForces = OutputControlsNodalForcesType.Yes
-REAC_PROBE = STAT_THERM_SOLN.AddReactionProbe()
-REAC_PROBE.LocationMethod = LocationDefinitionMethod.GeometrySelection
-REAC_PROBE.GeometryLocation = FACE1
-
-
 # Radiation Probe
 RAD = STAT_THERM.AddRadiation()
 RAD.Location = FACE3
@@ -312,14 +255,75 @@ RAD.AmbientTemperature.Output.DiscreteValues = [
 ]
 RAD.Correlation = RadiationType.SurfaceToSurface
 
+ANLYS_SET = STAT_THERM.AnalysisSettings
+ANLYS_SET.NumberOfSteps = 2
+ANLYS_SET.CalculateVolumeEnergy = True
+
+STAT_THERM.Activate()
+ExtAPI.Graphics.Camera.SetFit()
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "BoundaryConditions.png"), image_export_format, settings_720p
+)
+display_image("BoundaryConditions.png")
+
+# %%
+# Add Results
+STAT_THERM_SOLN = DataModel.Project.Model.Analyses[0].Solution
+TEMP_RST = STAT_THERM_SOLN.AddTemperature()
+TEMP_RST.By = SetDriverStyle.MaximumOverTime
+
+
+TEMP_RST2 = STAT_THERM_SOLN.AddTemperature()
+TEMP_RST2.Location = BODY1
+
+TEMP_RST3 = STAT_THERM_SOLN.AddTemperature()
+TEMP_RST3.Location = Path
+
+TEMP_RST4 = STAT_THERM_SOLN.AddTemperature()
+TEMP_RST4.Location = SURF
+
+
+# Total Heat Flux
+TOT_HFLUX = STAT_THERM_SOLN.AddTotalHeatFlux()
+DIR_HFLUX = STAT_THERM_SOLN.AddTotalHeatFlux()
+DIR_HFLUX.ThermalResultType = TotalOrDirectional.Directional
+DIR_HFLUX.NormalOrientation = NormalOrientationType.ZAxis
+
+LCS2.PrimaryAxisDefineBy = CoordinateSystemAlignmentType.GlobalZ
+DIR_HFLUX.CoordinateSystem = LCS2
+DIR_HFLUX.DisplayOption = ResultAveragingType.Averaged
+
+# Thermal Error
+THERM_ERROR = STAT_THERM_SOLN.AddThermalError()
+
+# Temperature Probe
+TEMP_PROBE = STAT_THERM_SOLN.AddTemperatureProbe()
+TEMP_PROBE.GeometryLocation = FACE1
+TEMP_PROBE.LocationMethod = LocationDefinitionMethod.CoordinateSystem
+TEMP_PROBE.CoordinateSystemSelection = LCS2
+
+# Heat Flux Probe
+HFLUX_PROBE = STAT_THERM_SOLN.AddHeatFluxProbe()
+HFLUX_PROBE.LocationMethod = LocationDefinitionMethod.CoordinateSystem
+HFLUX_PROBE.CoordinateSystemSelection = LCS2
+HFLUX_PROBE.ResultSelection = ProbeDisplayFilter.ZAxis
+
+
+# Reaction Probe
+ANLYS_SET.NodalForces = OutputControlsNodalForcesType.Yes
+REAC_PROBE = STAT_THERM_SOLN.AddReactionProbe()
+REAC_PROBE.LocationMethod = LocationDefinitionMethod.GeometrySelection
+REAC_PROBE.GeometryLocation = FACE1
+
+
 Rad_Probe = STAT_THERM_SOLN.AddRadiationProbe()
 Rad_Probe.BoundaryConditionSelection = RAD
 Rad_Probe.ResultSelection = ProbeDisplayFilter.All
 
 
 STAT_THERM_SOLN.Solve(True)
+
 # sphinx_gallery_start_ignore
-assert str(STAT_THERM.ObjectState) == "Solved"
 assert str(STAT_THERM_SOLN.Status) == "Done", "Solution status is not 'Done'"
 # sphinx_gallery_end_ignore
 
@@ -367,16 +371,20 @@ display_image("temp4.png")
 # %%
 # Export stress animation
 
-Tree.Activate([TOT_HFLUX])
-animation_export_format = GraphicsAnimationExportFormat.GIF
+Tree.Activate([DIR_HFLUX])
+animation_export_format = (
+    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
+)
 settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
 settings_720p.Width = 1280
 settings_720p.Height = 720
 
-TOT_HFLUX.ExportAnimation(
-    os.path.join(cwd, "HeatFlux.gif"), animation_export_format, settings_720p
+DIR_HFLUX.Activate()
+
+DIR_HFLUX.ExportAnimation(
+    os.path.join(cwd, "DirectionalHeatFlux.gif"), animation_export_format, settings_720p
 )
-gif = Image.open(os.path.join(cwd, "HeatFlux.gif"))
+gif = Image.open(os.path.join(cwd, "DirectionalHeatFlux.gif"))
 fig, ax = plt.subplots(figsize=(16, 9))
 ax.axis("off")
 img = ax.imshow(gif.convert("RGBA"))
@@ -397,7 +405,7 @@ plt.show()
 # Cleanup
 # ~~~~~~~
 # Save project
-app.save(os.path.join(cwd, "ss.mechdat"))
+app.save(os.path.join(cwd, "Steady_State_Thermal.mechdat"))
 app.new()
 
 # %%
