@@ -213,7 +213,7 @@ ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
 GEOMETRY.Activate()
 GEOMETRY.Model2DBehavior = Model2DBehavior.PlaneStrain
 
-# Assign Material
+# Assign material
 
 PART.Activate()
 PART.Material = MAT_BODY.Name
