@@ -15,17 +15,16 @@ from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 
 # Embed Mechanical and set global variables
-app = mech.App(version=232)
+app = mech.App(version=241)
 globals().update(mech.global_variables(app, True))
 print(app)
 
 
 def display_image(image_name):
-    path = os.path.join(os.path.join(cwd, image_name))
-    image = mpimg.imread(path)
-    plt.figure(figsize=(15, 15))
-    plt.axis("off")
-    plt.imshow(image)
+    plt.figure(figsize=(16, 9))
+    plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
+    plt.xticks([])
+    plt.yticks([])
     plt.show()
 
 
@@ -199,6 +198,9 @@ print("Original Mass: ", TOPO_DENS.OriginalMass.Value)
 print("Final Mass: ", TOPO_DENS.FinalMass.Value)
 print("Percent Mass of Original: ", TOPO_DENS.PercentMassOfOriginal)
 
+# %%
+# Cleanup
+# ~~~~~~~
 # Save project
 app.save(os.path.join(cwd, "cantilever_beam_topology_optimization.mechdat"))
 app.new()
