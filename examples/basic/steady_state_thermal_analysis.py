@@ -240,7 +240,7 @@ TEMP2.Magnitude.Output.DiscreteValues = [
     Quantity("80[C]"),
 ]
 
-# Radiation Probe
+# Radiation probe
 RAD = STAT_THERM.AddRadiation()
 RAD.Location = FACE3
 RAD.AmbientTemperature.Inputs[0].DiscreteValues = [
@@ -267,7 +267,9 @@ ExtAPI.Graphics.ExportImage(
 display_image("BoundaryConditions.png")
 
 # %%
-# Add Results
+# Add results
+# ~~~~~~~~~~~
+
 STAT_THERM_SOLN = DataModel.Project.Model.Analyses[0].Solution
 TEMP_RST = STAT_THERM_SOLN.AddTemperature()
 TEMP_RST.By = SetDriverStyle.MaximumOverTime
@@ -283,7 +285,8 @@ TEMP_RST4 = STAT_THERM_SOLN.AddTemperature()
 TEMP_RST4.Location = SURF
 
 
-# Total Heat Flux
+# Total  and directional Heat Flux
+
 TOT_HFLUX = STAT_THERM_SOLN.AddTotalHeatFlux()
 DIR_HFLUX = STAT_THERM_SOLN.AddTotalHeatFlux()
 DIR_HFLUX.ThermalResultType = TotalOrDirectional.Directional
@@ -293,33 +296,42 @@ LCS2.PrimaryAxisDefineBy = CoordinateSystemAlignmentType.GlobalZ
 DIR_HFLUX.CoordinateSystem = LCS2
 DIR_HFLUX.DisplayOption = ResultAveragingType.Averaged
 
-# Thermal Error
+# Thermal error
+
 THERM_ERROR = STAT_THERM_SOLN.AddThermalError()
 
-# Temperature Probe
+# Temperature probe
+
 TEMP_PROBE = STAT_THERM_SOLN.AddTemperatureProbe()
 TEMP_PROBE.GeometryLocation = FACE1
 TEMP_PROBE.LocationMethod = LocationDefinitionMethod.CoordinateSystem
 TEMP_PROBE.CoordinateSystemSelection = LCS2
 
-# Heat Flux Probe
+# Heat flux probe
+
 HFLUX_PROBE = STAT_THERM_SOLN.AddHeatFluxProbe()
 HFLUX_PROBE.LocationMethod = LocationDefinitionMethod.CoordinateSystem
 HFLUX_PROBE.CoordinateSystemSelection = LCS2
 HFLUX_PROBE.ResultSelection = ProbeDisplayFilter.ZAxis
 
 
-# Reaction Probe
+# Reaction probe
+
 ANLYS_SET.NodalForces = OutputControlsNodalForcesType.Yes
 REAC_PROBE = STAT_THERM_SOLN.AddReactionProbe()
 REAC_PROBE.LocationMethod = LocationDefinitionMethod.GeometrySelection
 REAC_PROBE.GeometryLocation = FACE1
 
+# Radiation probe
 
 Rad_Probe = STAT_THERM_SOLN.AddRadiationProbe()
 Rad_Probe.BoundaryConditionSelection = RAD
 Rad_Probe.ResultSelection = ProbeDisplayFilter.All
 
+
+# %%
+# Solve
+# ~~~~~
 
 STAT_THERM_SOLN.Solve(True)
 
@@ -329,7 +341,9 @@ assert str(STAT_THERM_SOLN.Status) == "Done", "Solution status is not 'Done'"
 
 
 # %%
-# All body temperature
+# Display results
+# ~~~~~~~~~~~~~~~
+# Total body temperature
 
 Tree.Activate([TEMP_RST])
 ExtAPI.Graphics.Camera.SetFit()
@@ -339,7 +353,7 @@ ExtAPI.Graphics.ExportImage(
 display_image("temp.png")
 
 # %%
-# end of the body temperature
+# Temperature on part of the body
 
 Tree.Activate([TEMP_RST2])
 ExtAPI.Graphics.Camera.SetFit()
@@ -349,7 +363,7 @@ ExtAPI.Graphics.ExportImage(
 display_image("temp2.png")
 
 # %%
-# path
+# Temperature distribution along the specific path
 
 Tree.Activate([TEMP_RST3])
 ExtAPI.Graphics.Camera.SetFit()
@@ -359,7 +373,7 @@ ExtAPI.Graphics.ExportImage(
 display_image("temp3.png")
 
 # %%
-# Bottom surface
+# Temperature of bottom surface
 
 Tree.Activate([TEMP_RST4])
 ExtAPI.Graphics.Camera.SetFit()
@@ -369,7 +383,8 @@ ExtAPI.Graphics.ExportImage(
 display_image("temp4.png")
 
 # %%
-# Export stress animation
+# Export directional heat flux animation
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Tree.Activate([DIR_HFLUX])
 animation_export_format = (
@@ -405,9 +420,11 @@ plt.show()
 # Cleanup
 # ~~~~~~~
 # Save project
+
 app.save(os.path.join(cwd, "Steady_State_Thermal.mechdat"))
 app.new()
 
 # %%
 # Delete example file
+
 delete_downloads()
