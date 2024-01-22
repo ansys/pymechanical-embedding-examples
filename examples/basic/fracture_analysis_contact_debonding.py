@@ -336,8 +336,8 @@ assert str(SOLUTION.Status) == "Done", "Solution status is not 'Done'"
 # sphinx_gallery_end_ignore
 
 # %%
-# Messages and warning
-# ~~~~~~~~~~~~~~~~~~~~
+# Messages
+# ~~~~~~~~
 
 listMessages = ExtAPI.Application.Messages
 for message in listMessages:
