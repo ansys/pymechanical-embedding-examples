@@ -17,7 +17,7 @@ from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-# Embed Mechanical and set global variables
+# Embed mechanical and set global variables
 app = mech.App(version=241)
 globals().update(mech.global_variables(app, True))
 print(app)
@@ -89,7 +89,7 @@ ExtAPI.Graphics.ExportImage(
 display_image("geometry.png")
 
 # %%
-# Material import , named selections, materials and connections
+# Material import, named selections, and connections
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Import materials
 
@@ -204,11 +204,11 @@ ANALYSIS_SETTINGS = STATIC_STRUCTURAL.AnalysisSettings
 SOLUTION = STATIC_STRUCTURAL.Solution
 MESH = Model.Mesh
 
-# Set Unit System
+# Set unit system
 
 ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
 
-# Set 2D Behavior
+# Set 2D behavior
 
 GEOMETRY.Activate()
 GEOMETRY.Model2DBehavior = Model2DBehavior.PlaneStrain
@@ -218,7 +218,7 @@ GEOMETRY.Model2DBehavior = Model2DBehavior.PlaneStrain
 PART.Activate()
 PART.Material = MAT_BODY.Name
 
-# Define Contact Region
+# Define contact Region
 
 CONTACT_REGION.Activate()
 CONTACT_REGION.SourceLocation = NS_EDGE_HIGH
@@ -259,7 +259,7 @@ ExtAPI.Graphics.ExportImage(
 display_image("mesh.png")
 
 # %%
-# Add Contact Debonding object
+# Add contact debonding object
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 MODEL.Activate()
@@ -270,7 +270,7 @@ CONTACT_DEBONDING.Material = MAT_CZM.Name
 CONTACT_DEBONDING.ContactRegion = CONTACT_REGION
 
 # %%
-# Define Analysis Settings
+# Define analysis settings
 # ~~~~~~~~~~~~~~~~~~~~~~~~
 
 ANALYSIS_SETTINGS.Activate()
@@ -378,9 +378,9 @@ settings_720p.Width = 1280
 settings_720p.Height = 720
 
 FORCE_REACTION.ExportAnimation(
-    os.path.join(cwd, "force.gif"), animation_export_format, settings_720p
+    os.path.join(cwd, "force_reaction.gif"), animation_export_format, settings_720p
 )
-gif = Image.open(os.path.join(cwd, "force.gif"))
+gif = Image.open(os.path.join(cwd, "force_reaction.gif"))
 fig, ax = plt.subplots(figsize=(16, 9))
 ax.axis("off")
 img = ax.imshow(gif.convert("RGBA"))
@@ -398,8 +398,15 @@ ani = FuncAnimation(
 plt.show()
 
 
+# %%
+# Cleanup
+# ~~~~~~~
+# Save project
+
 app.save(os.path.join(cwd, "contact_debonding.mechdat"))
 app.new()
 
-# delete example file
+# %%
+# Delete example file
+
 delete_downloads()
