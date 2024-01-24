@@ -3,11 +3,12 @@
 Steady state thermal analysis
 -----------------------------
 
-A simple steady-state thermal analysis to determine temperatures,
-thermal gradients, heat flow rates, and heat fluxes in an
-long bar that are caused by thermal loads that do not vary over time.
-A steady-state thermal analysis calculates the effects of steady
-thermal loads on a system or component.
+This example problem demonstrates the use of a
+simple steady-state thermal analysis to determine the temperatures,
+thermal gradients, heat flow rates, and heat fluxes that are caused
+by thermal loads that do not vary over time.  A steady-state thermal
+analysis calculates the effects of steady thermal loads on a system
+or component, in this example, a long bar model.
 """
 import os
 
