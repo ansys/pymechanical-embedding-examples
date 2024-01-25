@@ -3,10 +3,10 @@
 Fracture Analysis - Contact debonding
 -------------------------------------
 
-This example demonstrates  will demonstrate
-Contact Debonding in ANSYS Mechanical using the
-Cohesive Zone Material (CZM) method by displacing two
-two-dimensional parts on a double cantilever beam.
+The following example demonstrates the use of Contact Debonding
+featuring in Mechanical using the Cohesive Zone Material (CZM) method.
+This example displaces two two-dimensional parts on a
+double cantilever beam.
 """
 import os
 
