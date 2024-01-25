@@ -6,7 +6,7 @@ Steady state thermal analysis
 This example problem demonstrates the use of a
 simple steady-state thermal analysis to determine the temperatures,
 thermal gradients, heat flow rates, and heat fluxes that are caused
-by thermal loads that do not vary over time.  A steady-state thermal
+by thermal loads that do not vary over time. A steady-state thermal
 analysis calculates the effects of steady thermal loads on a system
 or component, in this example, a long bar model.
 """
@@ -19,11 +19,12 @@ from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-# Embed Mechanical and set global variables
+# %%
+# Embed mechanical and set global variables
+
 app = mech.App(version=241)
 globals().update(mech.global_variables(app, True))
 print(app)
-
 
 cwd = os.path.join(os.getcwd(), "out")
 
@@ -241,7 +242,9 @@ TEMP2.Magnitude.Output.DiscreteValues = [
     Quantity("80[C]"),
 ]
 
-# Radiation probe
+# %%
+# Add Radiation
+
 RAD = STAT_THERM.AddRadiation()
 RAD.Location = FACE3
 RAD.AmbientTemperature.Inputs[0].DiscreteValues = [
@@ -270,6 +273,7 @@ display_image("BoundaryConditions.png")
 # %%
 # Add results
 # ~~~~~~~~~~~
+# Temperature
 
 STAT_THERM_SOLN = DataModel.Project.Model.Analyses[0].Solution
 TEMP_RST = STAT_THERM_SOLN.AddTemperature()
@@ -285,8 +289,8 @@ TEMP_RST3.Location = Path
 TEMP_RST4 = STAT_THERM_SOLN.AddTemperature()
 TEMP_RST4.Location = SURF
 
-
-# Total  and directional Heat Flux
+# %%
+# Total  and directional heat flux
 
 TOT_HFLUX = STAT_THERM_SOLN.AddTotalHeatFlux()
 DIR_HFLUX = STAT_THERM_SOLN.AddTotalHeatFlux()
@@ -297,10 +301,12 @@ LCS2.PrimaryAxisDefineBy = CoordinateSystemAlignmentType.GlobalZ
 DIR_HFLUX.CoordinateSystem = LCS2
 DIR_HFLUX.DisplayOption = ResultAveragingType.Averaged
 
+# %%
 # Thermal error
 
 THERM_ERROR = STAT_THERM_SOLN.AddThermalError()
 
+# %%
 # Temperature probe
 
 TEMP_PROBE = STAT_THERM_SOLN.AddTemperatureProbe()
@@ -308,6 +314,7 @@ TEMP_PROBE.GeometryLocation = FACE1
 TEMP_PROBE.LocationMethod = LocationDefinitionMethod.CoordinateSystem
 TEMP_PROBE.CoordinateSystemSelection = LCS2
 
+# %%
 # Heat flux probe
 
 HFLUX_PROBE = STAT_THERM_SOLN.AddHeatFluxProbe()
@@ -315,7 +322,7 @@ HFLUX_PROBE.LocationMethod = LocationDefinitionMethod.CoordinateSystem
 HFLUX_PROBE.CoordinateSystemSelection = LCS2
 HFLUX_PROBE.ResultSelection = ProbeDisplayFilter.ZAxis
 
-
+# %%
 # Reaction probe
 
 ANLYS_SET.NodalForces = OutputControlsNodalForcesType.Yes
@@ -323,6 +330,7 @@ REAC_PROBE = STAT_THERM_SOLN.AddReactionProbe()
 REAC_PROBE.LocationMethod = LocationDefinitionMethod.GeometrySelection
 REAC_PROBE.GeometryLocation = FACE1
 
+# %%
 # Radiation probe
 
 Rad_Probe = STAT_THERM_SOLN.AddRadiationProbe()
@@ -386,7 +394,7 @@ display_image("temp4.png")
 # %%
 # Export directional heat flux animation
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+# Directional heat flux
 Tree.Activate([DIR_HFLUX])
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF

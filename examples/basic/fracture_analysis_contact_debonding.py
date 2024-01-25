@@ -17,10 +17,14 @@ from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
+# %%
 # Embed mechanical and set global variables
+
 app = mech.App(version=241)
 globals().update(mech.global_variables(app, True))
 print(app)
+
+cwd = os.path.join(os.getcwd(), "out")
 
 
 def display_image(image_name):
@@ -30,9 +34,6 @@ def display_image(image_name):
     plt.yticks([])
     plt.axis("off")
     plt.show()
-
-
-cwd = os.path.join(os.getcwd(), "out")
 
 
 # %%
@@ -65,9 +66,9 @@ mat2_path = download_file(
 
 
 # %%
-# Import the geometry and material
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Import material
+# Import the geometry
+# ~~~~~~~~~~~~~~~~~~~
+
 geometry_file = geometry_path
 geometry_import = Model.GeometryImportGroup.AddGeometryImport()
 geometry_import_format = (
@@ -339,8 +340,8 @@ assert str(SOLUTION.Status) == "Done", "Solution status is not 'Done'"
 # Messages
 # ~~~~~~~~
 
-listMessages = ExtAPI.Application.Messages
-for message in listMessages:
+Messages = ExtAPI.Application.Messages
+for message in Messages:
     print(f"[{message.Severity}] {message.DisplayString}")
 
 # %%

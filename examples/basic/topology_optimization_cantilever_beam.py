@@ -14,7 +14,9 @@ from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 
+# %%
 # Embed Mechanical and set global variables
+
 app = mech.App(version=241)
 globals().update(mech.global_variables(app, True))
 print(app)
@@ -25,25 +27,11 @@ def display_image(image_name):
     plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
     plt.xticks([])
     plt.yticks([])
+    plt.axis("off")
     plt.show()
 
 
 cwd = os.path.join(os.getcwd(), "out")
-
-structural_mechdat_file = download_file(
-    "cantilever.mechdat", "pymechanical", "embedding"
-)
-app.open(structural_mechdat_file)
-STRUCT = ExtAPI.DataModel.Project.Model.Analyses[0]
-
-# sphinx_gallery_start_ignore
-assert str(STRUCT.ObjectState) == "Solved"
-# sphinx_gallery_end_ignore
-STRUCT_SLN = STRUCT.Solution
-STRUCT_SLN.Solve(True)
-# sphinx_gallery_start_ignore
-assert str(STRUCT_SLN.Status) == "Done", "Solution status is not 'Done'"
-# sphinx_gallery_end_ignore
 
 # %%
 # Configure graphics for image export
@@ -63,10 +51,28 @@ settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
 # %%
-# Structural analsys results
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import structural analsys
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
+# Download ``.mechdat`` file
+
+structural_mechdat_file = download_file(
+    "cantilever.mechdat", "pymechanical", "embedding"
+)
+app.open(structural_mechdat_file)
+STRUCT = ExtAPI.DataModel.Project.Model.Analyses[0]
+
+# sphinx_gallery_start_ignore
+assert str(STRUCT.ObjectState) == "Solved"
+# sphinx_gallery_end_ignore
+STRUCT_SLN = STRUCT.Solution
+STRUCT_SLN.Solve(True)
+# sphinx_gallery_start_ignore
+assert str(STRUCT_SLN.Status) == "Done", "Solution status is not 'Done'"
+# sphinx_gallery_end_ignore
 
 # %%
+# Display structural analsys results
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Total deformation
 
 STRUCT_SLN.Children[1].Activate()
@@ -91,9 +97,11 @@ display_image("equivalent_stress.png")
 # ~~~~~~~~~~~~~~~~~~~~~
 
 # Set MKS unit system
+
 ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
 # Store all main tree nodes as variables
+
 GEOM = ExtAPI.DataModel.Project.Model.Geometry
 MSH = ExtAPI.DataModel.Project.Model.Mesh
 NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
@@ -102,6 +110,7 @@ MY_TOTAL_VOL = GEOM.Volume.Value
 MY_TOTAL_MA = GEOM.Mass.Value
 
 # Get structural analysis and link to topology optimization
+
 TOPO_OPT = ExtAPI.DataModel.Project.Model.AddTopologyOptimizationAnalysis()
 TOPO_OPT.TransferDataFrom(STRUCT)
 # sphinx_gallery_start_ignore
@@ -110,6 +119,7 @@ assert str(TOPO_OPT.ObjectState) == "NotSolved"
 
 # Set ``None`` for optimization region boundary condition exclusion region
 # Optimization region
+
 OPT_REG = TOPO_OPT.Children[1]
 # OPT_REG.BoundaryCondition=BoundaryConditionType.None
 # Using ``getattr`` because Python.Net does not support the ``None`` enum
@@ -117,15 +127,18 @@ OPT_REG.BoundaryCondition = BoundaryConditionType.AllLoadsAndSupports
 
 # Insert volume response constraint object for topology optimization
 # Delete mass response constraint
+
 MASS_CONSTRN = TOPO_OPT.Children[3]
 MASS_CONSTRN.Delete()
 
 # Add volume response constraint
+
 VOL_CONSTRN = TOPO_OPT.AddVolumeConstraint()
 # VOL_CONSTRN.DefineBy=ResponseConstraintDefineBy.Constant
 # VOL_CONSTRN.PercentageToRetain=50
 
 # Insert member size manufacturing constraint
+
 MEM_SIZE_MFG_CONSTRN = TOPO_OPT.AddMemberSizeManufacturingConstraint()
 MEM_SIZE_MFG_CONSTRN.Minimum = ManuMemberSizeControlledType.Manual
 MEM_SIZE_MFG_CONSTRN.MinSize = Quantity("2.4 [m]")
@@ -169,6 +182,7 @@ display_image("topo_opitimized_smooth.png")
 
 # %%
 # Export animation
+
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
 )
@@ -202,8 +216,11 @@ print("Percent Mass of Original: ", TOPO_DENS.PercentMassOfOriginal)
 # Cleanup
 # ~~~~~~~
 # Save project
+
 app.save(os.path.join(cwd, "cantilever_beam_topology_optimization.mechdat"))
 app.new()
 
+# %%
 # Delete the example file
+
 delete_downloads()

@@ -14,13 +14,12 @@ from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-# Embed Mechanical and set global variables
+# %%
+# Embed mechanical and set global variables
+
 app = mech.App(version=241)
 globals().update(mech.global_variables(app))
 print(app)
-
-geometry_path = download_file("Valve.pmdb", "pymechanical", "embedding")
-analysis = Model.AddStaticStructuralAnalysis()
 
 cwd = os.path.join(os.getcwd(), "out")
 
@@ -30,6 +29,7 @@ def display_image(image_name):
     plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
     plt.xticks([])
     plt.yticks([])
+    plt.axis("off")
     plt.show()
 
 
@@ -51,7 +51,17 @@ settings_720p.Capture = Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType.Ima
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
+
+# %%
+# Download geometry and import
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Download geometry
+
+geometry_path = download_file("Valve.pmdb", "pymechanical", "embedding")
+
+# %%
 # Import geometry
+
 geometry_file = geometry_path
 geometry_import = Model.GeometryImportGroup.AddGeometryImport()
 geometry_import_format = (
@@ -85,7 +95,9 @@ sel.Ids = [
 ]
 material_assignment.Location = sel
 
+# %%
 # Define mesh settings,  generate mesh
+
 mesh = Model.Mesh
 mesh.ElementSize = Quantity(25, "mm")
 mesh.GenerateMesh()
@@ -96,8 +108,10 @@ ExtAPI.Graphics.ExportImage(
 display_image("mesh.png")
 
 # %%
-# Define boundary conditions
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Define analysis and boundary conditions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+analysis = Model.AddStaticStructuralAnalysis()
 fixed_support = analysis.AddFixedSupport()
 fixed_support.Location = ExtAPI.DataModel.GetObjectsByName("NSFixedSupportFaces")[0]
 
@@ -121,7 +135,8 @@ Model.Solve()
 # %%
 # Postprocessing
 # ~~~~~~~~~~~~~~
-# Evaluate results, export screenshots
+# Evaluate results and export screenshots
+
 solution = analysis.Solution
 deformation = solution.AddTotalDeformation()
 stress = solution.AddEquivalentStress()
@@ -129,6 +144,7 @@ solution.EvaluateAllResults()
 
 # %%
 # Deformation
+
 Tree.Activate([deformation])
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "deformation.png"), image_export_format, settings_720p
@@ -137,6 +153,7 @@ display_image("deformation.png")
 
 # %%
 # Stress
+
 Tree.Activate([stress])
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "stress.png"), image_export_format, settings_720p
@@ -145,6 +162,7 @@ display_image("stress.png")
 
 # %%
 # Export stress animation
+
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
 )
@@ -181,5 +199,7 @@ plt.show()
 app.save(os.path.join(cwd, "Valve.mechdat"))
 app.new()
 
+# %%
 # delete example file
+
 delete_downloads()
