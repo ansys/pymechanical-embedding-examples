@@ -3,7 +3,7 @@
 Fracture Analysis - Contact debonding
 -------------------------------------
 
-The following example demonstrates the use of Contact Debonding
+The following example demonstrates the use of the Contact Debonding
 featuring in Mechanical using the Cohesive Zone Material (CZM) method.
 This example displaces two two-dimensional parts on a
 double cantilever beam.
