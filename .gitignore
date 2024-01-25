@@ -76,6 +76,7 @@ instance/
 doc/_build/
 doc/source/examples
 
+
 # PyBuilder
 .pybuilder/
 target/
@@ -162,7 +163,7 @@ cython_debug/
 PyMAPDL_Dev
 
 # Results generated during doc build and example run locally
-examples/technology_showcase/out
-examples/basic/out
+examples/technology_showcase/
+examples/basic/
 /out
-
+examples/**/*.py
