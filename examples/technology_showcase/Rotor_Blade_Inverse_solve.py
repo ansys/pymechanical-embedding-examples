@@ -1,7 +1,7 @@
 """ .. _ref_example_10_td_055:
 
 Inverse-Solving analysis of a rotor fan blade with disk
----------------------------------------------------------------------------------------
+-------------------------------------------------------
 
 This example demonstrates the inverse-solving analysis of a rotor fan blade with disk.
 The NASA Rotor 67 fan bladed disk is a subsystem of a turbo fan's compressor set used
@@ -162,7 +162,7 @@ PRT2_Blade_2.Material = "MAT1 (Setup, File1)"
 PRT2_Blade_3.Material = "MAT1 (Setup, File1)"
 
 # %%
-# Define Units System and store variables
+# Define units system and store variables
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Select MKS units
 ExtAPI.Application.ActiveUnitSystem = (
@@ -177,9 +177,9 @@ MAT_GRP = ExtAPI.DataModel.Project.Model.Materials
 CS = ExtAPI.DataModel.Project.Model.CoordinateSystems
 
 # %%
-# Define Named Selection
+# Define named selection
 # ~~~~~~~~~~~~~~~~~~~~~~
-# Create NS for Named Selection.
+# Create NS for named selection
 
 NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
 BLADE_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade"][0]
@@ -255,8 +255,8 @@ CONT_REG1.Behavior = ContactBehavior.AutoAsymmetric
 CONT_REG1.ContactFormulation = ContactFormulation.MPC
 
 # %%
-# Define mesh settings, generate mesh
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Define mesh settings and generate mesh
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 MSH = Model.Mesh
 MSH.ElementSize = Quantity(0.004, "m")
@@ -448,8 +448,9 @@ app.execute_script(mech_command)
 Imported_Pressure.ImportLoad()
 
 # %%
-# Postprocessing: Insert results objects
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Postprocessing
+# ~~~~~~~~~~~~~~
+# Insert results
 
 SOLN = STAT_STRUC.Solution
 
@@ -478,8 +479,8 @@ THERM_STRN2 = SOLN.AddThermalStrain()
 THERM_STRN2.DisplayTime = Quantity("2 [s]")
 
 # %%
-# Run Solution: Inverse Simulation
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Run Solution
+# ~~~~~~~~~~~~
 # Solve inverse analysis on blade model
 
 SOLN.Solve(True)

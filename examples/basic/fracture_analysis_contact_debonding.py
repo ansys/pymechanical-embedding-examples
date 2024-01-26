@@ -91,7 +91,7 @@ display_image("geometry.png")
 
 # %%
 # Material import, named selections, and connections
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Import materials
 
 MODEL = Model
