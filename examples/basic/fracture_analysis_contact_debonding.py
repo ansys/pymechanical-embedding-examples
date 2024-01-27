@@ -8,6 +8,10 @@ featuring in Mechanical using the Cohesive Zone Material (CZM) method.
 This example displaces two two-dimensional parts on a
 double cantilever beam.
 """
+# %%
+# Import necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 import os
 
 from PIL import Image
@@ -41,7 +45,6 @@ def display_image(image_name):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Front)
-
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -69,7 +72,6 @@ mat2_path = download_file(
 # Import the geometry
 # ~~~~~~~~~~~~~~~~~~~
 
-geometry_file = geometry_path
 geometry_import = Model.GeometryImportGroup.AddGeometryImport()
 geometry_import_format = (
     Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
@@ -80,7 +82,7 @@ geometry_import_preferences.AnalysisType = (
     Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.AnalysisType.Type2D
 )
 geometry_import.Import(
-    geometry_file, geometry_import_format, geometry_import_preferences
+    geometry_path, geometry_import_format, geometry_import_preferences
 )
 
 ExtAPI.Graphics.Camera.SetFit()
@@ -341,8 +343,11 @@ assert str(SOLUTION.Status) == "Done", "Solution status is not 'Done'"
 # ~~~~~~~~
 
 Messages = ExtAPI.Application.Messages
-for message in Messages:
-    print(f"[{message.Severity}] {message.DisplayString}")
+if Messages:
+    for message in Messages:
+        print(f"[{message.Severity}] {message.DisplayString}")
+else:
+    print("No [Info]/[Warning]/[Error] Messages")
 
 # %%
 # Display results
@@ -398,6 +403,42 @@ ani = FuncAnimation(
 )
 plt.show()
 
+# %%
+# Display output file from solve
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+def write_file_contents_to_console(path):
+    """Write file contents to console."""
+    with open(path, "rt") as file:
+        for line in file:
+            print(line, end="")
+
+
+solve_path = STATIC_STRUCTURAL.WorkingDir
+solve_out_path = os.path.join(solve_path, "Solve.out")
+if solve_out_path:
+    write_file_contents_to_console(solve_out_path)
+
+# %%
+# Project tree
+# ~~~~~~~~~~~~
+
+
+def print_tree(node, indentation=""):
+    print(f"{indentation}├── {node.Name}")
+
+    if (
+        hasattr(node, "Children")
+        and node.Children is not None
+        and node.Children.Count > 0
+    ):
+        for child in node.Children:
+            print_tree(child, indentation + "|  ")
+
+
+root_node = DataModel.Project
+print_tree(root_node)
 
 # %%
 # Cleanup
@@ -408,6 +449,6 @@ app.save(os.path.join(cwd, "contact_debonding.mechdat"))
 app.new()
 
 # %%
-# Delete example file
+# Delete example files
 
 delete_downloads()

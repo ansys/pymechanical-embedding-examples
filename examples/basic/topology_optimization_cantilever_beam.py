@@ -7,6 +7,10 @@ This example demonstrates the structural topology optimization of a simple
 cantilever beam. The structural analysis is performed with basic constraints and
 load, which is then transferred to the topology optimization.
 """
+# %%
+# Import necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 import os
 
 import ansys.mechanical.core as mech
@@ -36,17 +40,12 @@ cwd = os.path.join(os.getcwd(), "out")
 # %%
 # Configure graphics for image export
 
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
-    Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
-)
-image_export_format = Ansys.Mechanical.DataModel.Enums.GraphicsImageExportFormat.PNG
+ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Front)
+image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
-settings_720p.Resolution = (
-    Ansys.Mechanical.DataModel.Enums.GraphicsResolutionType.EnhancedResolution
-)
-settings_720p.Background = Ansys.Mechanical.DataModel.Enums.GraphicsBackgroundType.White
+settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
+settings_720p.Background = GraphicsBackgroundType.White
 settings_720p.Width = 1280
-settings_720p.Capture = Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType.ImageOnly
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
@@ -113,6 +112,7 @@ MY_TOTAL_MA = GEOM.Mass.Value
 
 TOPO_OPT = ExtAPI.DataModel.Project.Model.AddTopologyOptimizationAnalysis()
 TOPO_OPT.TransferDataFrom(STRUCT)
+
 # sphinx_gallery_start_ignore
 assert str(TOPO_OPT.ObjectState) == "NotSolved"
 # sphinx_gallery_end_ignore
@@ -151,6 +151,13 @@ MEM_SIZE_MFG_CONSTRN.MinSize = Quantity("2.4 [m]")
 # SYMM_MFG_CONSTRN = TOPO_OPT.AddSymmetryManufacturingConstraint()
 # SYMM_MFG_CONSTRN.CoordinateSystem = coord_sys7
 
+TOPO_OPT.Activate()
+ExtAPI.Graphics.Camera.SetFit()
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "boundary_conditions.png"), image_export_format, settings_720p
+)
+display_image("boundary_conditions.png")
+
 # %%
 # Solve
 # ~~~~~
@@ -162,8 +169,19 @@ assert str(TOPO_OPT_SLN.Status) == "Done", "Solution status is not 'Done'"
 # sphinx_gallery_end_ignore
 
 # %%
-# Results
-# ~~~~~~~
+# Messages
+# ~~~~~~~~
+
+Messages = ExtAPI.Application.Messages
+if Messages:
+    for message in Messages:
+        print(f"[{message.Severity}] {message.DisplayString}")
+else:
+    print("No [Info]/[Warning]/[Error] Messages")
+
+# %%
+# Display results
+# ~~~~~~~~~~~~~~~
 
 TOPO_OPT_SLN.Children[1].Activate()
 TOPO_DENS = TOPO_OPT_SLN.Children[1]
@@ -213,6 +231,43 @@ print("Final Mass: ", TOPO_DENS.FinalMass.Value)
 print("Percent Mass of Original: ", TOPO_DENS.PercentMassOfOriginal)
 
 # %%
+# Display output file from solve
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+def write_file_contents_to_console(path):
+    """Write file contents to console."""
+    with open(path, "rt") as file:
+        for line in file:
+            print(line, end="")
+
+
+solve_path = TOPO_OPT.WorkingDir
+solve_out_path = os.path.join(solve_path, "Solve.out")
+if solve_out_path:
+    write_file_contents_to_console(solve_out_path)
+
+# %%
+# Project tree
+# ~~~~~~~~~~~~
+
+
+def print_tree(node, indentation=""):
+    print(f"{indentation}├── {node.Name}")
+
+    if (
+        hasattr(node, "Children")
+        and node.Children is not None
+        and node.Children.Count > 0
+    ):
+        for child in node.Children:
+            print_tree(child, indentation + "|  ")
+
+
+root_node = DataModel.Project
+print_tree(root_node)
+
+# %%
 # Cleanup
 # ~~~~~~~
 # Save project
@@ -221,6 +276,6 @@ app.save(os.path.join(cwd, "cantilever_beam_topology_optimization.mechdat"))
 app.new()
 
 # %%
-# Delete the example file
+# Delete the example files
 
 delete_downloads()

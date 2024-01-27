@@ -166,3 +166,5 @@ examples/technology_showcase/out
 examples/basic/out
 /out
 
+# rst check
+.rstcheck.cfg
