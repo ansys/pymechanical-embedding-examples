@@ -453,7 +453,7 @@ def write_file_contents_to_console(path):
 
 
 solve_path = STAT_THERM.WorkingDir
-solve_out_path = os.path.join(solve_path, "Solve.out")
+solve_out_path = os.path.join(solve_path, "solve.out")
 if solve_out_path:
     write_file_contents_to_console(solve_out_path)
 
