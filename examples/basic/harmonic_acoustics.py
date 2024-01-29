@@ -5,6 +5,7 @@ Harmonic acoustics
 
 This example demonstrates a basic.
 """
+
 import os
 
 from PIL import Image
