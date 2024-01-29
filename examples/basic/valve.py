@@ -5,6 +5,7 @@ Basic Valve Implementation
 
 This example demonstrates a basic implementation of a valve in Python.
 """
+
 import os
 
 from PIL import Image
