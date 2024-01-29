@@ -18,7 +18,7 @@ from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 
 # Embed Mechanical and set global variables
-app = mech.App(version=232)
+app = mech.App(version=241)
 globals().update(mech.global_variables(app, True))
 print(app)
 
@@ -297,7 +297,7 @@ CMD6.AppendText(AWM6)
 
 Hex_Method = MSH.AddAutomaticMethod()
 Hex_Method.Location = all_bodies
-Hex_Method.Method = MethodType.HexDominant
+Hex_Method.Method = MethodType.Automatic
 
 BODY_SIZING1 = MSH.AddSizing()
 BODY_SIZING1.Location = bodies_5
