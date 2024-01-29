@@ -7,6 +7,7 @@ This example demonstrates the structural topology optimization of a simple
 cantilever beam. The structural analysis is performed with basic constraints and
 load, which is then transferred to the topology optimization.
 """
+
 import os
 
 import ansys.mechanical.core as mech
