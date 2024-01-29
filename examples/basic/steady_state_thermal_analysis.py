@@ -10,9 +10,11 @@ by thermal loads that do not vary over time. A steady-state thermal
 analysis calculates the effects of steady thermal loads on a system
 or component, in this example, a long bar model.
 """
+
 # %%
 # Import necessary libraries
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 import os
 

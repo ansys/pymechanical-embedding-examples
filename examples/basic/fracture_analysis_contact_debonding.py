@@ -8,6 +8,7 @@ featuring in Mechanical using the Cohesive Zone Material (CZM) method.
 This example displaces two two-dimensional parts on a
 double cantilever beam.
 """
+
 # %%
 # Import necessary libraries
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
