@@ -3,10 +3,10 @@
 Acoustic harmonic analysis
 --------------------------
 
-Acoustic harmonic analysis with surface velocity to
-determine the steady-state response of a structure and
-the surrounding fluid medium to loads and excitations that
-vary sinusoidally with time.
+This example examines an Acoustic Harmonic analysis that uses
+surface velocity to determine the steady-state response of a
+structure and the surrounding fluid medium to loads and excitations
+that vary sinusoidally with time.
 """
 
 # %%
