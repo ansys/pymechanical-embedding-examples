@@ -6,7 +6,7 @@ Acoustic harmonic analysis
 Acoustic harmonic analysis with surface velocity to
 determine the steady-state response of a structure and
 the surrounding fluid medium to loads and excitations that
-vary sinusoidally with time
+vary sinusoidally with time.
 """
 
 # %%
@@ -401,6 +401,7 @@ print(str(SOLN.Status))
 
 # %%
 # Total acoustic pressure
+# ^^^^^^^^^^^^^^^^^^^^^^^
 
 Tree.Activate([ACOUST_PRES_RES1])
 ExtAPI.Graphics.ExportImage(
@@ -420,6 +421,7 @@ display_image("totalvelocity.png")
 
 # %%
 # Sound pressure level
+# ^^^^^^^^^^^^^^^^^^^^
 
 Tree.Activate([ACOUST_SPL])
 ExtAPI.Graphics.ExportImage(
@@ -429,6 +431,7 @@ display_image("sound_pressure.png")
 
 # %%
 # Total velocity on pressure surface
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Tree.Activate([ACOUST_TOT_VEL2])
 ExtAPI.Graphics.ExportImage(
@@ -437,7 +440,8 @@ ExtAPI.Graphics.ExportImage(
 display_image("totalvelocity_pressure.png")
 
 # %%
-# Kinetic Energy
+# Kinetic energy on absorption face
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Tree.Activate([ACOUST_KE])
 ExtAPI.Graphics.ExportImage(
@@ -446,7 +450,8 @@ ExtAPI.Graphics.ExportImage(
 display_image("kineticenergy.png")
 
 # %%
-# Acoustic pressure animation
+# Total acoustic pressure animation
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
@@ -471,7 +476,7 @@ def update(frame):
 
 
 ani = FuncAnimation(
-    fig, update, frames=range(gif.n_frames), interval=100, repeat=True, blit=True
+    fig, update, frames=range(gif.n_frames), interval=200, repeat=True, blit=True
 )
 plt.show()
 
@@ -487,7 +492,7 @@ def write_file_contents_to_console(path):
             print(line, end="")
 
 
-solve_path = STAT_THERM.WorkingDir
+solve_path = HARM_ACOUST.WorkingDir
 solve_out_path = os.path.join(solve_path, "solve.out")
 if solve_out_path:
     write_file_contents_to_console(solve_out_path)
@@ -498,7 +503,10 @@ if solve_out_path:
 
 
 def print_tree(node, indentation=""):
-    print(f"{indentation}├── {node.Name}")
+    if hasattr(node, "Suppressed") and node.Suppressed is True:
+        print(f"{indentation}├── {node.Name} (Suppressed)")
+    else:
+        print(f"{indentation}├── {node.Name}")
 
     if (
         hasattr(node, "Children")
