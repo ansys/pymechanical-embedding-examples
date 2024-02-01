@@ -1,10 +1,18 @@
-""" .. _ref_harmo:
+""" .. _ref_harmonic_acoustics:
 
-Harmonic acoustics
-------------------
+Acoustic harmonic analysis
+--------------------------
 
-This example demonstrates a basic.
+Acoustic harmonic analysis with surface velocity to
+determine the steady-state response of a structure and
+the surrounding fluid medium to loads and excitations that
+vary sinusoidally with time
 """
+
+# %%
+# Import necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 import os
 
 from PIL import Image
@@ -14,19 +22,12 @@ from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-# Embed Mechanical and set global variables
+# %%
+# Embed mechanical and set global variables
+
 app = mech.App(version=241)
 globals().update(mech.global_variables(app, True))
 print(app)
-
-geometry_path = download_file("C_GEOMETRY.agdb", "pymechanical", "embedding")
-
-mat_path = download_file("Air-material.xml", "pymechanical", "embedding")
-
-materials = Model.Materials
-materials.Import(mat_path)
-
-Model.AddHarmonicAcousticAnalysis()
 
 cwd = os.path.join(os.getcwd(), "out")
 
@@ -36,29 +37,35 @@ def display_image(image_name):
     plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
     plt.xticks([])
     plt.yticks([])
+    plt.axis("off")
     plt.show()
 
 
 # %%
 # Configure graphics for image export
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
-    Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
-)
-ExtAPI.Graphics.Camera.SetFit()
-image_export_format = Ansys.Mechanical.DataModel.Enums.GraphicsImageExportFormat.PNG
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
-settings_720p.Resolution = (
-    Ansys.Mechanical.DataModel.Enums.GraphicsResolutionType.EnhancedResolution
-)
-settings_720p.Background = Ansys.Mechanical.DataModel.Enums.GraphicsBackgroundType.White
+settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
+settings_720p.Background = GraphicsBackgroundType.White
 settings_720p.Width = 1280
-settings_720p.Capture = Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType.ImageOnly
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
+ExtAPI.Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
 
-# Import geometry
-geometry_file = geometry_path
+# %%
+# Download geometry and materials files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+geometry_path = download_file("C_GEOMETRY.agdb", "pymechanical", "embedding")
+mat_path = download_file("Air-material.xml", "pymechanical", "embedding")
+
+# %%
+# Import the geometry
+# ~~~~~~~~~~~~~~~~~~~
+
 geometry_import = Model.GeometryImportGroup.AddGeometryImport()
 geometry_import_format = (
     Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
@@ -66,8 +73,10 @@ geometry_import_format = (
 geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
 geometry_import_preferences.ProcessNamedSelections = True
 geometry_import.Import(
-    geometry_file, geometry_import_format, geometry_import_preferences
+    geometry_path, geometry_import_format, geometry_import_preferences
 )
+
+
 GEOM = Model.Geometry
 
 solid1 = GEOM.Children[0]
@@ -91,6 +100,7 @@ solid7.Suppressed = True
 solid10.Suppressed = True
 solid11.Suppressed = True
 
+
 ExtAPI.Graphics.Camera.SetFit()
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
@@ -98,30 +108,51 @@ ExtAPI.Graphics.ExportImage(
 display_image("geometry.png")
 
 # %%
-# Assign materials and mesh the geometry
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Store all Variables necessary for analysis
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 MESH = Model.Mesh
 NS = Model.NamedSelections
 CONN = Model.Connections
 CS = Model.CoordinateSystems
+MAT = Model.Materials
 
+# %%
+# Setup the Analysis
+# ~~~~~~~~~~~~~~~~~~
+# Add harmonic acoustics and unit system
+
+Model.AddHarmonicAcousticAnalysis()
 ExtAPI.Application.ActiveUnitSystem = (
     Ansys.ACT.Interfaces.Common.MechanicalUnitSystem.StandardMKS
 )
 
+# %%
+# Import and assign materials
 
+MAT.Import(mat_path)
 solid6.Material = "Air"
 solid8.Material = "Air"
 solid9.Material = "Air"
 
-MESH.ElementSize = Quantity("200 [mm]")
-
+# %%
+# Create coordinate system
 LCS1 = CS.AddCoordinateSystem()
 LCS1.OriginX = Quantity("0 [mm]")
 LCS1.OriginY = Quantity("0 [mm]")
 LCS1.OriginZ = Quantity("0 [mm]")
 LCS1.PrimaryAxisDefineBy = CoordinateSystemAlignmentType.GlobalZ
+
+# %%
+# Generate mesh
+
+MESH.ElementSize = Quantity("200 [mm]")
+MESH.GenerateMesh()
+
+
+# %%
+# Create named selections
+# ~~~~~~~~~~~~~~~~~~~~~~~~
 
 SF_Velo = Model.AddNamedSelection()
 SF_Velo.ScopingMethod = GeometryDefineByType.Worksheet
@@ -207,6 +238,9 @@ GEN_CRT4.Add(CRT1)
 ACOUSTIC_Region.Activate()
 ACOUSTIC_Region.Generate()
 
+# %%
+# Analysis settings
+# ~~~~~~~~~~~~~~~~~
 
 ANALYSIS_SETTINGS = Model.Analyses[0].AnalysisSettings
 ANALYSIS_SETTINGS.RangeMaximum = Quantity("100 [Hz]")
@@ -215,28 +249,61 @@ ANALYSIS_SETTINGS.CalculateVelocity = True
 ANALYSIS_SETTINGS.CalculateEnergy = True
 ANALYSIS_SETTINGS.CalculateVolumeEnergy = True
 
+# %%
+# Boundary conditions and load
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 HARM_ACOUST = Model.Analyses[0]
+
+# %%
+# Acoustic region
 
 Acoustic_region = [x for x in HARM_ACOUST.Children if x.Name == "Acoustics Region"][0]
 Acoustic_region.Location = ACOUSTIC_Region
+
+# %%
+# Surface velocity
 
 SURF_VEL = HARM_ACOUST.AddAcousticSurfaceVelocity()
 SURF_VEL.Location = SF_Velo
 SURF_VEL.Magnitude.Output.DiscreteValues = [Quantity("5000 [mm s-1]")]
 
+# %%
+# Acoustic pressure
+
 ACOUST_PRES = HARM_ACOUST.AddAcousticPressure()
 ACOUST_PRES.Location = PRES_Face
 ACOUST_PRES.Magnitude = Quantity("1.5e-7 [MPa]")
+
+# %%
+# Acoustic absoption surface
 
 ABSORP_SURF = HARM_ACOUST.AddAcousticAbsorptionSurface()
 ABSORP_SURF.Location = ABS_Face
 ABSORP_SURF.AbsorptionCoefficient.Output.DiscreteValues = [Quantity("0.02")]
 
+HARM_ACOUST.Activate()
+ExtAPI.Graphics.Camera.SetFit()
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "bounday_conditions.png"), image_export_format, settings_720p
+)
+display_image("bounday_conditions.png")
+
+# %%
+# Add results
+# ~~~~~~~~~~~
+
 SOLN = Model.Analyses[0].Solution
+
+# %%
+# Acoustic pressure
 
 ACOUST_PRES_RES1 = SOLN.AddAcousticPressureResult()
 ACOUST_PRES_RES1.By = SetDriverStyle.ResultSet
 ACOUST_PRES_RES1.SetNumber = 25
+
+# %%
+# Acoustic velocity - total and directional
 
 ACOUST_TOT_VEL1 = SOLN.AddAcousticTotalVelocityResult()
 ACOUST_TOT_VEL1.Frequency = Quantity("50 [Hz]")
@@ -249,6 +316,9 @@ ACOUST_DIR_VEL2 = SOLN.AddAcousticDirectionalVelocityResult()
 ACOUST_DIR_VEL2.NormalOrientation = NormalOrientationType.ZAxis
 ACOUST_DIR_VEL2.By = SetDriverStyle.ResultSet
 ACOUST_DIR_VEL2.SetNumber = 25
+
+# %%
+# Acoustic sound pressure and frequency bands
 
 ACOUST_SPL = SOLN.AddAcousticSoundPressureLevel()
 ACOUST_SPL.Frequency = Quantity("50 [Hz]")
@@ -265,16 +335,19 @@ Z_VELO_RESP.NormalOrientation = NormalOrientationType.ZAxis
 Z_VELO_RESP.Location = PRES_Face
 Z_VELO_RESP.NormalOrientation = NormalOrientationType.ZAxis
 
+# %%
+# Acoustic kinetic  and potentional energy frequency response
+
 KE_RESP = SOLN.AddAcousticKineticEnergyFrequencyResponse()
 KE_RESP.Location = ABS_Face
-# KE_RESP.TimeHistoryDisplay =TimeHistoryDisplayType.Amplitude
 KE_display = KE_RESP.TimeHistoryDisplay
-# Testing.ValidateString("Display of Kinetic Energy set to", KE_display, 'Amplitude')
 
 PE_RESP = SOLN.AddAcousticPotentialEnergyFrequencyResponse()
 PE_RESP.Location = ABS_Face
 PE_display = PE_RESP.TimeHistoryDisplay
-# Testing.ValidateString("Display of Potential Energy set to", PE_display, 'Amplitude')
+
+# %%
+# Acoustic total and directional velocity
 
 ACOUST_TOT_VEL2 = SOLN.AddAcousticTotalVelocityResult()
 ACOUST_TOT_VEL2.Location = PRES_Face
@@ -297,28 +370,84 @@ ACOUST_PE.Location = ABS_Face
 ACOUST_PE.Frequency = Quantity("10 [Hz]")
 ACOUST_PE.Amplitude = True
 
+# %%
+# Solve
+# ~~~~~
 
 SOLN.Solve(True)
+
+# sphinx_gallery_start_ignore
+assert str(SOLN.Status) == "Done", "Solution status is not 'Done'"
+# sphinx_gallery_end_ignore
+
+# %%
+# Messages
+# ~~~~~~~~
+
+Messages = ExtAPI.Application.Messages
+if Messages:
+    for message in Messages:
+        print(f"[{message.Severity}] {message.DisplayString}")
+else:
+    print("No [Info]/[Warning]/[Error] Messages")
 
 
 # %%
 # Postprocessing
 # ~~~~~~~~~~~~~~
-# Evaluate results, export screenshots
+# Display results
 
 print(str(SOLN.Status))
 
 # %%
-# Deformation
+# Total acoustic pressure
+
 Tree.Activate([ACOUST_PRES_RES1])
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "acou_pressure.png"), image_export_format, settings_720p
 )
 display_image("acou_pressure.png")
 
+# %%
+# Total acoustic velocity
+# ^^^^^^^^^^^^^^^^^^^^^^^
+
+Tree.Activate([ACOUST_PRES_RES1])
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "totalvelocity.png"), image_export_format, settings_720p
+)
+display_image("totalvelocity.png")
 
 # %%
-# Export stress animation
+# Sound pressure level
+
+Tree.Activate([ACOUST_SPL])
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "sound_pressure.png"), image_export_format, settings_720p
+)
+display_image("sound_pressure.png")
+
+# %%
+# Total velocity on pressure surface
+
+Tree.Activate([ACOUST_TOT_VEL2])
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "totalvelocity_pressure.png"), image_export_format, settings_720p
+)
+display_image("totalvelocity_pressure.png")
+
+# %%
+# Kinetic Energy
+
+Tree.Activate([ACOUST_KE])
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "kineticenergy.png"), image_export_format, settings_720p
+)
+display_image("kineticenergy.png")
+
+# %%
+# Acoustic pressure animation
+
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
 )
@@ -346,13 +475,49 @@ ani = FuncAnimation(
 )
 plt.show()
 
+# %%
+# Display output file from solve
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+def write_file_contents_to_console(path):
+    """Write file contents to console."""
+    with open(path, "rt") as file:
+        for line in file:
+            print(line, end="")
+
+
+solve_path = STAT_THERM.WorkingDir
+solve_out_path = os.path.join(solve_path, "solve.out")
+if solve_out_path:
+    write_file_contents_to_console(solve_out_path)
+
+# %%
+# Project tree
+# ~~~~~~~~~~~~
+
+
+def print_tree(node, indentation=""):
+    print(f"{indentation}├── {node.Name}")
+
+    if (
+        hasattr(node, "Children")
+        and node.Children is not None
+        and node.Children.Count > 0
+    ):
+        for child in node.Children:
+            print_tree(child, indentation + "|  ")
+
+
+root_node = DataModel.Project
+print_tree(root_node)
 
 # %%
 # Cleanup
 # ~~~~~~~
 # Save project
 
-app.save(os.path.join(cwd, "harmnonic.mechdat"))
+app.save(os.path.join(cwd, "harmnonic_acoustics.mechdat"))
 app.new()
 
 # delete example file
