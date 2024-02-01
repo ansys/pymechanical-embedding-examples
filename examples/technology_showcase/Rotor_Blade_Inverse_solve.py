@@ -1,7 +1,7 @@
 """ .. _ref_example_10_td_055:
 
 Inverse-Solving analysis of a rotor fan blade with disk
----------------------------------------------------------------------------------------
+-------------------------------------------------------
 
 This example demonstrates the inverse-solving analysis of a rotor fan blade with disk.
 The NASA Rotor 67 fan bladed disk is a subsystem of a turbo fan's compressor set used
@@ -36,7 +36,7 @@ involve a cyclic symmetry analysis.
 
 **Following loads are considered:**
 
-The rotational velocity (CGOMGA,0,0,1680) is applied along the global Z axis.The reference
+The rotational velocity (CGOMGA,0,0,1680) is applied along the global Z axis. The reference
 temperature is maintained at 22°C, and the temperature loading is applied on the blade (BF)
 
 **Expected results:**
@@ -54,6 +54,9 @@ from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 
+# %%
+# Embed mechanical and set global variables
+
 app = mech.App(version=241)
 globals().update(mech.global_variables(app, True))
 print(app)
@@ -66,26 +69,28 @@ def display_image(image_name):
     plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
     plt.xticks([])
     plt.yticks([])
+    plt.axis("off")
     plt.show()
 
 
 # %%
 # Download required files
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Download the geometry file.
+# ~~~~~~~~~~~~~~~~~~~~~~~
+# Download the geometry file
+
 geometry_path = download_file(
     "example_10_td_055_Rotor_Blade_Geom.pmdb", "pymechanical", "embedding"
 )
 
 # %%
-# Download the material file.
+# Download the material file
 
 mat_path = download_file(
     "example_10_td_055_Rotor_Blade_Mat_File.xml", "pymechanical", "embedding"
 )
 
 # %%
-# Download the CFX Pressure Data.
+# Download the CFX pressure data
 
 cfx_data_path = download_file(
     "example_10_CFX_ExportResults_FT_10P_EO2.csv", "pymechanical", "embedding"
@@ -94,6 +99,7 @@ cfx_data_path = download_file(
 # %%
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 cwd = os.path.join(os.getcwd(), "out")
 ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
     Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
@@ -113,7 +119,7 @@ settings_720p.CurrentGraphicsDisplay = False
 # %%
 # Import geometry
 # ~~~~~~~~~~~~~~~
-# Reads Geometry file and display
+# Reads geometry file and display
 
 geometry_import_group = Model.GeometryImportGroup
 geometry_import = geometry_import_group.AddGeometryImport()
@@ -156,7 +162,7 @@ PRT2_Blade_2.Material = "MAT1 (Setup, File1)"
 PRT2_Blade_3.Material = "MAT1 (Setup, File1)"
 
 # %%
-# Define Units System and store variables
+# Define units system and store variables
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Select MKS units
 ExtAPI.Application.ActiveUnitSystem = (
@@ -171,9 +177,9 @@ MAT_GRP = ExtAPI.DataModel.Project.Model.Materials
 CS = ExtAPI.DataModel.Project.Model.CoordinateSystems
 
 # %%
-# Define Named Selection
+# Define named selection
 # ~~~~~~~~~~~~~~~~~~~~~~
-# Create NS for Named Selection.
+# Create NS for named selection
 
 NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
 BLADE_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade"][0]
@@ -217,7 +223,7 @@ BLADE3_TARGET_NS = [
 # %%
 # Define coordinate system
 # ~~~~~~~~~~~~~~~~~~~~~~~~
-# Create Cylindrical coordinate system
+# Create cylindrical coordinate system
 
 coordinate_systems = Model.CoordinateSystems
 coord_system = coordinate_systems.AddCoordinateSystem()
@@ -228,9 +234,9 @@ coord_system.OriginDefineBy = CoordinateSystemAlignmentType.Component
 coord_system.OriginDefineBy = CoordinateSystemAlignmentType.Fixed
 
 # %%
-# Define Contacts
+# Define contacts
 # ~~~~~~~~~~~~~~~
-# Delete existing contacts and define connections.
+# Delete existing contacts and define connections
 
 connections = ExtAPI.DataModel.Project.Model.Connections
 
@@ -239,7 +245,8 @@ connections = ExtAPI.DataModel.Project.Model.Connections
 #    if connection.DataModelObjectCategory==DataModelObjectCategory.ConnectionGroup:
 #        connection.Delete()
 
-# Define Connections.
+# Define connections
+
 CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
 CONT_REG1 = CONN_GRP.AddContactRegion()
 CONT_REG1.SourceLocation = NS_GRP.Children[6]
@@ -248,8 +255,8 @@ CONT_REG1.Behavior = ContactBehavior.AutoAsymmetric
 CONT_REG1.ContactFormulation = ContactFormulation.MPC
 
 # %%
-# Define mesh settings, generate mesh
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Define mesh settings and generate mesh
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 MSH = Model.Mesh
 MSH.ElementSize = Quantity(0.004, "m")
@@ -321,7 +328,8 @@ display_image("blade_mesh.png")
 # %%
 # Define analysis settings
 # ~~~~~~~~~~~~~~~~~~~~~~~~
-# Setup static structural settings with Inverse solve
+# Setup static structural settings with inverse solve
+
 Model.AddStaticStructuralAnalysis()
 STAT_STRUC = Model.Analyses[0]
 ANA_SETTINGS = ExtAPI.DataModel.Project.Model.Analyses[0].AnalysisSettings
@@ -340,7 +348,8 @@ ANA_SETTINGS.LargeDeflection = True
 # %%
 # Define boundary conditions
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Apply Rotational velocity
+# Apply rotational velocity
+
 ROT_VEL = STAT_STRUC.AddRotationalVelocity()
 ROT_VEL.DefineBy = LoadDefineBy.Components
 ROT_VEL.ZComponent.Inputs[0].DiscreteValues = [
@@ -355,11 +364,13 @@ ROT_VEL.ZComponent.Output.DiscreteValues = [
 ]
 
 # Apply Fixed Support Condition
+
 Fixed_Support = STAT_STRUC.AddFixedSupport()
 selection = NS_GRP.Children[3]
 Fixed_Support.Location = selection
 
 # Apply Thermal load to the Structural Blade
+
 Thermal_Condition = STAT_STRUC.AddThermalCondition()
 selection = NS_GRP.Children[1]
 Thermal_Condition.Location = selection
@@ -375,9 +386,10 @@ Thermal_Condition.Magnitude.Output.DiscreteValues = [
 ]
 
 # %%
-# Import CFX Pressure
+# Import CFX pressure
 # ~~~~~~~~~~~~~~~~~~~
-# Import CFX Pressure data and apply it to structural blade surface
+# Import CFX pressure data and apply it to structural blade surface
+
 Imported_Load_Group = STAT_STRUC.AddImportedLoadExternalData()
 
 external_data_files = Ansys.Mechanical.ExternalData.ExternalDataFileCollection()
@@ -436,8 +448,10 @@ app.execute_script(mech_command)
 Imported_Pressure.ImportLoad()
 
 # %%
-# Postprocessing: Insert results objects
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Postprocessing
+# ~~~~~~~~~~~~~~
+# Insert results
+
 SOLN = STAT_STRUC.Solution
 
 TOT_DEF1 = SOLN.AddTotalDeformation()
@@ -465,16 +479,17 @@ THERM_STRN2 = SOLN.AddThermalStrain()
 THERM_STRN2.DisplayTime = Quantity("2 [s]")
 
 # %%
-# Run Solution: Inverse Simulation
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Run Solution
+# ~~~~~~~~~~~~
 # Solve inverse analysis on blade model
+
 SOLN.Solve(True)
 STAT_STRUC_SS = SOLN.Status
 
 # %%
 # Postprocessing
 # ~~~~~~~~~~~~~~
-# Evaluate results, export screenshots
+# Evaluate results and export screenshots
 
 # %%
 # Total deformation
@@ -501,9 +516,11 @@ display_image("stress.png")
 # Cleanup
 # ~~~~~~~
 # Save project
+
 app.save(os.path.join(cwd, "blade_inverse.mechdat"))
 app.new()
 
 # %%
 # Delete example file
+
 delete_downloads()
