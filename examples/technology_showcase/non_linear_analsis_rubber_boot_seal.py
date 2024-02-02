@@ -1,17 +1,14 @@
-""" .. _ref_non_linear_analysis_rubber_bolt_seal:
+""" .. _ref_non_linear_analysis_rubber_boot_seal:
 
 Nonlinear Analysis of a Rubber Boot Seal Model
 ----------------------------------------------
 
-This example demonstrate 3D analysis of Nonlinear Analysis of a Rubber Boot Seal.
-
-Rigid-flexible Contact Pair between Rigid Shaft and Rubber Boot.
-
-Ramped effects, Detection Method: On Gauss Point, update contact stiffness at each iteration
-Self Contact Pairs at Inner and Outer Surfaces of Rubber Boot.
-
-No Ramped effects, Detection Method: Nodal-Projected Normal From Contact,
-update contact stiffness at each iteration
+This example of a rubber boot seal demonstrates geometric nonlinearities
+(large strain and large deformation), nonlinear material behavior (rubber),
+and changing status nonlinearities (contact). The objective of this example
+is to show the advantages of the surface-projection-based contact method and
+to determine the displacement behavior of the
+rubber boot seal and stress results.
 """
 
 # %%
@@ -471,7 +468,7 @@ plt.show()
 # ~~~~~~~
 # Save project
 
-app.save(os.path.join(cwd, "contact_wear.mechdat"))
+app.save(os.path.join(cwd, "non-linear-rubber-boot-seal.mechdat"))
 app.new()
 
 # delete example file
