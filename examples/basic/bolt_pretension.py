@@ -3,10 +3,11 @@
 Bolt Pretension
 ---------------
 
-This example shows how to insert a static structural
-analysis into a new Mechanical session and execute a sequence of Python
-scripting commands that define and solve the bolt-pretension analysis.
-Deformation, equivalent sresses, contact and bolt results are then post-processed.
+This example demonstrates how to insert a Static Structural analysis
+into a new Mechanical session and execute a sequence of Python scripting
+commands that define and solve a bolt-pretension analysis.
+Scripts then evaluate the following results: deformation,
+equivalent stresses, contact, and bolt
 """
 
 # %%
