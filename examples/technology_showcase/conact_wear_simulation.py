@@ -1,30 +1,24 @@
-""".. _ref_example_07_td_043:
+""".. _ref_contact_wear_simulation:
 
 Contact Surface Wear Simulation
 -------------------------------
 
-Contact Surface Wear Simulation.
-UNIT System: NMM.
+Using a Archard wear model, this example demonstrates contact sliding
+of a hemispherical ring on a flat ring to produce wear.
 
-Coverage:
-Archard wear model
-Wear on One Contact Surface (Asymmetric Contact)
+The model includes:
 
-Problem Description:
-A hemispherical ring of copper with radius = 30 mm
-rotates on a flat ring of steel with inner radius = 50 mm
-and outer radius = 150 mm. The hemispherical ring touches
-the flat ring at the center from the axis of rotation at
-100 mm). The hemispherical ring is subjected to a pressure
-load of 4000 N/mm2 and is rotating with a frequency of 100,000
-revolutions/sec. Sliding of the hemispherical ring on the flat
-ring causes wear in the rings.
+- Hemispherical ring with a radius of 30 mm made of copper.
+- Flat ring with an inner radius of 50 mm and an outer radius of 150 mm made of steel.
 
-Validation:
-The total deformation and Normal stress in loading direction are
-validated before wear and after wear and also Contact Pressure
-before wear and after wear are validated.
+The hemispherical ring is in contact with the flat ring at the center
+from the axis of rotation at 100 mm and is subjected to a
+1) pressure of 4000 N/mm2 and 2) a rotation with a frequency
+of 100,000 revolutions/sec.
 
+The application evaluates total deformation and normal stress results,
+in loading direction, prior to and following wear. In addition,
+contact pressure prior to wear is evaluated.
 """
 
 # %%
@@ -109,6 +103,8 @@ display_image("geometry.png")
 MAT = Model.Materials
 MAT.Import(mat1_path)
 MAT.Import(mat2_path)
+
+print("Material import done !")
 
 # %%
 # Setup the Analysis
