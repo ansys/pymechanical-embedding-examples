@@ -202,7 +202,7 @@ solid4 = [
 # %%
 # Assign material water to acoustic parts
 
-solid1.Assignment = "WATER"
+solid1.Material = "WATER"
 solid2.Material = "WATER"
 solid3.Material = "WATER"
 solid4.Material = "WATER"
