@@ -3,12 +3,15 @@
 Nonlinear Analysis of a Rubber Boot Seal Model
 ----------------------------------------------
 
-This example of a rubber boot seal demonstrates geometric nonlinearities
-(large strain and large deformation), nonlinear material behavior (rubber),
-and changing status nonlinearities (contact). The objective of this example
-is to show the advantages of the surface-projection-based contact method and
-to determine the displacement behavior of the
-rubber boot seal and stress results.
+This example demonstrates a nonlinear 3D analysis of a rubber boot seal to:
+
+- Create a rigid-flexible contact pair between a rigid shaft and a
+  rubber boot part.
+- Specify ramped effects using the On Gauss Point Detection Method
+  to update contact stiffness at each iteration.
+- Specify contact pairs at the inner and outer surfaces of the rubber boot.
+- Specify non-ramped effects using the Nodal-Projected Normal From Contact
+  Detection Method to update contact stiffness at each iteration.
 """
 
 # %%
