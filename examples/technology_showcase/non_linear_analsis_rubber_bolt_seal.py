@@ -75,7 +75,7 @@ mat_path = download_file("example_05_Boot_Mat.xml", "pymechanical", "00_basic")
 
 materials = Model.Materials
 materials.Import(mat_path)
-
+print("Material import done !")
 # %%
 # Import geometry
 
