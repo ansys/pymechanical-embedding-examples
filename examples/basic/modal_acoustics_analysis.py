@@ -1,4 +1,4 @@
-""" .. _ref_modal_acoustics:
+""" .. _ref_modal_acoustics_analysis:
 
 Modal acoustics analsysis
 -------------------------
