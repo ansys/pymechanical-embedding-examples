@@ -1,9 +1,9 @@
 """ .. _ref_harmonic_acoustics:
 
-Acoustic harmonic analysis
+Harmonic acoustic analysis
 --------------------------
 
-This example examines an Acoustic Harmonic analysis that uses
+This example examines a harmonic acoustic analysis that uses
 surface velocity to determine the steady-state response of a
 structure and the surrounding fluid medium to loads and excitations
 that vary sinusoidally with time.
@@ -395,9 +395,6 @@ else:
 # %%
 # Postprocessing
 # ~~~~~~~~~~~~~~
-# Display results
-
-print(str(SOLN.Status))
 
 # %%
 # Total acoustic pressure
