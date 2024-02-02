@@ -1,6 +1,6 @@
 """ .. _ref_modal_acoustics_analysis:
 
-Modal acoustics analsysis
+Modal acoustics analysis
 -------------------------
 
 This example demonstrate modal acoustic analysis that involves
