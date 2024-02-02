@@ -1,7 +1,7 @@
 """ .. _ref_modal_acoustics_analysis:
 
 Modal acoustics analysis
--------------------------
+------------------------
 
 This example demonstrate modal acoustic analysis that involves
 modeling both a structure and the surrounding
