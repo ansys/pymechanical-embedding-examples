@@ -14,14 +14,18 @@ and plastic strain (EPS) animation is exported in the project directory.
 # Import necessary libraries
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+import logging
 import os
 
 from PIL import Image
 import ansys.mechanical.core as mech
+from ansys.mechanical.core.embedding.logger import Configuration
 from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
+
+Configuration.configure(level=logging.DEBUG, to_stdout=True)
 
 app = mech.App(version=241)
 globals().update(mech.global_variables(app, True))
