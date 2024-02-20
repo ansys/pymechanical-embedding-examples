@@ -2,7 +2,7 @@
 ansys-mechanical-core==0.10.6
 
 # Documentation dependencies
-ansys-sphinx-theme==0.13.1
+ansys-sphinx-theme==0.13.4
 jupyter_sphinx==0.5.3
 jupyterlab>=3.2.8
 numpy==1.26.3
@@ -10,9 +10,9 @@ numpydoc==1.6.0
 pandas==2.2.0
 panel==1.3.8
 plotly==5.18.0
-pypandoc==1.12
+pypandoc==1.13
 pythreejs==2.4.2
-pyvista==0.43.2
+pyvista==0.43.3
 Sphinx==7.2.6
 sphinx-copybutton==0.5.1
 sphinx-gallery==0.15.0
