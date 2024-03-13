@@ -2,12 +2,8 @@ name: CI
 
 on:
   workflow_dispatch:
-  pull_request:
-  push:
-    tags:
-      - "*"
-    branches:
-      - main
+  schedule: # UTC at 0300
+    - cron: "0 3 * * *"
 
 env:
   MAIN_PYTHON_VERSION: '3.9'
@@ -23,36 +19,15 @@ permissions:
 
 jobs:
 
-  style:
-    name: Code style
-    runs-on: ubuntu-latest
-    steps:
-      - name: PyAnsys code style checks
-        uses: ansys/actions/code-style@v5
-        with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          use-python-cache: false
-
-  doc-style:
-    name: Documentation Style Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-  doc-build:
+  nightly-doc-build:
     name: Documentation building
     runs-on: public-ubuntu-latest-8-cores
     timeout-minutes: 30
     container:
-      image: ghcr.io/ansys/mechanical:24.1.0
+      image: ghcr.io/ansys/mechanical:24.2_candidate
       options: --entrypoint /bin/bash
-    needs: [style, doc-style]
 
     steps:
-
       - name: Install Git and checkout project
         uses: actions/checkout@v4
 
@@ -80,11 +55,19 @@ jobs:
           echo "PyMechanical version is: $(python -c "from ansys.mechanical.core import __version__; print(__version__)")"
         id: version
 
+      - name: Find Mechanical version
+        run: |
+          find-mechanical
+
+      - name: Update PyMechanical version in examples for 242
+        run: |
+          find ./examples -type f -name "*.py" -exec sed -i 's/version=241/version=242/g' {} +
+
       - name: Build docs
         env:
           SPHINXOPTS: '-j auto'
           LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
-          ANSYSCL232_DIR: /install/ansys_inc/v232/licensingclient
+          ANSYSCL232_DIR: /install/ansys_inc/v242/licensingclient
           ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
           ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
         run: |
@@ -108,31 +91,18 @@ jobs:
           path: doc/_build/html
           retention-days: 7
 
-  doc-deploy:
-    name: Documentation deploy
+  build-failure:
+    name: Teams notify on failure
+    if: failure()
+    needs: [ nightly-doc-build ]
     runs-on: ubuntu-latest
-    needs: [doc-build]
-
     steps:
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+      - name: Microsoft Teams Notification
+        uses: jdcargile/ms-teams-notification@v1.3
         with:
-          name: documentation-html
-          path: documentation-html
-
-      - name: List all files
-        run: ls -R .
-
-      - name: Deploy to GitHub Pages
-        if: contains(github.ref, 'refs/heads/main')
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          folder: documentation-html/
-          clean: true
-          single-commit: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          notification-summary: Nightly build failure
+          notification-color: dc3545
+          timezone: America/Chicago
