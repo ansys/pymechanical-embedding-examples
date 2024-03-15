@@ -62,12 +62,10 @@ jobs:
           IMAGE_NAME=${{ needs.saving-image-versions.outputs.dev_docker_image_version }}
           docker pull $IMAGE_NAME
           PUSHED_AT=$(docker inspect --format='{{.Created}}' $IMAGE_NAME)
-          PUSHED_AT_CENTRAL=$(date -d "$PUSHED_AT" -u +"%Y-%m-%d %H:%M:%S %Z" -s "UTC" +"%Y-%m-%d %H:%M:%S" -s "America/Chicago")
           echo "docker_info=$IMAGE_NAME was pushed at: $PUSHED_AT" >> $GITHUB_OUTPUT
           echo "::group::Docker Image Info"
           echo "Docker $IMAGE_NAME was pushed at: $PUSHED_AT"
           echo "::endgroup::"
-          echo "$PUSHED_AT_CENTRAL"
 
 
   nightly-doc-build:
