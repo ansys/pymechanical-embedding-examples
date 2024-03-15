@@ -53,7 +53,8 @@ jobs:
     steps:
       - name: Display Docker image push timestamp
         run: |
-          IMAGE_NAME=${{ needs.revn-variations.outputs.test_docker_image_version }}
+          IMAGE_NAME="${{ needs.revn-variations.outputs.dev_docker_image_version }}"
+          echo $IMAGE_NAME
           PUSHED_AT=$(docker inspect --format='{{.Created}}' $IMAGE_NAME)
           echo "Docker $IMAGE_NAME was pushed at: $PUSHED_AT"
 
