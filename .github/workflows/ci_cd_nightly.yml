@@ -4,13 +4,7 @@ on:
   workflow_dispatch:
   schedule: # UTC at 0300
     - cron: "0 3 * * *"
-  pull_request:
-  push:
-    tags:
-      - "*"
-    branches:
-      - main
-  # above is only for testing pupose will be removed after test are passing
+
 env:
   MAIN_PYTHON_VERSION: '3.9'
   DEV_MAJOR_REV: '24'
