@@ -41,6 +41,26 @@ jobs:
             echo "minor=${{ env.DEV_MINOR_REV }}" >> $GITHUB_OUTPUT
             echo "dev_docker_image_version=ghcr.io/ansys/mechanical:${{ env.DEV_MAJOR_REV }}.${{ env.DEV_MINOR_REV }}_candidate" >> $GITHUB_OUTPUT
             cat $GITHUB_OUTPUT
+
+  display-docker-info:
+    name: Save variations of revn
+    runs-on: ubuntu-latest
+    needs: ['saving-image-versions']
+    steps:
+      - name: Login in Github Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull, launch & display info
+        run: |
+          IMAGE_NAME=${{ needs.saving-image-versions.outputs.dev_docker_image_version }}
+          docker pull $IMAGE_NAME
+          PUSHED_AT=$(docker inspect --format='{{.Created}}' $IMAGE_NAME)
+          echo "Docker $IMAGE_NAME was pushed at: $PUSHED_AT"
+
   nightly-doc-build:
     name: Documentation building
     runs-on: public-ubuntu-latest-8-cores
@@ -49,15 +69,7 @@ jobs:
     container:
       image:  ${{ needs.saving-image-versions.outputs.dev_docker_image_version }}
       options: --entrypoint /bin/bash
-
     steps:
-      - name: Display Docker image push timestamp
-        run: |
-          IMAGE_NAME="${{ needs.saving-image-versions.outputs.dev_docker_image_version }}"
-          echo $IMAGE_NAME
-          PUSHED_AT=$(docker inspect --format='{{.Created}}' $IMAGE_NAME)
-          echo "Docker $IMAGE_NAME was pushed at: $PUSHED_AT"
-
       - name: Install Git and checkout project
         uses: actions/checkout@v4
 
