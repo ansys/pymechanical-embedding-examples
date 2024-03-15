@@ -40,20 +40,20 @@ jobs:
             echo "major=${{ env.DEV_MAJOR_REV }}" >> $GITHUB_OUTPUT
             echo "minor=${{ env.DEV_MINOR_REV }}" >> $GITHUB_OUTPUT
             echo "dev_docker_image_version=ghcr.io/ansys/mechanical:${{ env.DEV_MAJOR_REV }}.${{ env.DEV_MINOR_REV }}_candidate" >> $GITHUB_OUTPUT
-
+            cat $GITHUB_OUTPUT
   nightly-doc-build:
     name: Documentation building
     runs-on: public-ubuntu-latest-8-cores
     needs: ['saving-image-versions']
     timeout-minutes: 30
     container:
-      image:  ${{ needs.revn-variations.outputs.dev_docker_image_version }}
+      image:  ${{ needs.saving-image-versions.outputs.dev_docker_image_version }}
       options: --entrypoint /bin/bash
 
     steps:
       - name: Display Docker image push timestamp
         run: |
-          IMAGE_NAME="${{ needs.revn-variations.outputs.dev_docker_image_version }}"
+          IMAGE_NAME="${{ needs.saving-image-versions.outputs.dev_docker_image_version }}"
           echo $IMAGE_NAME
           PUSHED_AT=$(docker inspect --format='{{.Created}}' $IMAGE_NAME)
           echo "Docker $IMAGE_NAME was pushed at: $PUSHED_AT"
@@ -97,7 +97,7 @@ jobs:
         env:
           SPHINXOPTS: '-j auto'
           LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
-          ANSYSCL232_DIR: /install/ansys_inc/v${{ steps.save-versions.outputs.major }}${{ steps.save-versions.outputs.minor }}/licensingclient
+          ANSYSCL232_DIR: /install/ansys_inc/v${{ needs.saving-image-versions.outputs.major }}${{ needs.saving-image-versions.outputs.major }}/licensingclient
           ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
           ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
         run: |
