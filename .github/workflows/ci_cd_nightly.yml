@@ -43,9 +43,11 @@ jobs:
             cat $GITHUB_OUTPUT
 
   display-docker-info:
-    name: Save variations of revn
+    name: Display Mechanical Image info
     runs-on: ubuntu-latest
     needs: ['saving-image-versions']
+    outputs:
+      docker_info: ${{ steps.capture_info.outputs.docker_info }}
     steps:
       - name: Login in Github Container registry
         uses: docker/login-action@v3
@@ -55,11 +57,16 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull, launch & display info
+        id: capture_info
         run: |
           IMAGE_NAME=${{ needs.saving-image-versions.outputs.dev_docker_image_version }}
           docker pull $IMAGE_NAME
           PUSHED_AT=$(docker inspect --format='{{.Created}}' $IMAGE_NAME)
+          echo "docker_info=$IMAGE_NAME was pushed at: $PUSHED_AT" >> $GITHUB_OUTPUT
+          echo "::group::Docker Image Info"
           echo "Docker $IMAGE_NAME was pushed at: $PUSHED_AT"
+          echo "::endgroup::"
+
 
   nightly-doc-build:
     name: Documentation building
@@ -136,7 +143,7 @@ jobs:
   build-failure:
     name: Teams notify on failure
     if: failure()
-    needs: [ nightly-doc-build ]
+    needs: [ 'nightly-doc-build', 'display-docker-info']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -145,6 +152,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: Nightly build failure
+          notification-summary: Nightly build failure on ${{ needs.display-docker-info.outputs.docker_info }}
           notification-color: dc3545
           timezone: America/Chicago
