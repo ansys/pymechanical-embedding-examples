@@ -15,7 +15,6 @@ env:
   MAIN_PYTHON_VERSION: '3.9'
   DEV_MAJOR_REV: '24'
   DEV_MINOR_REV: '2'
-  DEV_IMAGE: 'ghcr.io/ansys/mechanical:24.2_candidate'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,18 +27,33 @@ permissions:
 
 jobs:
 
+  saving-image-versions:
+    name: Save variations of revn
+    runs-on: ubuntu-latest
+    outputs:
+      major: ${{ steps.save-versions.outputs.major }}                                         # 24
+      minor: ${{ steps.save-versions.outputs.minor }}                                         # 2
+      dev_docker_image_version: ${{ steps.save-versions.outputs.dev_docker_image_version }}   # ghcr.io/ansys/mechanical:24.2_candidate
+    steps:
+      - id: save-versions
+        run: |
+            echo "major=${{ env.DEV_MAJOR_REV }}" >> $GITHUB_OUTPUT
+            echo "minor=${{ env.DEV_MINOR_REV }}" >> $GITHUB_OUTPUT
+            echo "dev_docker_image_version=ghcr.io/ansys/mechanical:${{ env.DEV_MAJOR_REV }}.${{ env.DEV_MINOR_REV }}_candidate" >> $GITHUB_OUTPUT
+
   nightly-doc-build:
     name: Documentation building
     runs-on: public-ubuntu-latest-8-cores
+    needs: ['saving-image-versions']
     timeout-minutes: 30
     container:
-      image: ${{ env.DEV_IMAGE }}
+      image:  ${{ needs.revn-variations.outputs.dev_docker_image_version }}
       options: --entrypoint /bin/bash
 
     steps:
       - name: Display Docker image push timestamp
         run: |
-          IMAGE_NAME=${{ env.DEV_IMAGE }}
+          IMAGE_NAME=${{ needs.revn-variations.outputs.test_docker_image_version }}
           PUSHED_AT=$(docker inspect --format='{{.Created}}' $IMAGE_NAME)
           echo "Docker $IMAGE_NAME was pushed at: $PUSHED_AT"
 
@@ -82,7 +96,7 @@ jobs:
         env:
           SPHINXOPTS: '-j auto'
           LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
-          ANSYSCL232_DIR: /install/ansys_inc/v${{ env.DEV_MAJOR_REV }}${{ env.DEV_MINOR_REV }}/licensingclient
+          ANSYSCL232_DIR: /install/ansys_inc/v${{ steps.save-versions.outputs.major }}${{ steps.save-versions.outputs.minor }}/licensingclient
           ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
           ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
         run: |
