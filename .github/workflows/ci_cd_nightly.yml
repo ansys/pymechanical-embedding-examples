@@ -1,0 +1,151 @@
+name: Nightly doc build
+
+on:
+  workflow_dispatch:
+  schedule: # UTC at 0300
+    - cron: "0 3 * * *"
+
+env:
+  MAIN_PYTHON_VERSION: '3.9'
+  DEV_MAJOR_REV: '24'
+  DEV_MINOR_REV: '2'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  packages: read
+
+jobs:
+
+  saving-image-versions:
+    name: Save variations of revn
+    runs-on: ubuntu-latest
+    outputs:
+      major: ${{ steps.save-versions.outputs.major }}                                         # 24
+      minor: ${{ steps.save-versions.outputs.minor }}                                         # 2
+      dev_docker_image_version: ${{ steps.save-versions.outputs.dev_docker_image_version }}   # ghcr.io/ansys/mechanical:24.2_candidate
+    steps:
+      - id: save-versions
+        run: |
+            echo "major=${{ env.DEV_MAJOR_REV }}" >> $GITHUB_OUTPUT
+            echo "minor=${{ env.DEV_MINOR_REV }}" >> $GITHUB_OUTPUT
+            echo "dev_docker_image_version=ghcr.io/ansys/mechanical:${{ env.DEV_MAJOR_REV }}.${{ env.DEV_MINOR_REV }}_candidate" >> $GITHUB_OUTPUT
+            cat $GITHUB_OUTPUT
+
+  display-docker-info:
+    name: Display Mechanical Image info
+    runs-on: ubuntu-latest
+    needs: ['saving-image-versions']
+    outputs:
+      docker_info: ${{ steps.capture_info.outputs.docker_info }}
+    steps:
+      - name: Login in Github Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull, launch & display info
+        id: capture_info
+        run: |
+          IMAGE_NAME=${{ needs.saving-image-versions.outputs.dev_docker_image_version }}
+          docker pull $IMAGE_NAME
+          PUSHED_AT=$(docker inspect --format='{{.Created}}' $IMAGE_NAME)
+          echo "docker_info=$IMAGE_NAME was pushed at: $PUSHED_AT" >> $GITHUB_OUTPUT
+          echo "::group::Docker Image Info"
+          echo "Docker $IMAGE_NAME was pushed at: $PUSHED_AT"
+          echo "::endgroup::"
+
+
+  nightly-doc-build:
+    name: Documentation building
+    runs-on: public-ubuntu-latest-8-cores
+    needs: ['saving-image-versions']
+    timeout-minutes: 30
+    container:
+      image:  ${{ needs.saving-image-versions.outputs.dev_docker_image_version }}
+      options: --entrypoint /bin/bash
+    steps:
+      - name: Install Git and checkout project
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        run: |
+          apt update
+          apt install -y python3.9 python3-pip
+          ln -s /usr/bin/python3.9 /usr/bin/python
+          python -m pip install --upgrade pip
+          python --version
+          pip3 --version
+
+      - name: Install system dependencies
+        run: |
+          apt update
+          apt install -y make
+
+      - name: Install Python requirements
+        run: |
+          pip3 install -r requirements/requirements_doc.txt
+
+      - name: Retrieve PyMechanial version
+        run: |
+          echo "PYMECHANICAL_VERSION=$(python -c 'from ansys.mechanical.core import __version__; print(__version__)')" >> $GITHUB_ENV
+          echo "PyMechanical version is: $(python -c "from ansys.mechanical.core import __version__; print(__version__)")"
+        id: version
+
+      - name: Find Mechanical version
+        run: |
+          find-mechanical
+
+      - name: Update PyMechanical version in examples for 242
+        run: |
+          find ./examples -type f -name "*.py" -exec sed -i 's/version=241/version=242/g' {} +
+
+      - name: Build docs
+        env:
+          SPHINXOPTS: '-j auto'
+          LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
+          ANSYSCL232_DIR: /install/ansys_inc/v${{ needs.saving-image-versions.outputs.major }}${{ needs.saving-image-versions.outputs.major }}/licensingclient
+          ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
+          ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
+        run: |
+          xvfb-run mechanical-env make -C doc html > doc_build_output.txt 2>&1 || true
+          cat doc_build_output.txt
+          #
+          # Check if "build succeeded" string is present in doc_build_output.txt
+          #
+          if grep -q "build succeeded" doc_build_output.txt; then
+            echo "Documentation building succeeded"
+            exit 0
+          else
+            echo "Documentation building failed"
+            exit 1
+          fi
+
+      - name: Upload HTML Documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-html
+          path: doc/_build/html
+          retention-days: 7
+
+  build-failure:
+    name: Teams notify on failure
+    if: failure()
+    needs: [ 'nightly-doc-build', 'display-docker-info']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Microsoft Teams Notification
+        uses: jdcargile/ms-teams-notification@v1.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          notification-summary: Nightly build failure on ${{ needs.display-docker-info.outputs.docker_info }}
+          notification-color: dc3545
+          timezone: America/Chicago
