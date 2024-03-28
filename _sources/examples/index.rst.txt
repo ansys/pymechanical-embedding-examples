@@ -1,0 +1,236 @@
+:orphan:
+
+Examples
+=========
+
+Embedding examples for `PyMechanical <_pymechanical_docs>`_ are contained in this repository.
+These end-to-end examples show how you can use ``ansys-mechanical-core``.
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+
+.. raw:: html
+
+    </div>
+
+Basic
+======
+
+This section demonstrates basic capabilities of PyMechanical
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to insert a Static Structural analysis into a new Mechanical sess...">
+
+.. only:: html
+
+  .. image:: /examples/basic/images/thumb/sphx_glr_bolt_pretension_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_basic_bolt_pretension.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Bolt Pretension</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The following example demonstrates the use of the Contact Debonding featuring in Mechanical usi...">
+
+.. only:: html
+
+  .. image:: /examples/basic/images/thumb/sphx_glr_fracture_analysis_contact_debonding_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_basic_fracture_analysis_contact_debonding.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Fracture Analysis - Contact debonding</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example examines a harmonic acoustic analysis that uses surface velocity to determine the ...">
+
+.. only:: html
+
+  .. image:: /examples/basic/images/thumb/sphx_glr_harmonic_acoustics_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_basic_harmonic_acoustics.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Harmonic acoustic analysis</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrate modal acoustic analysis that involves modeling both a structure and th...">
+
+.. only:: html
+
+  .. image:: /examples/basic/images/thumb/sphx_glr_modal_acoustics_analysis_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_basic_modal_acoustics_analysis.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Modal acoustics analysis</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example problem demonstrates the use of a simple steady-state thermal analysis to determin...">
+
+.. only:: html
+
+  .. image:: /examples/basic/images/thumb/sphx_glr_steady_state_thermal_analysis_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_basic_steady_state_thermal_analysis.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Steady state thermal analysis</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates the structural topology optimization of a simple cantilever beam. The...">
+
+.. only:: html
+
+  .. image:: /examples/basic/images/thumb/sphx_glr_topology_optimization_cantilever_beam_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_basic_topology_optimization_cantilever_beam.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Topology optimization of a simple cantilever beam</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates a basic implementation of a valve in Python.">
+
+.. only:: html
+
+  .. image:: /examples/basic/images/thumb/sphx_glr_valve_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_basic_valve.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Basic Valve Implementation</div>
+    </div>
+
+
+.. raw:: html
+
+    </div>
+
+Technology showcase
+====================
+
+Using technology showcase examples demonstrates embedding capabilities of PyMechanical.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates the inverse-solving analysis of a rotor fan blade with disk. The NASA...">
+
+.. only:: html
+
+  .. image:: /examples/technology_showcase/images/thumb/sphx_glr_Rotor_Blade_Inverse_solve_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_technology_showcase_Rotor_Blade_Inverse_solve.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Inverse-Solving analysis of a rotor fan blade with disk</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Using a Archard wear model, this example demonstrates contact sliding of a hemispherical ring o...">
+
+.. only:: html
+
+  .. image:: /examples/technology_showcase/images/thumb/sphx_glr_conact_wear_simulation_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_technology_showcase_conact_wear_simulation.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Contact Surface Wear Simulation</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates a nonlinear 3D analysis of a rubber boot seal to:">
+
+.. only:: html
+
+  .. image:: /examples/technology_showcase/images/thumb/sphx_glr_non_linear_analsis_rubber_boot_seal_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_technology_showcase_non_linear_analsis_rubber_boot_seal.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Nonlinear Analysis of a Rubber Boot Seal Model</div>
+    </div>
+
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+   :includehidden:
+
+
+   /examples/basic/index.rst
+   /examples/technology_showcase/index.rst
+
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_
