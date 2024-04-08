@@ -1,15 +1,42 @@
 version: 2
 updates:
+
   - package-ecosystem: "pip" # See documentation for possible values
     directory: "/requirements" # Location of package manifests
-    insecure-external-code-execution: allow
     schedule:
       interval: "weekly"
+    assignees:
+      - "pyansys-ci-bot"
+    commit-message:
+      prefix: "MAINT"
     labels:
       - "maintenance"
       - "dependencies"
+      - "dependabot"
+    groups:
+       actions:
+          patterns:
+            - "*"
+          update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    assignees:
+      - "pyansys-ci-bot"
+    labels:
+      - "maintenance"
+      - "dependencies"
+      - "dependabot"
+    commit-message:
+      prefix: "MAINT"
+    groups:
+       actions:
+          patterns:
+            - "*"
+          update-types:
+          - "minor"
+          - "patch"

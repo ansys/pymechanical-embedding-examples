@@ -165,6 +165,7 @@ PyMAPDL_Dev
 examples/technology_showcase/out
 examples/basic/out
 /out
+doc/source/sg_execution_times.rst
 
 # rst check
 .rstcheck.cfg
