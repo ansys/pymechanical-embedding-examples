@@ -100,7 +100,19 @@ jobs:
             echo "Documentation building failed"
             exit 1
           fi
-
+      - name: Link check
+        env:
+          SPHINXOPTS: '-j auto -W --keep-going'
+        run: |
+          xvfb-run make -C doc linkcheck > doc_linkcheck_output.txt 2>&1 || true
+          cat doc_linkcheck_output.txt
+          if grep -q "build succeeded" doc_build_output.txt; then
+            echo "LinkCheck  succeeded"
+            exit 0
+          else
+            echo "LinkCheck failed"
+            exit 1
+          fi
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v4
         with:
