@@ -2,7 +2,7 @@
 ansys-mechanical-core==0.10.9
 
 # Documentation dependencies
-ansys-sphinx-theme==0.15.1
+ansys-sphinx-theme==0.15.2
 jupyter_sphinx==0.5.3
 jupyterlab>=3.2.8
 numpy==1.26.4
@@ -14,7 +14,7 @@ pypandoc==1.13
 pythreejs==2.4.2
 pyvista==0.43.5
 Sphinx==7.2.6
-sphinx-copybutton==0.5.1
+sphinx-copybutton==0.5.2
 sphinx-gallery==0.15.0
 sphinx-autobuild==2024.2.4
 sphinx-autodoc-typehints==2.0.0
