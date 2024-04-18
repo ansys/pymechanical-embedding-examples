@@ -9,6 +9,7 @@ env:
   MAIN_PYTHON_VERSION: '3.9'
   DEV_MAJOR_REV: '24'
   DEV_MINOR_REV: '2'
+  DEV_REV: '24.2_candidate'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -42,6 +43,7 @@ jobs:
     needs: ['saving-image-versions']
     outputs:
       docker_info: ${{ steps.capture_info.outputs.docker_info }}
+      build-info: ${{ steps.capture_info.outputs.build_info }}
     steps:
       - name: Login in Github Container registry
         uses: docker/login-action@v3
@@ -55,10 +57,14 @@ jobs:
         run: |
           IMAGE_NAME=${{ needs.saving-image-versions.outputs.dev_docker_image_version }}
           docker pull $IMAGE_NAME
+          BUILD_DATE=$(docker run --rm --entrypoint head $IMAGE_NAME -n 1 /install/ansys_inc/v${{ needs.saving-image-versions.outputs.major }}${{ needs.saving-image-versions.outputs.minor }}/aisol/CommonFiles/builddate.txt)
           PUSHED_AT=$(docker inspect --format='{{.Created}}' $IMAGE_NAME)
           echo "docker_info=$IMAGE_NAME was pushed at: $PUSHED_AT" >> $GITHUB_OUTPUT
-          echo "::group::Docker Image Info"
-          echo "Docker $IMAGE_NAME was pushed at: $PUSHED_AT"
+          echo "::group::Docker Info"
+          echo "docker_info=$PUSHED_AT" >> $GITHUB_OUTPUT
+          echo "build_info=$BUILD_DATE" >> $GITHUB_OUTPUT
+          echo "${{ env.DEV_REV }} pushed at $PUSHED_AT"
+          echo "Build date : $BUILD_DATE"
           echo "::endgroup::"
 
 
@@ -146,6 +152,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: Nightly build failure on ${{ needs.display-docker-info.outputs.docker_info }}
+          notification-summary: Nightly build failure on ${{ env.DEV_REV }} build at ${{ needs.display-docker-info.outputs.build_info }} , pushed at ${{ needs.display-docker-info.outputs.docker_info }} (UTC)
           notification-color: dc3545
           timezone: America/Chicago
