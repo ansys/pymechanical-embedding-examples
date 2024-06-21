@@ -1,5 +1,5 @@
 #PyMechanical
-ansys-mechanical-core==0.11.0
+git+https://github.com/ansys/pymechanical.git@fix-building-gallery-scopes
 
 # Documentation dependencies
 ansys-sphinx-theme==0.16.5
