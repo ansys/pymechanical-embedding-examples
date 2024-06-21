@@ -68,7 +68,7 @@ jobs:
       - name: Install system dependencies
         run: |
           apt update
-          apt install -y make
+          apt install -y make git
 
       - name: Install Python requirements
         run: |
