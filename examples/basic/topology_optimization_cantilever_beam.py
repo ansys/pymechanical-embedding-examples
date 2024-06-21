@@ -23,7 +23,7 @@ from matplotlib import pyplot as plt
 # Embed Mechanical and set global variables
 
 app = mech.App(version=241)
-globals().update(mech.global_variables(app, True))
+app.update_globals(globals())
 print(app)
 
 
