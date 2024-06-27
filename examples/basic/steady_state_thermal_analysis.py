@@ -29,7 +29,7 @@ from matplotlib.animation import FuncAnimation
 # Embed mechanical and set global variables
 
 app = mech.App(version=241)
-globals().update(mech.global_variables(app, True))
+app.update_globals(globals())
 print(app)
 
 cwd = os.path.join(os.getcwd(), "out")
@@ -463,21 +463,7 @@ if solve_out_path:
 # Project tree
 # ~~~~~~~~~~~~
 
-
-def print_tree(node, indentation=""):
-    print(f"{indentation}├── {node.Name}")
-
-    if (
-        hasattr(node, "Children")
-        and node.Children is not None
-        and node.Children.Count > 0
-    ):
-        for child in node.Children:
-            print_tree(child, indentation + "|  ")
-
-
-root_node = DataModel.Project
-print_tree(root_node)
+app.print_tree(DataModel.Project)
 
 # %%
 # Cleanup
