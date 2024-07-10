@@ -2,4 +2,5 @@
 ansys-mechanical-core[doc, viz]==0.11.1
 
 # Documentation dependencies
-trame-vtk==2.8.9
+pyvista[jupyter]==0.43.10
+ipyvtklink==0.2.3

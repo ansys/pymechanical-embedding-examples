@@ -1,11 +1,9 @@
 """Sphinx documentation configuration file."""
 
 from datetime import datetime
-import os
 
 import ansys.mechanical.core
 from ansys_sphinx_theme import ansys_favicon, pyansys_logo_black
-import numpy as np
 import pyvista
 from pyvista.plotting.utilities.sphinx_gallery import DynamicScraper
 from sphinx_gallery.sorting import FileNameSortKey
@@ -38,6 +36,12 @@ html_theme_options = {
             "icon": "fa fa-comment fa-fw",
         },
     ],
+    "cheatsheet": {
+        "url": "https://cheatsheets.docs.pyansys.com/pymechanical_cheat_sheet.pdf",
+        "title": "PyMechanical cheat sheet",
+        "thumbnail": "https://cheatsheets.docs.pyansys.com/pymechanical_cheat_sheet.png",
+        "needs_download": True,
+    },
 }
 
 # Sphinx extensions
@@ -119,18 +123,6 @@ numpydoc_validation_checks = {
 pyvista.set_error_output_file("errors.txt")
 pyvista.OFF_SCREEN = True
 pyvista.BUILDING_GALLERY = True
-
-# must be less than or equal to the XVFB window size
-try:
-    pyvista.global_theme.window_size = np.array([1024, 768])
-except AttributeError:
-    # for compatibility with pyvista < 0.40
-    pyvista.rcParams["window_size"] = np.array([1024, 768])
-
-# Save figures in specified directory
-pyvista.FIGURE_PATH = os.path.join(os.path.abspath("./images/"), "auto-generated/")
-if not os.path.exists(pyvista.FIGURE_PATH):
-    os.makedirs(pyvista.FIGURE_PATH)
 
 # configure pymechanical for embedding
 ansys.mechanical.core.BUILDING_GALLERY = True
