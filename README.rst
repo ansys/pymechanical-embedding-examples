@@ -1,44 +1,23 @@
 PyMechanical Embedding Examples
-================
+===============================
 
-This repository holds `embedding` examples for PyMechanical.
+This repository holds `embedding` examples for `PyMechanical <pymechanical_>`_.
+These end-to-end examples are split into two sections.
 
-Code Style
-----------
-Code style can be checked by running:
-
-.. code-block:: text
-
-    tox -e style
-
-Previous command will run `pre-commit`_ for checking code quality.
+- Basic: Shows basic capabilities of Ansys Mechanical with different types of analyses.
+- Technology showcase: Demonstration of how Ansys Mechanical can be leveraged to solve real-world problems.
+  These examples simulate and accurately solve interdisciplinary problems from a variety of industries and engineering fields
 
 
 Documentation
 -------------
-Documentation can be rendered by running:
+Documentation can be generated and inspected using your web browser by running:
 
 .. code-block:: text
 
     tox -e doc
-
-The resultant HTML files can be inspected using your favorite web browser:
-
-.. code-block:: text
-
     <browser> .tox/doc_out_html/index.html
 
-Previous will open the rendered documentation in the desired browser.
-
-
 .. LINKS AND REFERENCES
-.. _black: https://github.com/psf/black
-.. _flake8: https://flake8.pycqa.org/en/latest/
-.. _isort: https://github.com/PyCQA/isort
-.. _PyAnsys Developer's guide: https://dev.docs.pyansys.com/
 .. _pre-commit: https://pre-commit.com/
-.. _pytest: https://docs.pytest.org/en/stable/
-.. _Sphinx: https://www.sphinx-doc.org/en/master/
-.. _pip: https://pypi.org/project/pip/
-.. _tox: https://tox.wiki/
-.. _venv: https://docs.python.org/3/library/venv.html
+.. _pymechanical: https://mechanical.docs.pyansys.com/
