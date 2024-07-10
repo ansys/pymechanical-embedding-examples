@@ -57,7 +57,7 @@ from matplotlib import pyplot as plt
 # %%
 # Embed mechanical and set global variables
 
-app = mech.App(version=241)
+app = mech.App(version=242)
 app.update_globals(globals())
 print(app)
 
