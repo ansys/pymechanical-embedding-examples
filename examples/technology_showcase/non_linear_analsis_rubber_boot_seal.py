@@ -90,11 +90,7 @@ geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
-)
-display_image("geometry.png")
+app.plot()
 
 # %%
 # Setup the Analysis

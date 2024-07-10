@@ -4,10 +4,10 @@ from datetime import datetime
 import os
 
 import ansys.mechanical.core
-from ansys_sphinx_theme import ansys_favicon
-from ansys_sphinx_theme import pyansys_logo_black as logo
+from ansys_sphinx_theme import ansys_favicon, pyansys_logo_black
 import numpy as np
 import pyvista
+from pyvista.plotting.utilities.sphinx_gallery import DynamicScraper
 from sphinx_gallery.sorting import FileNameSortKey
 
 # Project information
@@ -17,7 +17,7 @@ author = "ANSYS, Inc."
 release = version = "0.1.dev0"
 
 # Select desired logo, theme, and declare the html title
-html_logo = logo
+html_logo = pyansys_logo_black
 html_favicon = ansys_favicon
 html_theme = "ansys_sphinx_theme"
 html_short_title = html_title = "PyMechanical Embedding Examples"
@@ -54,6 +54,8 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_gallery.gen_gallery",
     "sphinxemoji.sphinxemoji",
+    "sphinx_design",
+    "pyvista.ext.viewer_directive",
 ]
 
 # -- Sphinx Gallery Options ---------------------------------------------------
@@ -74,7 +76,7 @@ sphinx_gallery_conf = {
     "backreferences_dir": None,
     # Modules for which function level galleries are created. In
     "doc_module": "ansys.mechanical.core",
-    "image_scrapers": ("pyvista", "matplotlib"),
+    "image_scrapers": (DynamicScraper(), "matplotlib"),
     "ignore_pattern": "flycheck*",
     "thumbnail_size": (350, 350),
     # embed gif in gallery
