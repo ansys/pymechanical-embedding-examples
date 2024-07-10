@@ -1,6 +1,6 @@
 #PyMechanical
-ansys-mechanical-core[doc, viz]==0.11.1
+ansys-mechanical-core[doc]==0.11.1
 
 # Documentation dependencies
-pyvista[jupyter]==0.43.10
+pyvista[jupyter]>=0.39.1
 ipyvtklink==0.2.3
