@@ -12,8 +12,8 @@ panel==1.4.4
 plotly==5.22.0
 pypandoc==1.13
 pythreejs==2.4.2
-pyvista==0.43.10
-Sphinx==7.3.7
+pyvista==0.44.0
+Sphinx==7.4.0
 sphinx-copybutton==0.5.2
 sphinx-gallery==0.16.0
 sphinx-autobuild==2024.4.16
