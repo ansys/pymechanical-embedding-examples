@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys code style checks
-        uses: ansys/actions/code-style@v5
+        uses: ansys/actions/code-style@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           use-python-cache: false
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@v5
+        uses: ansys/actions/doc-style@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -47,7 +47,7 @@ jobs:
     runs-on: public-ubuntu-latest-8-cores
     timeout-minutes: 30
     container:
-      image: ghcr.io/ansys/mechanical:24.1.0
+      image: ghcr.io/ansys/mechanical:24.2.0
       options: --entrypoint /bin/bash
     needs: [style, doc-style]
 
@@ -84,7 +84,7 @@ jobs:
         env:
           SPHINXOPTS: '-j auto'
           LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
-          ANSYSCL232_DIR: /install/ansys_inc/v232/licensingclient
+          ANSYSCL242_DIR: /install/ansys_inc/v242/licensingclient
           ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
           ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
         run: |
@@ -100,7 +100,19 @@ jobs:
             echo "Documentation building failed"
             exit 1
           fi
-
+      - name: Link check
+        env:
+          SPHINXOPTS: '-j auto -W --keep-going'
+        run: |
+          xvfb-run make -C doc linkcheck > doc_linkcheck_output.txt 2>&1 || true
+          cat doc_linkcheck_output.txt
+          if grep -q "build succeeded" doc_build_output.txt; then
+            echo "LinkCheck  succeeded"
+            exit 0
+          else
+            echo "LinkCheck failed"
+            exit 1
+          fi
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v4
         with:

@@ -25,7 +25,7 @@ from matplotlib.animation import FuncAnimation
 # %%
 # Embed mechanical and set global variables
 
-app = mech.App(version=241)
+app = mech.App(version=242)
 globals().update(mech.global_variables(app, True))
 print(app)
 
@@ -101,11 +101,7 @@ solid10.Suppressed = True
 solid11.Suppressed = True
 
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
-)
-display_image("geometry.png")
+app.plot()
 
 # %%
 # Store all Variables necessary for analysis
@@ -498,24 +494,7 @@ if solve_out_path:
 # Project tree
 # ~~~~~~~~~~~~
 
-
-def print_tree(node, indentation=""):
-    if hasattr(node, "Suppressed") and node.Suppressed is True:
-        print(f"{indentation}├── {node.Name} (Suppressed)")
-    else:
-        print(f"{indentation}├── {node.Name}")
-
-    if (
-        hasattr(node, "Children")
-        and node.Children is not None
-        and node.Children.Count > 0
-    ):
-        for child in node.Children:
-            print_tree(child, indentation + "|  ")
-
-
-root_node = DataModel.Project
-print_tree(root_node)
+app.print_tree(DataModel.Project)
 
 # %%
 # Cleanup

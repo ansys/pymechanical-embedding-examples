@@ -57,8 +57,8 @@ from matplotlib import pyplot as plt
 # %%
 # Embed mechanical and set global variables
 
-app = mech.App(version=241)
-globals().update(mech.global_variables(app, True))
+app = mech.App(version=242)
+app.update_globals(globals())
 print(app)
 
 cwd = os.path.join(os.getcwd(), "out")
@@ -135,11 +135,7 @@ geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
-)
-display_image("geometry.png")
+app.plot()
 
 # %%
 # Assign materials

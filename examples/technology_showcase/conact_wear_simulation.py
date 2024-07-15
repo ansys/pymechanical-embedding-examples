@@ -37,8 +37,8 @@ from matplotlib.animation import FuncAnimation
 # %%
 # Embed mechanical and set global variables
 
-app = mech.App(version=241)
-globals().update(mech.global_variables(app, True))
+app = mech.App(version=242)
+app.update_globals(globals())
 print(app)
 
 cwd = os.path.join(os.getcwd(), "out")
@@ -90,11 +90,7 @@ geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
-)
-display_image("geometry.png")
+app.plot()
 
 # %%
 # Import materials
@@ -381,22 +377,7 @@ plt.show()
 # Project tree
 # ~~~~~~~~~~~~
 
-
-def print_tree(node, indentation=""):
-    print(f"{indentation}├── {node.Name}")
-
-    if (
-        hasattr(node, "Children")
-        and node.Children is not None
-        and node.Children.Count > 0
-    ):
-        for child in node.Children:
-            print_tree(child, indentation + "|  ")
-
-
-root_node = DataModel.Project
-print_tree(root_node)
-
+app.print_tree(DataModel.Project)
 
 # %%
 # Cleanup
