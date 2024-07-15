@@ -27,7 +27,7 @@ from matplotlib.animation import FuncAnimation
 
 Configuration.configure(level=logging.DEBUG, to_stdout=True)
 
-app = mech.App(version=241)
+app = mech.App(version=242)
 globals().update(mech.global_variables(app, True))
 print(app)
 
