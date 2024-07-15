@@ -25,7 +25,7 @@ from matplotlib.animation import FuncAnimation
 # %%
 # Embed mechanical and set global variables
 
-app = mech.App(version=241)
+app = mech.App(version=242)
 app.update_globals(globals())
 print(app)
 
@@ -86,11 +86,7 @@ geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
-)
-display_image("geometry.png")
+app.plot()
 
 # %%
 # Material import, named selections, and connections

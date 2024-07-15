@@ -1,22 +1,6 @@
 #PyMechanical
-ansys-mechanical-core==0.11.1
+ansys-mechanical-core[doc]==0.11.1
 
 # Documentation dependencies
-ansys-sphinx-theme==0.16.6
-jupyter_sphinx==0.5.3
-jupyterlab>=3.2.8
-numpy==2.0.0
-numpydoc==1.7.0
-pandas==2.2.2
-panel==1.4.4
-plotly==5.22.0
-pypandoc==1.13
-pythreejs==2.4.2
-pyvista==0.43.10
-Sphinx==7.3.7
-sphinx-copybutton==0.5.2
-sphinx-gallery==0.16.0
-sphinx-autobuild==2024.4.16
-sphinx-autodoc-typehints==2.2.2
-sphinx-notfound-page==1.0.2
-sphinxemoji==0.3.1
+pyvista[jupyter]>=0.39.1
+ipyvtklink==0.2.3

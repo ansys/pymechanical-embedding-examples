@@ -25,7 +25,7 @@ from matplotlib.animation import FuncAnimation
 # %%
 # Embed mechanical and set global variables
 
-app = mech.App(version=241)
+app = mech.App(version=242)
 globals().update(mech.global_variables(app, True))
 print(app)
 
@@ -101,11 +101,7 @@ solid10.Suppressed = True
 solid11.Suppressed = True
 
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
-)
-display_image("geometry.png")
+app.plot()
 
 # %%
 # Store all Variables necessary for analysis

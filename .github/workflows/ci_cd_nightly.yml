@@ -7,9 +7,9 @@ on:
 
 env:
   MAIN_PYTHON_VERSION: '3.9'
-  DEV_MAJOR_REV: '24'
-  DEV_MINOR_REV: '2'
-  DEV_REV: '24.2_candidate'
+  DEV_MAJOR_REV: '25'
+  DEV_MINOR_REV: '1'
+  DEV_REV: '25.1_candidate'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,9 +26,9 @@ jobs:
     name: Save variations of revn
     runs-on: ubuntu-latest
     outputs:
-      major: ${{ steps.save-versions.outputs.major }}                                         # 24
-      minor: ${{ steps.save-versions.outputs.minor }}                                         # 2
-      dev_docker_image_version: ${{ steps.save-versions.outputs.dev_docker_image_version }}   # ghcr.io/ansys/mechanical:24.2_candidate
+      major: ${{ steps.save-versions.outputs.major }}                                         # 25
+      minor: ${{ steps.save-versions.outputs.minor }}                                         # 1
+      dev_docker_image_version: ${{ steps.save-versions.outputs.dev_docker_image_version }}   # ghcr.io/ansys/mechanical:25.1_candidate
     steps:
       - id: save-versions
         run: |
@@ -108,9 +108,9 @@ jobs:
         run: |
           find-mechanical
 
-      - name: Update PyMechanical version in examples for 242
+      - name: Update PyMechanical version in examples for 251
         run: |
-          find ./examples -type f -name "*.py" -exec sed -i 's/version=241/version=242/g' {} +
+          find ./examples -type f -name "*.py" -exec sed -i 's/version=242/version=251/g' {} +
 
       - name: Build docs
         env:
