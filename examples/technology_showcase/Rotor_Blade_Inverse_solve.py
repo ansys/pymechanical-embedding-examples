@@ -96,6 +96,14 @@ cfx_data_path = download_file(
     "example_10_CFX_ExportResults_FT_10P_EO2.csv", "pymechanical", "embedding"
 )
 
+
+# %%
+# Download required Temperature file
+
+temp_data_path = download_file(
+    "example_10_Temperature_Data.txt", "pymechanical", "embedding"
+)
+
 # %%
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -329,14 +337,15 @@ display_image("blade_mesh.png")
 Model.AddStaticStructuralAnalysis()
 STAT_STRUC = Model.Analyses[0]
 ANA_SETTINGS = ExtAPI.DataModel.Project.Model.Analyses[0].AnalysisSettings
-ANA_SETTINGS.NumberOfSteps = 2
-ANA_SETTINGS.AutomaticTimeStepping = AutomaticTimeStepping.Off
-ANA_SETTINGS.NumberOfSubSteps = 20
+ANA_SETTINGS.AutomaticTimeStepping = AutomaticTimeStepping.On
+ANA_SETTINGS.NumberOfSubSteps = 10
 
 ANA_SETTINGS.Activate()
-ANA_SETTINGS.CurrentStepNumber = 2
-ANA_SETTINGS.AutomaticTimeStepping = AutomaticTimeStepping.Off
-ANA_SETTINGS.NumberOfSubSteps = 20
+
+CMD1 = STAT_STRUC.AddCommandSnippet()
+# Add convergence criterion using command snippet.
+AWM = """CNVTOL,U,1.0,5e-5,1,,"""
+CMD1.AppendText(AWM)
 
 ANA_SETTINGS.InverseOption = True
 ANA_SETTINGS.LargeDeflection = True
@@ -365,21 +374,6 @@ Fixed_Support = STAT_STRUC.AddFixedSupport()
 selection = NS_GRP.Children[3]
 Fixed_Support.Location = selection
 
-# Apply Thermal load to the Structural Blade
-
-Thermal_Condition = STAT_STRUC.AddThermalCondition()
-selection = NS_GRP.Children[1]
-Thermal_Condition.Location = selection
-Thermal_Condition.Magnitude.Inputs[0].DiscreteValues = [
-    Quantity("0 [s]"),
-    Quantity("1 [s]"),
-    Quantity("2 [s]"),
-]
-Thermal_Condition.Magnitude.Output.DiscreteValues = [
-    Quantity("22 [C]"),
-    Quantity("80 [C]"),
-    Quantity("80 [C]"),
-]
 
 # %%
 # Import CFX pressure
@@ -435,13 +429,81 @@ Imported_Load_Group.ImportExternalDataFiles(external_data_files)
 Imported_Pressure = Imported_Load_Group.AddImportedPressure()
 selection = NS_GRP.Children[2]
 Imported_Pressure.Location = selection
-
-pressure_id = Imported_Pressure.ObjectId
-mech_command = f"""Imported_Pressure = ExtAPI.DataModel.GetObjectById({pressure_id})
-Imported_Pressure.InternalObject.ExternalLoadAppliedBy = 1
-"""
-app.execute_script(mech_command)
+Imported_Pressure.AppliedBy = LoadAppliedBy.Direct
 Imported_Pressure.ImportLoad()
+
+Tree.Activate([Imported_Pressure])
+ExtAPI.Graphics.Camera.SetFit()
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "imported_pressure.png"), image_export_format, settings_720p
+)
+display_image("imported_pressure.png")
+
+
+###################################################################################
+# Import Temperature
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import temperature data and apply it to structural blade
+
+Imported_Load_Group = STAT_STRUC.AddImportedLoadExternalData()
+
+external_data_files = Ansys.Mechanical.ExternalData.ExternalDataFileCollection()
+external_data_files.SaveFilesWithProject = False
+external_data_file_1 = Ansys.Mechanical.ExternalData.ExternalDataFile()
+external_data_files.Add(external_data_file_1)
+external_data_file_1.Identifier = "File1"
+external_data_file_1.Description = ""
+external_data_file_1.IsMainFile = False
+external_data_file_1.FilePath = temp_data_path
+
+external_data_file_1.ImportSettings = (
+    Ansys.Mechanical.ExternalData.ImportSettingsFactory.GetSettingsForFormat(
+        Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.ImportFormat.Delimited
+    )
+)
+import_settings = external_data_file_1.ImportSettings
+import_settings.SkipRows = 0
+import_settings.SkipFooter = 0
+import_settings.Delimiter = ","
+import_settings.AverageCornerNodesToMidsideNodes = False
+import_settings.UseColumn(
+    0,
+    Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.XCoordinate,
+    "m",
+    "X Coordinate@A",
+)
+import_settings.UseColumn(
+    1,
+    Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.YCoordinate,
+    "m",
+    "Y Coordinate@B",
+)
+import_settings.UseColumn(
+    2,
+    Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.ZCoordinate,
+    "m",
+    "Z Coordinate@C",
+)
+import_settings.UseColumn(
+    3,
+    Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.Temperature,
+    "C",
+    "Temperature@D",
+)
+
+Imported_Load_Group.ImportExternalDataFiles(external_data_files)
+imported_body_temperature = Imported_Load_Group.AddImportedBodyTemperature()
+
+selection = NS_GRP.Children[1]
+imported_body_temperature.Location = selection
+imported_body_temperature.ImportLoad()
+
+Tree.Activate([imported_body_temperature])
+ExtAPI.Graphics.Camera.SetFit()
+ExtAPI.Graphics.ExportImage(
+    os.path.join(cwd, "imported_temperature.png"), image_export_format, settings_720p
+)
+display_image("imported_temperature.png")
 
 # %%
 # Postprocessing
@@ -453,26 +515,15 @@ SOLN = STAT_STRUC.Solution
 TOT_DEF1 = SOLN.AddTotalDeformation()
 TOT_DEF1.DisplayTime = Quantity("1 [s]")
 
-TOT_DEF2 = SOLN.AddTotalDeformation()
-TOT_DEF2.DisplayTime = Quantity("2 [s]")
-
 EQV_STRS1 = SOLN.AddEquivalentStress()
 EQV_STRS1.DisplayTime = Quantity("1 [s]")
-
-EQV_STRS2 = SOLN.AddEquivalentStress()
-EQV_STRS2.DisplayTime = Quantity("2 [s]")
 
 EQV_TOT_STRN1 = SOLN.AddEquivalentTotalStrain()
 EQV_TOT_STRN1.DisplayTime = Quantity("1 [s]")
 
-EQV_TOT_STRN2 = SOLN.AddEquivalentTotalStrain()
-EQV_TOT_STRN2.DisplayTime = Quantity("2 [s]")
-
 THERM_STRN1 = SOLN.AddThermalStrain()
 THERM_STRN1.DisplayTime = Quantity("1 [s]")
 
-THERM_STRN2 = SOLN.AddThermalStrain()
-THERM_STRN2.DisplayTime = Quantity("2 [s]")
 
 # %%
 # Run Solution
@@ -490,7 +541,7 @@ STAT_STRUC_SS = SOLN.Status
 # %%
 # Total deformation
 
-Tree.Activate([TOT_DEF2])
+Tree.Activate([TOT_DEF1])
 ExtAPI.Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
     Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.ExtraModelDisplay.NoWireframe
 )
@@ -502,7 +553,7 @@ display_image("deformation.png")
 # %%
 # Equivalent stress
 
-Tree.Activate([EQV_STRS2])
+Tree.Activate([EQV_STRS1])
 ExtAPI.Graphics.ExportImage(
     os.path.join(cwd, "stress.png"), image_export_format, settings_720p
 )
