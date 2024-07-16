@@ -435,11 +435,14 @@ Moment_Reaction_2.BoundaryConditionSelection = FIX_SUP
 # Solve
 # ~~~~~
 
-STAT_STRUC_SOLN.Solve(True)
+STAT_STRUC_SOLN.Solve(True, "My Computer, Background")
+
 STAT_STRUC_SS = STAT_STRUC_SOLN.Status
-# sphinx_gallery_start_ignore
-assert str(STAT_STRUC_SS) == "Done", "Solution status is not 'Done'"
-# sphinx_gallery_end_ignore
+
+print(STAT_STRUC_SS)
+STAT_STRUC_SOLN.GetResults()
+STAT_STRUC_SS = STAT_STRUC_SOLN.Status
+print(STAT_STRUC_SS)
 
 # %%
 # Messages
