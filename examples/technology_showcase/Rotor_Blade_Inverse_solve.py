@@ -553,11 +553,11 @@ display_image("deformation.png")
 # %%
 # Equivalent stress
 
-Tree.Activate([EQV_STRS1])
+Tree.Activate([THERM_STRN1])
 ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "stress.png"), image_export_format, settings_720p
+    os.path.join(cwd, "thermal_strain.png"), image_export_format, settings_720p
 )
-display_image("stress.png")
+display_image("thermal_strain.png")
 
 # %%
 # Cleanup
