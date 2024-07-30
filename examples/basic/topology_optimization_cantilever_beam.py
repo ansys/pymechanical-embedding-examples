@@ -100,31 +100,18 @@ display_image("equivalent_stress.png")
 
 ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
-# Store all main tree nodes as variables
-
-GEOM = ExtAPI.DataModel.Project.Model.Geometry
-MSH = ExtAPI.DataModel.Project.Model.Mesh
-NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
-CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
-MY_TOTAL_VOL = GEOM.Volume.Value
-MY_TOTAL_MA = GEOM.Mass.Value
-
 # Get structural analysis and link to topology optimization
 
 TOPO_OPT = ExtAPI.DataModel.Project.Model.AddTopologyOptimizationAnalysis()
 TOPO_OPT.TransferDataFrom(STRUCT)
 
+OPT_REG = DataModel.GetObjectsByType(DataModelObjectCategory.OptimizationRegion)[0]
+OPT_REG.BoundaryCondition = BoundaryConditionType.AllLoadsAndSupports
+OPT_REG.OptimizationType = OptimizationType.TopologyDensity
+
 # sphinx_gallery_start_ignore
 assert str(TOPO_OPT.ObjectState) == "NotSolved"
 # sphinx_gallery_end_ignore
-
-# Set ``None`` for optimization region boundary condition exclusion region
-# Optimization region
-
-OPT_REG = TOPO_OPT.Children[1]
-# OPT_REG.BoundaryCondition=BoundaryConditionType.None
-# Using ``getattr`` because Python.Net does not support the ``None`` enum
-OPT_REG.BoundaryCondition = BoundaryConditionType.AllLoadsAndSupports
 
 # Insert volume response constraint object for topology optimization
 # Delete mass response constraint
@@ -135,8 +122,6 @@ MASS_CONSTRN.Delete()
 # Add volume response constraint
 
 VOL_CONSTRN = TOPO_OPT.AddVolumeConstraint()
-# VOL_CONSTRN.DefineBy=ResponseConstraintDefineBy.Constant
-# VOL_CONSTRN.PercentageToRetain=50
 
 # Insert member size manufacturing constraint
 
@@ -144,13 +129,6 @@ MEM_SIZE_MFG_CONSTRN = TOPO_OPT.AddMemberSizeManufacturingConstraint()
 MEM_SIZE_MFG_CONSTRN.Minimum = ManuMemberSizeControlledType.Manual
 MEM_SIZE_MFG_CONSTRN.MinSize = Quantity("2.4 [m]")
 
-# # Store coordinate system ID for use in symmetry manufacturing constraint
-# Coordinate_Systems = DataModel.Project.Model.CoordinateSystems
-# coord_sys7 = Coordinate_Systems.Children[7]
-
-# # Insert symmetry manufacturing constraint
-# SYMM_MFG_CONSTRN = TOPO_OPT.AddSymmetryManufacturingConstraint()
-# SYMM_MFG_CONSTRN.CoordinateSystem = coord_sys7
 
 TOPO_OPT.Activate()
 ExtAPI.Graphics.Camera.SetFit()
