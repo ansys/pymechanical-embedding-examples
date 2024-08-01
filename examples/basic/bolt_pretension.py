@@ -46,8 +46,8 @@ def display_image(image_name):
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
-ExtAPI.Graphics.Camera.SetFit()
+Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+Graphics.Camera.SetFit()
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -55,7 +55,7 @@ settings_720p.Background = GraphicsBackgroundType.White
 settings_720p.Width = 1280
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
-ExtAPI.Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
+Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
 
 # %%
 # Download and import geometry
@@ -86,6 +86,7 @@ assert str(geometry_import.ObjectState) == "Solved", "Geometry Import unsuccessf
 
 app.plot()
 
+
 # %%
 # Download and import material
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -101,7 +102,7 @@ mat_Steel_file_path = download_file(
 # %%
 # Import materials
 
-MAT = ExtAPI.DataModel.Project.Model.Materials
+MAT = Model.Materials
 MAT.Import(mat_Copper_file_path)
 MAT.Import(mat_Steel_file_path)
 
@@ -127,68 +128,48 @@ ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
 # %%
 # Store all main tree nodes as variables
 
-MODEL = ExtAPI.DataModel.Project.Model
-GEOM = ExtAPI.DataModel.Project.Model.Geometry
-CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
-CS_GRP = ExtAPI.DataModel.Project.Model.CoordinateSystems
-MSH = ExtAPI.DataModel.Project.Model.Mesh
-NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
+MODEL = Model
+GEOM = Model.Geometry
+CONN_GRP = Model.Connections
+CS_GRP = Model.CoordinateSystems
+MSH = Model.Mesh
+NS_GRP = Model.NamedSelections
 
 # %%
 # Store named selections
 
-block3_block2_cont_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "block3_block2_cont"
-][0]
-block3_block2_targ_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "block3_block2_targ"
-][0]
-shank_block3_targ_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "shank_block3_targ"
-][0]
-shank_block3_cont_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "shank_block3_cont"
-][0]
-block1_washer_cont_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "block1_washer_cont"
-][0]
-block1_washer_targ_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "block1_washer_targ"
-][0]
-washer_bolt_cont_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "washer_bolt_cont"
-][0]
-washer_bolt_targ_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "washer_bolt_targ"
-][0]
-shank_bolt_targ_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "shank_bolt_targ"
-][0]
-shank_bolt_cont_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "shank_bolt_cont"
-][0]
-block2_block1_cont_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "block2_block1_cont"
-][0]
-block2_block1_targ_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "block2_block1_targ"
-][0]
-all_bodies = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "all_bodies"][0]
-bodies_5 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "bodies_5"][0]
-shank = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "shank"][0]
-shank_face = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "shank_face"][0]
-shank_face2 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "shank_face2"][
+block3_block2_cont_NS = [x for x in Tree.AllObjects if x.Name == "block3_block2_cont"][
     0
 ]
-bottom_surface = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "bottom_surface"
-][0]
-block2_surface = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "block2_surface"
-][0]
-shank_surface = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "shank_surface"
-][0]
+block3_block2_targ_NS = [x for x in Tree.AllObjects if x.Name == "block3_block2_targ"][
+    0
+]
+shank_block3_targ_NS = [x for x in Tree.AllObjects if x.Name == "shank_block3_targ"][0]
+shank_block3_cont_NS = [x for x in Tree.AllObjects if x.Name == "shank_block3_cont"][0]
+block1_washer_cont_NS = [x for x in Tree.AllObjects if x.Name == "block1_washer_cont"][
+    0
+]
+block1_washer_targ_NS = [x for x in Tree.AllObjects if x.Name == "block1_washer_targ"][
+    0
+]
+washer_bolt_cont_NS = [x for x in Tree.AllObjects if x.Name == "washer_bolt_cont"][0]
+washer_bolt_targ_NS = [x for x in Tree.AllObjects if x.Name == "washer_bolt_targ"][0]
+shank_bolt_targ_NS = [x for x in Tree.AllObjects if x.Name == "shank_bolt_targ"][0]
+shank_bolt_cont_NS = [x for x in Tree.AllObjects if x.Name == "shank_bolt_cont"][0]
+block2_block1_cont_NS = [x for x in Tree.AllObjects if x.Name == "block2_block1_cont"][
+    0
+]
+block2_block1_targ_NS = [x for x in Tree.AllObjects if x.Name == "block2_block1_targ"][
+    0
+]
+all_bodies = [x for x in Tree.AllObjects if x.Name == "all_bodies"][0]
+bodies_5 = [x for x in Tree.AllObjects if x.Name == "bodies_5"][0]
+shank = [x for x in Tree.AllObjects if x.Name == "shank"][0]
+shank_face = [x for x in Tree.AllObjects if x.Name == "shank_face"][0]
+shank_face2 = [x for x in Tree.AllObjects if x.Name == "shank_face2"][0]
+bottom_surface = [x for x in Tree.AllObjects if x.Name == "bottom_surface"][0]
+block2_surface = [x for x in Tree.AllObjects if x.Name == "block2_surface"][0]
+shank_surface = [x for x in Tree.AllObjects if x.Name == "shank_surface"][0]
 
 # %%
 # Assign material to bodies
@@ -215,25 +196,22 @@ SURFACE6.Material = "Steel"
 # Define coordinate system
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-coordinate_systems_17 = Model.CoordinateSystems
-coordinate_system_93 = coordinate_systems_17.AddCoordinateSystem()
-coordinate_system_93.OriginDefineBy = CoordinateSystemAlignmentType.Fixed
-coordinate_system_93.OriginX = Quantity(-195, "mm")
-coordinate_system_93.OriginY = Quantity(100, "mm")
-coordinate_system_93.OriginZ = Quantity(50, "mm")
-coordinate_system_93.PrimaryAxis = CoordinateSystemAxisType.PositiveZAxis
+coordinate_system = CS_GRP.AddCoordinateSystem()
+coordinate_system.OriginDefineBy = CoordinateSystemAlignmentType.Fixed
+coordinate_system.OriginX = Quantity(-195, "mm")
+coordinate_system.OriginY = Quantity(100, "mm")
+coordinate_system.OriginZ = Quantity(50, "mm")
+coordinate_system.PrimaryAxis = CoordinateSystemAxisType.PositiveZAxis
 
 # %%
 # Define Contacts
 # ~~~~~~~~~~~~~~~
 # Change contact settings
 
-connections = ExtAPI.DataModel.Project.Model.Connections
-
 # %%
 # Delete existing contacts
 
-for connection in connections.Children:
+for connection in CONN_GRP.Children:
     if connection.DataModelObjectCategory == DataModelObjectCategory.ConnectionGroup:
         connection.Delete()
 
@@ -333,10 +311,10 @@ Sweep_Method.SourceLocation = shank_face
 Sweep_Method.TargetLocation = shank_face2
 
 MSH.Activate()
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
-)
+MSH.GenerateMesh()
+
+Graphics.Camera.SetFit()
+Graphics.ExportImage(os.path.join(cwd, "mesh.png"), image_export_format, settings_720p)
 display_image("mesh.png")
 
 # %%
@@ -407,7 +385,7 @@ Bolt_Pretension.SetDefineBy(3, BoltLoadDefineBy.Lock)
 Bolt_Pretension.SetDefineBy(4, BoltLoadDefineBy.Lock)
 
 Tree.Activate([Bolt_Pretension])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "loads_and_boundaryconditions.png"),
     image_export_format,
     settings_720p,
@@ -458,8 +436,8 @@ else:
 # Total deformation
 
 Tree.Activate([Total_Deformation])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "total_deformation.png"), image_export_format, settings_720p
 )
 display_image("total_deformation.png")
@@ -468,8 +446,8 @@ display_image("total_deformation.png")
 # Equivalent stress on all bodies
 
 Tree.Activate([Equivalent_stress_1])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "equivalent_stress_total.png"), image_export_format, settings_720p
 )
 display_image("equivalent_stress_total.png")
@@ -478,8 +456,8 @@ display_image("equivalent_stress_total.png")
 # Equivalent stress on shank
 
 Tree.Activate([Equivalent_stress_2])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "equivalent_stress_shank.png"), image_export_format, settings_720p
 )
 display_image("equivalent_stress_shank.png")
@@ -489,7 +467,7 @@ display_image("equivalent_stress_shank.png")
 
 Post_Contact_Tool_status = Post_Contact_Tool.Children[0]
 Tree.Activate([Post_Contact_Tool_status])
-ExtAPI.Graphics.Camera.SetFit()
+Graphics.Camera.SetFit()
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
 )
@@ -521,7 +499,7 @@ plt.show()
 # Project tree
 # ~~~~~~~~~~~~
 
-app.print_tree(DataModel.Project)
+app.print_tree()
 
 # %%
 # Cleanup

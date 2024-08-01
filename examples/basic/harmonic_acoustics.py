@@ -26,7 +26,7 @@ from matplotlib.animation import FuncAnimation
 # Embed mechanical and set global variables
 
 app = mech.App(version=242)
-globals().update(mech.global_variables(app, True))
+app.update_globals(globals())
 print(app)
 
 cwd = os.path.join(os.getcwd(), "out")
@@ -45,7 +45,7 @@ def display_image(image_name):
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -53,7 +53,7 @@ settings_720p.Background = GraphicsBackgroundType.White
 settings_720p.Width = 1280
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
-ExtAPI.Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
+Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
 
 # %%
 # Download geometry and materials files
@@ -119,9 +119,7 @@ MAT = Model.Materials
 # Add harmonic acoustics and unit system
 
 Model.AddHarmonicAcousticAnalysis()
-ExtAPI.Application.ActiveUnitSystem = (
-    Ansys.ACT.Interfaces.Common.MechanicalUnitSystem.StandardMKS
-)
+ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
 # %%
 # Import and assign materials
@@ -279,8 +277,8 @@ ABSORP_SURF.Location = ABS_Face
 ABSORP_SURF.AbsorptionCoefficient.Output.DiscreteValues = [Quantity("0.02")]
 
 HARM_ACOUST.Activate()
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "bounday_conditions.png"), image_export_format, settings_720p
 )
 display_image("bounday_conditions.png")
@@ -397,7 +395,7 @@ else:
 # ^^^^^^^^^^^^^^^^^^^^^^^
 
 Tree.Activate([ACOUST_PRES_RES1])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "acou_pressure.png"), image_export_format, settings_720p
 )
 display_image("acou_pressure.png")
@@ -407,7 +405,7 @@ display_image("acou_pressure.png")
 # ^^^^^^^^^^^^^^^^^^^^^^^
 
 Tree.Activate([ACOUST_PRES_RES1])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "totalvelocity.png"), image_export_format, settings_720p
 )
 display_image("totalvelocity.png")
@@ -417,7 +415,7 @@ display_image("totalvelocity.png")
 # ^^^^^^^^^^^^^^^^^^^^
 
 Tree.Activate([ACOUST_SPL])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "sound_pressure.png"), image_export_format, settings_720p
 )
 display_image("sound_pressure.png")
@@ -427,7 +425,7 @@ display_image("sound_pressure.png")
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Tree.Activate([ACOUST_TOT_VEL2])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "totalvelocity_pressure.png"), image_export_format, settings_720p
 )
 display_image("totalvelocity_pressure.png")
@@ -437,7 +435,7 @@ display_image("totalvelocity_pressure.png")
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Tree.Activate([ACOUST_KE])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "kineticenergy.png"), image_export_format, settings_720p
 )
 display_image("kineticenergy.png")
@@ -494,7 +492,7 @@ if solve_out_path:
 # Project tree
 # ~~~~~~~~~~~~
 
-app.print_tree(DataModel.Project)
+app.print_tree()
 
 # %%
 # Cleanup

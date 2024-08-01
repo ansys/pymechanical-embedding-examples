@@ -109,10 +109,10 @@ temp_data_path = download_file(
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 cwd = os.path.join(os.getcwd(), "out")
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
+Graphics.Camera.SetSpecificViewOrientation(
     Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
 )
-ExtAPI.Graphics.Camera.SetFit()
+Graphics.Camera.SetFit()
 image_export_format = Ansys.Mechanical.DataModel.Enums.GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = (
@@ -150,13 +150,11 @@ app.plot()
 # ~~~~~~~~~~~~~~~~
 # Import material from xml file and assign it to bodies
 
-materials = ExtAPI.DataModel.Project.Model.Materials
+materials = Model.Materials
 materials.Import(mat_path)
 
-PRT1 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Component2\Rotor11"][
-    0
-]
-PRT2 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Component3"][0]
+PRT1 = [x for x in Tree.AllObjects if x.Name == "Component2\Rotor11"][0]
+PRT2 = [x for x in Tree.AllObjects if x.Name == "Component3"][0]
 PRT2_Blade_1 = PRT2.Children[0]
 PRT2_Blade_2 = PRT2.Children[1]
 PRT2_Blade_3 = PRT2.Children[2]
@@ -169,60 +167,38 @@ PRT2_Blade_3.Material = "MAT1 (Setup, File1)"
 # Define units system and store variables
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Select MKS units
-ExtAPI.Application.ActiveUnitSystem = (
-    Ansys.ACT.Interfaces.Common.MechanicalUnitSystem.StandardMKS
-)
+ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
 # Store all main tree nodes as variables
-MODEL = ExtAPI.DataModel.Project.Model
-GEOM = ExtAPI.DataModel.Project.Model.Geometry
-MESH = ExtAPI.DataModel.Project.Model.Mesh
-MAT_GRP = ExtAPI.DataModel.Project.Model.Materials
-CS = ExtAPI.DataModel.Project.Model.CoordinateSystems
+MODEL = Model
+GEOM = Model.Geometry
+MESH = Model.Mesh
+MAT_GRP = Model.Materials
+CS = Model.CoordinateSystems
+NS_GRP = Model.NamedSelections
 
 # %%
 # Define named selection
 # ~~~~~~~~~~~~~~~~~~~~~~
 # Create NS for named selection
 
-NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
-BLADE_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade"][0]
-BLADE_SURF_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade_Surf"][
-    0
-]
-FIX_SUPPORT_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Fix_Support"
-][0]
-BLADE_HUB_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade_Hub"][0]
-HUB_CONTACT_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Hub_Contact"
-][0]
-BLADE_TARGET_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade_Target"
-][0]
-Hub_Low_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Hub_Low"][0]
-Hub_High_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Hub_High"][0]
-BLADE1_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade1"][0]
-BLADE1_Source_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade1_Source"
-][0]
-BLADE1_TARGET_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade1_Target"
-][0]
-BLADE2_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade2"][0]
-BLADE2_Source_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade2_Source"
-][0]
-BLADE2_TARGET_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade2_Target"
-][0]
-BLADE3_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade3"][0]
-BLADE3_Source_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade3_Source"
-][0]
-BLADE3_TARGET_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade3_Target"
-][0]
+BLADE_NS = [x for x in Tree.AllObjects if x.Name == "Blade"][0]
+BLADE_SURF_NS = [x for x in Tree.AllObjects if x.Name == "Blade_Surf"][0]
+FIX_SUPPORT_NS = [x for x in Tree.AllObjects if x.Name == "Fix_Support"][0]
+BLADE_HUB_NS = [x for x in Tree.AllObjects if x.Name == "Blade_Hub"][0]
+HUB_CONTACT_NS = [x for x in Tree.AllObjects if x.Name == "Hub_Contact"][0]
+BLADE_TARGET_NS = [x for x in Tree.AllObjects if x.Name == "Blade_Target"][0]
+Hub_Low_NS = [x for x in Tree.AllObjects if x.Name == "Hub_Low"][0]
+Hub_High_NS = [x for x in Tree.AllObjects if x.Name == "Hub_High"][0]
+BLADE1_NS = [x for x in Tree.AllObjects if x.Name == "Blade1"][0]
+BLADE1_Source_NS = [x for x in Tree.AllObjects if x.Name == "Blade1_Source"][0]
+BLADE1_TARGET_NS = [x for x in Tree.AllObjects if x.Name == "Blade1_Target"][0]
+BLADE2_NS = [x for x in Tree.AllObjects if x.Name == "Blade2"][0]
+BLADE2_Source_NS = [x for x in Tree.AllObjects if x.Name == "Blade2_Source"][0]
+BLADE2_TARGET_NS = [x for x in Tree.AllObjects if x.Name == "Blade2_Target"][0]
+BLADE3_NS = [x for x in Tree.AllObjects if x.Name == "Blade3"][0]
+BLADE3_Source_NS = [x for x in Tree.AllObjects if x.Name == "Blade3_Source"][0]
+BLADE3_TARGET_NS = [x for x in Tree.AllObjects if x.Name == "Blade3_Target"][0]
 
 # %%
 # Define coordinate system
@@ -240,18 +216,10 @@ coord_system.OriginDefineBy = CoordinateSystemAlignmentType.Fixed
 # %%
 # Define contacts
 # ~~~~~~~~~~~~~~~
-# Delete existing contacts and define connections
-
-connections = ExtAPI.DataModel.Project.Model.Connections
-
-# Delete existing contacts
-# for connection in connections.Children:
-#    if connection.DataModelObjectCategory==DataModelObjectCategory.ConnectionGroup:
-#        connection.Delete()
 
 # Define connections
 
-CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
+CONN_GRP = Model.Connections
 CONT_REG1 = CONN_GRP.AddContactRegion()
 CONT_REG1.SourceLocation = NS_GRP.Children[6]
 CONT_REG1.TargetLocation = NS_GRP.Children[5]
@@ -323,8 +291,8 @@ automatic_method_Blade3.SweepNumberDivisions = 5
 
 MSH.GenerateMesh()
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "blade_mesh.png"), image_export_format, settings_720p
 )
 display_image("blade_mesh.png")
@@ -433,8 +401,8 @@ Imported_Pressure.AppliedBy = LoadAppliedBy.Direct
 Imported_Pressure.ImportLoad()
 
 Tree.Activate([Imported_Pressure])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "imported_pressure.png"), image_export_format, settings_720p
 )
 display_image("imported_pressure.png")
@@ -499,8 +467,8 @@ imported_body_temperature.Location = selection
 imported_body_temperature.ImportLoad()
 
 Tree.Activate([imported_body_temperature])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "imported_temperature.png"), image_export_format, settings_720p
 )
 display_image("imported_temperature.png")
@@ -542,10 +510,10 @@ STAT_STRUC_SS = SOLN.Status
 # Total deformation
 
 Tree.Activate([TOT_DEF1])
-ExtAPI.Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
+Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
     Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.ExtraModelDisplay.NoWireframe
 )
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "deformation.png"), image_export_format, settings_720p
 )
 display_image("deformation.png")
@@ -554,7 +522,7 @@ display_image("deformation.png")
 # Equivalent stress
 
 Tree.Activate([THERM_STRN1])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "thermal_strain.png"), image_export_format, settings_720p
 )
 display_image("thermal_strain.png")

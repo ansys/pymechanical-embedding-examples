@@ -50,7 +50,7 @@ def display_image(image_name):
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -104,8 +104,8 @@ ExtAPI.Application.ActiveAngleUnit = AngleUnitType.Radian
 # Store all main tree nodes as variables
 
 GEOM = Model.Geometry
-PRT1 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Part"][0]
-PRT2 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Solid"][1]
+PRT1 = [x for x in Tree.AllObjects if x.Name == "Part"][0]
+PRT2 = [x for x in Tree.AllObjects if x.Name == "Solid"][1]
 CS_GRP = Model.CoordinateSystems
 GCS = CS_GRP.Children[0]
 
@@ -185,7 +185,7 @@ PRT2.StiffnessBehavior = StiffnessBehavior.Rigid
 # %%
 # Define connections
 
-CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
+CONN_GRP = Model.Connections
 CONT_REG1 = CONN_GRP.AddContactRegion()
 CONT_REG1.TargetLocation = SHAFT_FACE
 CONT_REG1.SourceLocation = INNER_FACES30
@@ -244,9 +244,7 @@ MSH.Resolution = 2
 
 MSH.GenerateMesh()
 
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
-)
+Graphics.ExportImage(os.path.join(cwd, "mesh.png"), image_export_format, settings_720p)
 display_image("mesh.png")
 
 # %%
@@ -417,7 +415,7 @@ assert str(STAT_STRUC_SOLN.Status) == "Done", "Solution status is not 'Done'"
 
 
 Tree.Activate([TOT_DEF])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "totaldeformation.png"), image_export_format, settings_720p
 )
 display_image("totaldeformation.png")
@@ -426,7 +424,7 @@ display_image("totaldeformation.png")
 # Equivalent stress
 
 Tree.Activate([EQV_STRS])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "equivalent_stress.png"), image_export_format, settings_720p
 )
 display_image("equivalent_stress.png")

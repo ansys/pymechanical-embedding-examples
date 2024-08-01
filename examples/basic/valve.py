@@ -42,7 +42,7 @@ def display_image(image_name):
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -97,9 +97,7 @@ mesh = Model.Mesh
 mesh.ElementSize = Quantity(25, "mm")
 mesh.GenerateMesh()
 Tree.Activate([mesh])
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
-)
+Graphics.ExportImage(os.path.join(cwd, "mesh.png"), image_export_format, settings_720p)
 display_image("mesh.png")
 
 # %%
@@ -123,8 +121,8 @@ pressure.Magnitude.Inputs[0].DiscreteValues = [Quantity("0 [s]"), Quantity("1 [s
 pressure.Magnitude.Output.DiscreteValues = [Quantity("0 [Pa]"), Quantity("15 [MPa]")]
 
 analysis.Activate()
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "boundary_conditions.png"), image_export_format, settings_720p
 )
 display_image("boundary_conditions.png")
@@ -169,21 +167,11 @@ else:
 # Results
 # ~~~~~~~
 
-
-def display_image(image_name):
-    plt.figure(figsize=(16, 9))
-    plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
-    plt.xticks([])
-    plt.yticks([])
-    plt.axis("off")
-    plt.show()
-
-
 # %%
 # Total deformation
 
 Tree.Activate([deformation])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "totaldeformation_valve.png"), image_export_format, settings_720p
 )
 display_image("totaldeformation_valve.png")
@@ -192,7 +180,7 @@ display_image("totaldeformation_valve.png")
 # Stress
 
 Tree.Activate([stress])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "stress_valve.png"), image_export_format, settings_720p
 )
 display_image("stress_valve.png")
@@ -248,7 +236,7 @@ if solve_out_path:
 # Project tree
 # ~~~~~~~~~~~~
 
-app.print_tree(DataModel.Project)
+app.print_tree()
 
 # %%
 # Cleanup

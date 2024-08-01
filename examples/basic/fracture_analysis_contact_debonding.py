@@ -45,7 +45,7 @@ def display_image(image_name):
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Front)
+Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Front)
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -99,7 +99,7 @@ MAT_GRP = MODEL.Materials
 MAT_GRP.Import(mat1_path)
 MAT_GRP.Import(mat2_path)
 
-PART = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Part 2"][0]
+PART = [x for x in Tree.AllObjects if x.Name == "Part 2"][0]
 MAT_BODY = [
     i
     for i in MAT_GRP.GetChildren[Ansys.ACT.Automation.Mechanical.Material](True)
@@ -117,7 +117,7 @@ MAT_CZM = [
 connections = MODEL.AddConnections()
 CONNECTIONS_GRP = connections.AddConnectionGroup()
 MODEL.Connections.CreateAutomaticConnections()
-CONNECTIONS_GRP = ExtAPI.DataModel.Project.Model.Connections
+CONNECTIONS_GRP = Model.Connections
 CONTACTS = [
     i
     for i in CONNECTIONS_GRP.GetChildren[
@@ -136,7 +136,7 @@ CONTACT_REGION = [
 # %%
 # Named selections
 
-NAMED_SELECTIONS = ExtAPI.DataModel.Project.Model.NamedSelections
+NAMED_SELECTIONS = Model.NamedSelections
 NS_EDGE_HIGH = [
     i
     for i in NAMED_SELECTIONS.GetChildren[
@@ -199,7 +199,7 @@ NS_FACES_BOTH = [
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 MODEL.AddStaticStructuralAnalysis()
-STATIC_STRUCTURAL = ExtAPI.DataModel.AnalysisByName("Static Structural")
+STATIC_STRUCTURAL = DataModel.AnalysisByName("Static Structural")
 ANALYSIS_SETTINGS = STATIC_STRUCTURAL.AnalysisSettings
 SOLUTION = STATIC_STRUCTURAL.Solution
 MESH = Model.Mesh
@@ -252,10 +252,8 @@ FACE_MESHING.Method = FaceMeshingMethod.Quadrilaterals
 MESH.Activate()
 MESH.GenerateMesh()
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
-)
+Graphics.Camera.SetFit()
+Graphics.ExportImage(os.path.join(cwd, "mesh.png"), image_export_format, settings_720p)
 display_image("mesh.png")
 
 # %%
@@ -307,8 +305,8 @@ DISPLACEMENT2.YComponent.Output.DiscreteValues = [Quantity("-10 [mm]")]
 
 STATIC_STRUCTURAL.Activate()
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "boundary_conditions.png"), image_export_format, settings_720p
 )
 display_image("boundary_conditions.png")
@@ -353,7 +351,7 @@ else:
 
 DIRECTIONAL_DEFORMATION.Activate()
 
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "directional_deformation.png"), image_export_format, settings_720p
 )
 display_image("directional_deformation.png")
@@ -363,8 +361,8 @@ display_image("directional_deformation.png")
 
 FORCE_REACTION.Activate()
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "force_reaction.png"), image_export_format, settings_720p
 )
 display_image("force_reaction.png")
@@ -421,7 +419,7 @@ if solve_out_path:
 # Project tree
 # ~~~~~~~~~~~~
 
-app.print_tree(DataModel.Project)
+app.print_tree()
 
 # %%
 # Cleanup

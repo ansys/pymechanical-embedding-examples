@@ -57,7 +57,7 @@ def display_image(image_name):
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Front)
+Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Front)
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -65,7 +65,7 @@ settings_720p.Background = GraphicsBackgroundType.White
 settings_720p.Width = 1280
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
-ExtAPI.Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
+Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
 
 # %%
 # Download geometry and materials files
@@ -112,12 +112,12 @@ ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
 # %%
 # Store all main tree nodes as variables
 
-MODEL = ExtAPI.DataModel.Project.Model
-GEOM = ExtAPI.DataModel.Project.Model.Geometry
-CS_GRP = ExtAPI.DataModel.Project.Model.CoordinateSystems
-CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
-MSH = ExtAPI.DataModel.Project.Model.Mesh
-NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
+MODEL = Model
+GEOM = Model.Geometry
+CS_GRP = Model.CoordinateSystems
+CONN_GRP = Model.Connections
+MSH = Model.Mesh
+NS_GRP = Model.NamedSelections
 
 # %%
 # Add static structural analysis
@@ -130,15 +130,13 @@ STAT_STRUC_ANA_SETTING = STAT_STRUC.Children[0]
 # %%
 # Store name selection
 
-CURVE_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "curve"][0]
-DIA_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "dia"][0]
-VER_EDGE1 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "v1"][0]
-VER_EDGE2 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "v2"][0]
-HOR_EDGE1 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "h1"][0]
-HOR_EDGE2 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "h2"][0]
-ALL_BODIES_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "all_bodies"][
-    0
-]
+CURVE_NS = [x for x in Tree.AllObjects if x.Name == "curve"][0]
+DIA_NS = [x for x in Tree.AllObjects if x.Name == "dia"][0]
+VER_EDGE1 = [x for x in Tree.AllObjects if x.Name == "v1"][0]
+VER_EDGE2 = [x for x in Tree.AllObjects if x.Name == "v2"][0]
+HOR_EDGE1 = [x for x in Tree.AllObjects if x.Name == "h1"][0]
+HOR_EDGE2 = [x for x in Tree.AllObjects if x.Name == "h2"][0]
+ALL_BODIES_NS = [x for x in Tree.AllObjects if x.Name == "all_bodies"][0]
 
 # %%
 # Assign material to bodies and change behavior to axisymmetric
@@ -232,10 +230,8 @@ EDGE_SIZING6.NumberOfDivisions = 60
 
 MSH.GenerateMesh()
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
-)
+Graphics.Camera.SetFit()
+Graphics.ExportImage(os.path.join(cwd, "mesh.png"), image_export_format, settings_720p)
 display_image("mesh.png")
 
 # %%
@@ -287,10 +283,8 @@ CMD2.AppendText(NLAD)
 CMD2.StepSelectionMode = SequenceSelectionType.All
 
 STAT_STRUC.Activate()
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
-)
+Graphics.Camera.SetFit()
+Graphics.ExportImage(os.path.join(cwd, "mesh.png"), image_export_format, settings_720p)
 display_image("mesh.png")
 
 # %%
@@ -337,7 +331,7 @@ assert str(STAT_STRUC_SS) == "Done", "Solution status is not 'Done'"
 # Normal stress
 
 Tree.Activate([NORM_STRS1])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "normal_stresss.png"), image_export_format, settings_720p
 )
 display_image("normal_stresss.png")
@@ -377,7 +371,7 @@ plt.show()
 # Project tree
 # ~~~~~~~~~~~~
 
-app.print_tree(DataModel.Project)
+app.print_tree()
 
 # %%
 # Cleanup
