@@ -89,8 +89,8 @@ app.plot()
 
 Model.AddSteadyStateThermalAnalysis()
 ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
-STAT_THERM = DataModel.Project.Model.Analyses[0]
-MODEL = DataModel.Project.Model
+STAT_THERM = Model.Analyses[0]
+MODEL = Model
 CS = MODEL.CoordinateSystems
 LCS1 = CS.AddCoordinateSystem()
 LCS1.OriginX = Quantity("0 [m]")
@@ -104,7 +104,7 @@ LCS2.PrimaryAxisDefineBy = CoordinateSystemAlignmentType.GlobalY
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create named selections
 
-FACE1 = DataModel.Project.Model.AddNamedSelection()
+FACE1 = Model.AddNamedSelection()
 FACE1.ScopingMethod = GeometryDefineByType.Worksheet
 FACE1.Name = "Face1"
 GEN_CRT1 = FACE1.GenerationCriteria
@@ -119,7 +119,7 @@ GEN_CRT1.Add(CRT1)
 FACE1.Activate()
 FACE1.Generate()
 
-FACE2 = DataModel.Project.Model.AddNamedSelection()
+FACE2 = Model.AddNamedSelection()
 FACE2.ScopingMethod = GeometryDefineByType.Worksheet
 FACE2.Name = "Face2"
 GEN_CRT2 = FACE2.GenerationCriteria
@@ -134,7 +134,7 @@ GEN_CRT2.Add(CRT1)
 FACE2.Activate()
 FACE2.Generate()
 
-FACE3 = DataModel.Project.Model.AddNamedSelection()
+FACE3 = Model.AddNamedSelection()
 FACE3.ScopingMethod = GeometryDefineByType.Worksheet
 FACE3.Name = "Face3"
 GEN_CRT3 = FACE3.GenerationCriteria
@@ -181,7 +181,7 @@ GEN_CRT3.Add(CRT5)
 FACE3.Activate()
 FACE3.Generate()
 
-BODY1 = DataModel.Project.Model.AddNamedSelection()
+BODY1 = Model.AddNamedSelection()
 BODY1.ScopingMethod = GeometryDefineByType.Worksheet
 BODY1.Name = "Body1"
 BODY1.GenerationCriteria.Add(None)
@@ -280,7 +280,7 @@ display_image("BC_steadystate.png")
 # ~~~~~~~~~~~
 # Temperature
 
-STAT_THERM_SOLN = DataModel.Project.Model.Analyses[0].Solution
+STAT_THERM_SOLN = Model.Analyses[0].Solution
 TEMP_RST = STAT_THERM_SOLN.AddTemperature()
 TEMP_RST.By = SetDriverStyle.MaximumOverTime
 

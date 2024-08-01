@@ -59,7 +59,7 @@ structural_mechdat_file = download_file(
     "cantilever.mechdat", "pymechanical", "embedding"
 )
 app.open(structural_mechdat_file)
-STRUCT = ExtAPI.DataModel.Project.Model.Analyses[0]
+STRUCT = Model.Analyses[0]
 
 # sphinx_gallery_start_ignore
 assert str(STRUCT.ObjectState) == "Solved"
@@ -102,7 +102,7 @@ ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
 # Get structural analysis and link to topology optimization
 
-TOPO_OPT = ExtAPI.DataModel.Project.Model.AddTopologyOptimizationAnalysis()
+TOPO_OPT = Model.AddTopologyOptimizationAnalysis()
 TOPO_OPT.TransferDataFrom(STRUCT)
 
 OPT_REG = DataModel.GetObjectsByType(DataModelObjectCategory.OptimizationRegion)[0]
@@ -209,22 +209,6 @@ print("Original Mass: ", TOPO_DENS.OriginalMass.Value)
 print("Final Mass: ", TOPO_DENS.FinalMass.Value)
 print("Percent Mass of Original: ", TOPO_DENS.PercentMassOfOriginal)
 
-# %%
-# Display output file from solve
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-def write_file_contents_to_console(path):
-    """Write file contents to console."""
-    with open(path, "rt") as file:
-        for line in file:
-            print(line, end="")
-
-
-solve_path = TOPO_OPT.WorkingDir
-solve_out_path = os.path.join(solve_path, "solve.out")
-if solve_out_path:
-    write_file_contents_to_console(solve_out_path)
 
 # %%
 # Project tree
