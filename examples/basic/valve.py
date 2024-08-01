@@ -167,16 +167,6 @@ else:
 # Results
 # ~~~~~~~
 
-
-def display_image(image_name):
-    plt.figure(figsize=(16, 9))
-    plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
-    plt.xticks([])
-    plt.yticks([])
-    plt.axis("off")
-    plt.show()
-
-
 # %%
 # Total deformation
 

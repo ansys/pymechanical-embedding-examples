@@ -112,12 +112,12 @@ ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
 # %%
 # Store all main tree nodes as variables
 
-MODEL = ExtAPI.DataModel.Project.Model
-GEOM = ExtAPI.DataModel.Project.Model.Geometry
-CS_GRP = ExtAPI.DataModel.Project.Model.CoordinateSystems
-CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
-MSH = ExtAPI.DataModel.Project.Model.Mesh
-NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
+MODEL = Model
+GEOM = Model.Geometry
+CS_GRP = Model.CoordinateSystems
+CONN_GRP = Model.Connections
+MSH = Model.Mesh
+NS_GRP = Model.NamedSelections
 
 # %%
 # Add static structural analysis
