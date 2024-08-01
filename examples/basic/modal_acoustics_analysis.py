@@ -524,7 +524,7 @@ plt.show()
 # Project tree
 # ~~~~~~~~~~~~
 
-app.print_tree(DataModel.Project)
+app.print_tree()
 
 # %%
 # Cleanup

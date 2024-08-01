@@ -459,7 +459,7 @@ if solve_out_path:
 # Project tree
 # ~~~~~~~~~~~~
 
-app.print_tree(DataModel.Project)
+app.print_tree()
 
 # %%
 # Cleanup

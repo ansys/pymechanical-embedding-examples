@@ -169,9 +169,7 @@ PRT2_Blade_3.Material = "MAT1 (Setup, File1)"
 # Define units system and store variables
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Select MKS units
-ExtAPI.Application.ActiveUnitSystem = (
-    Ansys.ACT.Interfaces.Common.MechanicalUnitSystem.StandardMKS
-)
+ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
 # Store all main tree nodes as variables
 MODEL = ExtAPI.DataModel.Project.Model
