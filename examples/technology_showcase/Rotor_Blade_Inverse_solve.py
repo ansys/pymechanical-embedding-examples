@@ -153,10 +153,8 @@ app.plot()
 materials = Model.Materials
 materials.Import(mat_path)
 
-PRT1 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Component2\Rotor11"][
-    0
-]
-PRT2 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Component3"][0]
+PRT1 = [x for x in Tree.AllObjects if x.Name == "Component2\Rotor11"][0]
+PRT2 = [x for x in Tree.AllObjects if x.Name == "Component3"][0]
 PRT2_Blade_1 = PRT2.Children[0]
 PRT2_Blade_2 = PRT2.Children[1]
 PRT2_Blade_3 = PRT2.Children[2]
@@ -184,43 +182,23 @@ NS_GRP = Model.NamedSelections
 # ~~~~~~~~~~~~~~~~~~~~~~
 # Create NS for named selection
 
-BLADE_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade"][0]
-BLADE_SURF_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade_Surf"][
-    0
-]
-FIX_SUPPORT_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Fix_Support"
-][0]
-BLADE_HUB_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade_Hub"][0]
-HUB_CONTACT_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Hub_Contact"
-][0]
-BLADE_TARGET_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade_Target"
-][0]
-Hub_Low_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Hub_Low"][0]
-Hub_High_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Hub_High"][0]
-BLADE1_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade1"][0]
-BLADE1_Source_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade1_Source"
-][0]
-BLADE1_TARGET_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade1_Target"
-][0]
-BLADE2_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade2"][0]
-BLADE2_Source_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade2_Source"
-][0]
-BLADE2_TARGET_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade2_Target"
-][0]
-BLADE3_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade3"][0]
-BLADE3_Source_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade3_Source"
-][0]
-BLADE3_TARGET_NS = [
-    x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade3_Target"
-][0]
+BLADE_NS = [x for x in Tree.AllObjects if x.Name == "Blade"][0]
+BLADE_SURF_NS = [x for x in Tree.AllObjects if x.Name == "Blade_Surf"][0]
+FIX_SUPPORT_NS = [x for x in Tree.AllObjects if x.Name == "Fix_Support"][0]
+BLADE_HUB_NS = [x for x in Tree.AllObjects if x.Name == "Blade_Hub"][0]
+HUB_CONTACT_NS = [x for x in Tree.AllObjects if x.Name == "Hub_Contact"][0]
+BLADE_TARGET_NS = [x for x in Tree.AllObjects if x.Name == "Blade_Target"][0]
+Hub_Low_NS = [x for x in Tree.AllObjects if x.Name == "Hub_Low"][0]
+Hub_High_NS = [x for x in Tree.AllObjects if x.Name == "Hub_High"][0]
+BLADE1_NS = [x for x in Tree.AllObjects if x.Name == "Blade1"][0]
+BLADE1_Source_NS = [x for x in Tree.AllObjects if x.Name == "Blade1_Source"][0]
+BLADE1_TARGET_NS = [x for x in Tree.AllObjects if x.Name == "Blade1_Target"][0]
+BLADE2_NS = [x for x in Tree.AllObjects if x.Name == "Blade2"][0]
+BLADE2_Source_NS = [x for x in Tree.AllObjects if x.Name == "Blade2_Source"][0]
+BLADE2_TARGET_NS = [x for x in Tree.AllObjects if x.Name == "Blade2_Target"][0]
+BLADE3_NS = [x for x in Tree.AllObjects if x.Name == "Blade3"][0]
+BLADE3_Source_NS = [x for x in Tree.AllObjects if x.Name == "Blade3_Source"][0]
+BLADE3_TARGET_NS = [x for x in Tree.AllObjects if x.Name == "Blade3_Target"][0]
 
 # %%
 # Define coordinate system

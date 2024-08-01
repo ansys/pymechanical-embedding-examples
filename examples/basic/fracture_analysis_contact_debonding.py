@@ -99,7 +99,7 @@ MAT_GRP = MODEL.Materials
 MAT_GRP.Import(mat1_path)
 MAT_GRP.Import(mat2_path)
 
-PART = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Part 2"][0]
+PART = [x for x in Tree.AllObjects if x.Name == "Part 2"][0]
 MAT_BODY = [
     i
     for i in MAT_GRP.GetChildren[Ansys.ACT.Automation.Mechanical.Material](True)

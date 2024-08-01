@@ -130,15 +130,13 @@ STAT_STRUC_ANA_SETTING = STAT_STRUC.Children[0]
 # %%
 # Store name selection
 
-CURVE_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "curve"][0]
-DIA_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "dia"][0]
-VER_EDGE1 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "v1"][0]
-VER_EDGE2 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "v2"][0]
-HOR_EDGE1 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "h1"][0]
-HOR_EDGE2 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "h2"][0]
-ALL_BODIES_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "all_bodies"][
-    0
-]
+CURVE_NS = [x for x in Tree.AllObjects if x.Name == "curve"][0]
+DIA_NS = [x for x in Tree.AllObjects if x.Name == "dia"][0]
+VER_EDGE1 = [x for x in Tree.AllObjects if x.Name == "v1"][0]
+VER_EDGE2 = [x for x in Tree.AllObjects if x.Name == "v2"][0]
+HOR_EDGE1 = [x for x in Tree.AllObjects if x.Name == "h1"][0]
+HOR_EDGE2 = [x for x in Tree.AllObjects if x.Name == "h2"][0]
+ALL_BODIES_NS = [x for x in Tree.AllObjects if x.Name == "all_bodies"][0]
 
 # %%
 # Assign material to bodies and change behavior to axisymmetric

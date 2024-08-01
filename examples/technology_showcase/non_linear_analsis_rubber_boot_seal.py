@@ -104,8 +104,8 @@ ExtAPI.Application.ActiveAngleUnit = AngleUnitType.Radian
 # Store all main tree nodes as variables
 
 GEOM = Model.Geometry
-PRT1 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Part"][0]
-PRT2 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Solid"][1]
+PRT1 = [x for x in Tree.AllObjects if x.Name == "Part"][0]
+PRT2 = [x for x in Tree.AllObjects if x.Name == "Solid"][1]
 CS_GRP = Model.CoordinateSystems
 GCS = CS_GRP.Children[0]
 
@@ -185,7 +185,7 @@ PRT2.StiffnessBehavior = StiffnessBehavior.Rigid
 # %%
 # Define connections
 
-CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
+CONN_GRP = Model.Connections
 CONT_REG1 = CONN_GRP.AddContactRegion()
 CONT_REG1.TargetLocation = SHAFT_FACE
 CONT_REG1.SourceLocation = INNER_FACES30
