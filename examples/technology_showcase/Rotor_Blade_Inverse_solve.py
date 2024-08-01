@@ -150,7 +150,7 @@ app.plot()
 # ~~~~~~~~~~~~~~~~
 # Import material from xml file and assign it to bodies
 
-materials = ExtAPI.DataModel.Project.Model.Materials
+materials = Model.Materials
 materials.Import(mat_path)
 
 PRT1 = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Component2\Rotor11"][
@@ -172,18 +172,18 @@ PRT2_Blade_3.Material = "MAT1 (Setup, File1)"
 ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
 # Store all main tree nodes as variables
-MODEL = ExtAPI.DataModel.Project.Model
-GEOM = ExtAPI.DataModel.Project.Model.Geometry
-MESH = ExtAPI.DataModel.Project.Model.Mesh
-MAT_GRP = ExtAPI.DataModel.Project.Model.Materials
-CS = ExtAPI.DataModel.Project.Model.CoordinateSystems
+MODEL = Model
+GEOM = Model.Geometry
+MESH = Model.Mesh
+MAT_GRP = Model.Materials
+CS = Model.CoordinateSystems
+NS_GRP = Model.NamedSelections
 
 # %%
 # Define named selection
 # ~~~~~~~~~~~~~~~~~~~~~~
 # Create NS for named selection
 
-NS_GRP = ExtAPI.DataModel.Project.Model.NamedSelections
 BLADE_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade"][0]
 BLADE_SURF_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "Blade_Surf"][
     0
@@ -238,18 +238,10 @@ coord_system.OriginDefineBy = CoordinateSystemAlignmentType.Fixed
 # %%
 # Define contacts
 # ~~~~~~~~~~~~~~~
-# Delete existing contacts and define connections
-
-connections = ExtAPI.DataModel.Project.Model.Connections
-
-# Delete existing contacts
-# for connection in connections.Children:
-#    if connection.DataModelObjectCategory==DataModelObjectCategory.ConnectionGroup:
-#        connection.Delete()
 
 # Define connections
 
-CONN_GRP = ExtAPI.DataModel.Project.Model.Connections
+CONN_GRP = Model.Connections
 CONT_REG1 = CONN_GRP.AddContactRegion()
 CONT_REG1.SourceLocation = NS_GRP.Children[6]
 CONT_REG1.TargetLocation = NS_GRP.Children[5]
