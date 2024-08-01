@@ -51,7 +51,7 @@ def display_image(image_name):
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -83,8 +83,8 @@ geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
 display_image("geometry.png")
@@ -93,11 +93,11 @@ display_image("geometry.png")
 # Store all variables necessary for analysis
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-GEOM = DataModel.Project.Model.Geometry
-MESH = DataModel.Project.Model.Mesh
-NS = DataModel.Project.Model.NamedSelections
-CONN = DataModel.Project.Model.Connections
-MAT = DataModel.Project.Model.Materials
+GEOM = Model.Geometry
+MESH = Model.Mesh
+NS = Model.NamedSelections
+CONN = Model.Connections
+MAT = Model.Materials
 
 # %%
 # Import material setup analysis
@@ -245,9 +245,7 @@ method3.SourceTargetSelection = 4
 
 MESH.GenerateMesh()
 
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
-)
+Graphics.ExportImage(os.path.join(cwd, "mesh.png"), image_export_format, settings_720p)
 display_image("mesh.png")
 
 # %%
@@ -364,7 +362,7 @@ FIXED_SUPPORT = MODAL_ACST.AddFixedSupport()
 FIXED_SUPPORT.Location = fvert
 
 MODAL_ACST.Activate()
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
 display_image("geometry.png")
@@ -374,7 +372,7 @@ display_image("geometry.png")
 # ~~~~~~~~~~~
 # Add 10 modes
 
-soln = DataModel.Project.Model.Analyses[0].Solution
+soln = Model.Analyses[0].Solution
 TOT_DEF1 = soln.AddTotalDeformation()
 TOT_DEF2 = soln.AddTotalDeformation()
 TOT_DEF2.Mode = 2
@@ -435,8 +433,8 @@ else:
 # Total deformation - mode 1
 
 Tree.Activate([TOT_DEF1])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "totaldeformation1.png"), image_export_format, settings_720p
 )
 display_image("totaldeformation1.png")
@@ -446,7 +444,7 @@ display_image("totaldeformation1.png")
 # Acoustic pressure
 
 Tree.Activate([ACOUST_PRES_RES])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "acoustic_pressure.png"), image_export_format, settings_720p
 )
 display_image("acoustic_pressure.png")
