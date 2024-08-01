@@ -57,7 +57,7 @@ def display_image(image_name):
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Front)
+Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Front)
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -65,7 +65,7 @@ settings_720p.Background = GraphicsBackgroundType.White
 settings_720p.Width = 1280
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
-ExtAPI.Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
+Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
 
 # %%
 # Download geometry and materials files
@@ -232,10 +232,8 @@ EDGE_SIZING6.NumberOfDivisions = 60
 
 MSH.GenerateMesh()
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
-)
+Graphics.Camera.SetFit()
+Graphics.ExportImage(os.path.join(cwd, "mesh.png"), image_export_format, settings_720p)
 display_image("mesh.png")
 
 # %%
@@ -287,10 +285,8 @@ CMD2.AppendText(NLAD)
 CMD2.StepSelectionMode = SequenceSelectionType.All
 
 STAT_STRUC.Activate()
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
-)
+Graphics.Camera.SetFit()
+Graphics.ExportImage(os.path.join(cwd, "mesh.png"), image_export_format, settings_720p)
 display_image("mesh.png")
 
 # %%
@@ -337,7 +333,7 @@ assert str(STAT_STRUC_SS) == "Done", "Solution status is not 'Done'"
 # Normal stress
 
 Tree.Activate([NORM_STRS1])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "normal_stresss.png"), image_export_format, settings_720p
 )
 display_image("normal_stresss.png")

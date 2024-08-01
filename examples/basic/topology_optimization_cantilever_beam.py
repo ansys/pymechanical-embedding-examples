@@ -41,7 +41,7 @@ cwd = os.path.join(os.getcwd(), "out")
 # %%
 # Configure graphics for image export
 
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Front)
+Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Front)
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -76,8 +76,8 @@ assert str(STRUCT_SLN.Status) == "Done", "Solution status is not 'Done'"
 # Total deformation
 
 STRUCT_SLN.Children[1].Activate()
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "total_deformation.png"), image_export_format, settings_720p
 )
 display_image("total_deformation.png")
@@ -86,8 +86,8 @@ display_image("total_deformation.png")
 # Equivalent stress
 
 STRUCT_SLN.Children[2].Activate()
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "equivalent_stress.png"), image_export_format, settings_720p
 )
 display_image("equivalent_stress.png")
@@ -131,8 +131,8 @@ MEM_SIZE_MFG_CONSTRN.MinSize = Quantity("2.4 [m]")
 
 
 TOPO_OPT.Activate()
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "boundary_conditions.png"), image_export_format, settings_720p
 )
 display_image("boundary_conditions.png")
@@ -171,8 +171,8 @@ TOPO_DENS = TOPO_OPT_SLN.Children[1]
 TOPO_DENS.AddSmoothing()
 TOPO_OPT.Solution.EvaluateAllResults()
 TOPO_DENS.Children[0].Activate()
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "topo_opitimized_smooth.png"), image_export_format, settings_720p
 )
 display_image("topo_opitimized_smooth.png")

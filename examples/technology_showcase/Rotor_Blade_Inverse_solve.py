@@ -109,10 +109,10 @@ temp_data_path = download_file(
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 cwd = os.path.join(os.getcwd(), "out")
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
+Graphics.Camera.SetSpecificViewOrientation(
     Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
 )
-ExtAPI.Graphics.Camera.SetFit()
+Graphics.Camera.SetFit()
 image_export_format = Ansys.Mechanical.DataModel.Enums.GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = (
@@ -321,8 +321,8 @@ automatic_method_Blade3.SweepNumberDivisions = 5
 
 MSH.GenerateMesh()
 
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "blade_mesh.png"), image_export_format, settings_720p
 )
 display_image("blade_mesh.png")
@@ -431,8 +431,8 @@ Imported_Pressure.AppliedBy = LoadAppliedBy.Direct
 Imported_Pressure.ImportLoad()
 
 Tree.Activate([Imported_Pressure])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "imported_pressure.png"), image_export_format, settings_720p
 )
 display_image("imported_pressure.png")
@@ -497,8 +497,8 @@ imported_body_temperature.Location = selection
 imported_body_temperature.ImportLoad()
 
 Tree.Activate([imported_body_temperature])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "imported_temperature.png"), image_export_format, settings_720p
 )
 display_image("imported_temperature.png")
@@ -540,10 +540,10 @@ STAT_STRUC_SS = SOLN.Status
 # Total deformation
 
 Tree.Activate([TOT_DEF1])
-ExtAPI.Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
+Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
     Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.ExtraModelDisplay.NoWireframe
 )
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "deformation.png"), image_export_format, settings_720p
 )
 display_image("deformation.png")
@@ -552,7 +552,7 @@ display_image("deformation.png")
 # Equivalent stress
 
 Tree.Activate([THERM_STRN1])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "thermal_strain.png"), image_export_format, settings_720p
 )
 display_image("thermal_strain.png")

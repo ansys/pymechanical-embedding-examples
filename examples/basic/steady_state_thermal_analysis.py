@@ -48,8 +48,8 @@ def display_image(image_name):
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
-ExtAPI.Graphics.Camera.SetFit()
+Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+Graphics.Camera.SetFit()
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -269,8 +269,8 @@ ANLYS_SET.NumberOfSteps = 2
 ANLYS_SET.CalculateVolumeEnergy = True
 
 STAT_THERM.Activate()
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
+Graphics.Camera.SetFit()
+Graphics.ExportImage(
     os.path.join(cwd, "BC_steadystate.png"), image_export_format, settings_720p
 )
 display_image("BC_steadystate.png")
@@ -369,40 +369,32 @@ else:
 # Total body temperature
 
 Tree.Activate([TEMP_RST])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "temp.png"), image_export_format, settings_720p
-)
+Graphics.Camera.SetFit()
+Graphics.ExportImage(os.path.join(cwd, "temp.png"), image_export_format, settings_720p)
 display_image("temp.png")
 
 # %%
 # Temperature on part of the body
 
 Tree.Activate([TEMP_RST2])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "temp2.png"), image_export_format, settings_720p
-)
+Graphics.Camera.SetFit()
+Graphics.ExportImage(os.path.join(cwd, "temp2.png"), image_export_format, settings_720p)
 display_image("temp2.png")
 
 # %%
 # Temperature distribution along the specific path
 
 Tree.Activate([TEMP_RST3])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "temp3.png"), image_export_format, settings_720p
-)
+Graphics.Camera.SetFit()
+Graphics.ExportImage(os.path.join(cwd, "temp3.png"), image_export_format, settings_720p)
 display_image("temp3.png")
 
 # %%
 # Temperature of bottom surface
 
 Tree.Activate([TEMP_RST4])
-ExtAPI.Graphics.Camera.SetFit()
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "temp4.png"), image_export_format, settings_720p
-)
+Graphics.Camera.SetFit()
+Graphics.ExportImage(os.path.join(cwd, "temp4.png"), image_export_format, settings_720p)
 display_image("temp4.png")
 
 # %%

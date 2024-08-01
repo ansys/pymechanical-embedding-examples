@@ -50,7 +50,7 @@ def display_image(image_name):
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -244,9 +244,7 @@ MSH.Resolution = 2
 
 MSH.GenerateMesh()
 
-ExtAPI.Graphics.ExportImage(
-    os.path.join(cwd, "mesh.png"), image_export_format, settings_720p
-)
+Graphics.ExportImage(os.path.join(cwd, "mesh.png"), image_export_format, settings_720p)
 display_image("mesh.png")
 
 # %%
@@ -417,7 +415,7 @@ assert str(STAT_STRUC_SOLN.Status) == "Done", "Solution status is not 'Done'"
 
 
 Tree.Activate([TOT_DEF])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "totaldeformation.png"), image_export_format, settings_720p
 )
 display_image("totaldeformation.png")
@@ -426,7 +424,7 @@ display_image("totaldeformation.png")
 # Equivalent stress
 
 Tree.Activate([EQV_STRS])
-ExtAPI.Graphics.ExportImage(
+Graphics.ExportImage(
     os.path.join(cwd, "equivalent_stress.png"), image_export_format, settings_720p
 )
 display_image("equivalent_stress.png")

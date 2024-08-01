@@ -1,4 +1,4 @@
 Basic
 ======
 
-This section demonstrates basic capabilities of PyMechanical
+This section demonstrates the basic capabilities of PyMechanical
