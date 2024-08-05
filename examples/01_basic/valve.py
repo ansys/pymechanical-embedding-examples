@@ -127,14 +127,6 @@ Graphics.ExportImage(
 )
 display_image("boundary_conditions.png")
 
-# %%
-# Solve
-# ~~~~~
-# Solve process settings
-
-config = ExtAPI.Application.SolveConfigurations["My Computer"]
-config.SolveProcessSettings.MaxNumberOfCores = 1
-config.SolveProcessSettings.DistributeSolution = False
 
 # %%
 # Add results
