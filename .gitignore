@@ -162,8 +162,9 @@ cython_debug/
 PyMAPDL_Dev
 
 # Results generated during doc build and example run locally
-examples/technology_showcase/out
-examples/basic/out
+examples/02_technology_showcase/out
+examples/01_basic/out
+examples/00_tips/out
 /out
 doc/source/sg_execution_times.rst
 
