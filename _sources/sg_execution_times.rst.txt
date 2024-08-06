@@ -1,0 +1,64 @@
+
+:orphan:
+
+.. _sphx_glr_sg_execution_times:
+
+
+Computation times
+=================
+**20:17.864** total execution time for 10 files **from all galleries**:
+
+.. container::
+
+  .. raw:: html
+
+    <style scoped>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script type="text/javascript" class="init">
+    $(document).ready( function () {
+        $('table.sg-datatable').DataTable({order: [[1, 'desc']]});
+    } );
+    </script>
+
+  .. list-table::
+   :header-rows: 1
+   :class: table table-striped sg-datatable
+
+   * - Example
+     - Time
+     - Mem (MB)
+   * - :ref:`sphx_glr_examples_technology_showcase_conact_wear_simulation.py` (``../../examples/technology_showcase/conact_wear_simulation.py``)
+     - 06:58.206
+     - 0.0
+   * - :ref:`sphx_glr_examples_technology_showcase_non_linear_analsis_rubber_boot_seal.py` (``../../examples/technology_showcase/non_linear_analsis_rubber_boot_seal.py``)
+     - 04:29.324
+     - 0.0
+   * - :ref:`sphx_glr_examples_technology_showcase_Rotor_Blade_Inverse_solve.py` (``../../examples/technology_showcase/Rotor_Blade_Inverse_solve.py``)
+     - 03:58.585
+     - 0.0
+   * - :ref:`sphx_glr_examples_basic_bolt_pretension.py` (``../../examples/basic/bolt_pretension.py``)
+     - 01:19.194
+     - 0.0
+   * - :ref:`sphx_glr_examples_basic_modal_acoustics_analysis.py` (``../../examples/basic/modal_acoustics_analysis.py``)
+     - 00:49.773
+     - 0.0
+   * - :ref:`sphx_glr_examples_basic_fracture_analysis_contact_debonding.py` (``../../examples/basic/fracture_analysis_contact_debonding.py``)
+     - 00:43.434
+     - 0.0
+   * - :ref:`sphx_glr_examples_basic_topology_optimization_cantilever_beam.py` (``../../examples/basic/topology_optimization_cantilever_beam.py``)
+     - 00:38.659
+     - 0.0
+   * - :ref:`sphx_glr_examples_basic_harmonic_acoustics.py` (``../../examples/basic/harmonic_acoustics.py``)
+     - 00:30.667
+     - 0.0
+   * - :ref:`sphx_glr_examples_basic_valve.py` (``../../examples/basic/valve.py``)
+     - 00:27.832
+     - 0.0
+   * - :ref:`sphx_glr_examples_basic_steady_state_thermal_analysis.py` (``../../examples/basic/steady_state_thermal_analysis.py``)
+     - 00:22.190
+     - 0.0
