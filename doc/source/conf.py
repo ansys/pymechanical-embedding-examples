@@ -151,3 +151,28 @@ rst_epilog = ""
 # Read link all targets from file
 with open("links.rst") as f:
     rst_epilog += f.read()
+
+
+def _add_mech_libraries_for_examples():
+    import os
+    import sys
+
+    awp_root = None
+    for key, value in os.environ.items():
+        if key.startswith("AWP_ROOT"):
+            awp_root = value
+            print(awp_root)
+            break
+
+    if awp_root:
+        location = os.path.join(awp_root, "Addins", "ACT", "libraries", "Mechanical")
+        if os.path.isdir(location):
+            sys.path.append(location)
+            print(f"Added to sys.path: {location}")
+        else:
+            print(f"Directory does not exist: {location}")
+    else:
+        print("No AWP_ROOT environment variable found.")
+
+
+_add_mech_libraries_for_examples()

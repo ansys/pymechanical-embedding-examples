@@ -1,46 +1,66 @@
 """ .. _ref_tips_04:
 
-Add logging
------------
+Use ``app_libraries``
+---------------------
 
-Add logging to the workflow
+Use app libraries which comes with Mechanical
 """
 
 # %%
 # Import necessary libraries
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-import logging
 
 import ansys.mechanical.core as mech
-from ansys.mechanical.core.embedding.logger import Configuration, Logger
-
-# %%
-# Configure logger to display only warning to stdout
-
-Configuration.configure(level=logging.WARNING, to_stdout=True)
+from ansys.mechanical.core.embedding import add_mechanical_python_libraries
+from ansys.mechanical.core.examples import delete_downloads, download_file
 
 # %%
 # Embed mechanical and set global variables
 
-Configuration.configure(level=logging.ERROR, to_stdout=True)
 app = mech.App(version=242)
 app.update_globals(globals())
 print(app)
 
 # %%
-# Add a custom error message to logging
+# Download geometry and import
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Download geometry
 
-Logger.error("Test error")
+geometry_path = download_file("Valve.pmdb", "pymechanical", "embedding")
 
 # %%
-# Modify logging level and create a warning log
+# Import geometry
 
-Configuration.set_log_level(logging.INFO)
-Logger.warning("Test warning")
+geometry_import = Model.GeometryImportGroup.AddGeometryImport()
+geometry_import.Import(geometry_path)
+
+# %%
+# Print sys path
+
+import sys
+
+print(sys.path)
+# %%
+# Update path to libraries which are found under
+# "Addins", "ACT", "libraries", "Mechanical"
+
+add_mechanical_python_libraries(app)
+
+# %%
+# Import ``materials`` module and use necessary functions
+
+import materials
+
+body = DataModel.GeoData.Assemblies[0].Parts[0].Bodies[0]
+mat = body.Material
+
+print(materials.GetListMaterialProperties(mat))
+
 
 # %%
 # Cleanup
 # ~~~~~~~
 
+delete_downloads()
 app.new()
