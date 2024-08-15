@@ -15,7 +15,7 @@ import ansys.mechanical.core as mech
 from ansys.mechanical.core.examples import delete_downloads, download_file
 
 # %%
-# Embed mechanical and set global variables
+# Embed Mechanical and set global variables
 
 app = mech.App(version=242)
 app.update_globals(globals())
@@ -23,13 +23,13 @@ print(app)
 
 
 # %%
-# Download mechdb file
-# ~~~~~~~~~~~~~~~~~~~~
+# Download the mechdb file
+# ~~~~~~~~~~~~~~~~~~~~~~~~
 
 mechdb_path = download_file("graphics_test.mechdb", "pymechanical", "test_files")
 
 # %%
-# Load the mechdb inside Mechanical
+# Load the mechdb file inside Mechanical
 
 app.open(mechdb_path)
 
@@ -40,7 +40,7 @@ app.open(mechdb_path)
 app.print_tree()
 
 # %%
-# Display tree only under first analysis
+# Display the tree only under the first analysis
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app.print_tree(Model.Analyses[0])

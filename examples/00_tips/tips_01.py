@@ -23,7 +23,7 @@ print(app)
 
 
 # %%
-# Download geometry and import
+# Download and import geometry
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Download geometry
 

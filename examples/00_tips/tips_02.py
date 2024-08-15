@@ -16,7 +16,7 @@ import ansys.mechanical.core as mech
 from ansys.mechanical.core.examples import delete_downloads, download_file
 
 # %%
-# Embed mechanical and set global variables
+# Embed Mechanical and set global variables
 
 app = mech.App(version=242)
 app.update_globals(globals())
@@ -24,7 +24,7 @@ print(app)
 
 
 # %%
-# Download geometry and import
+# Download and import geometry
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Download geometry
 
@@ -59,13 +59,13 @@ ExtAPI.Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
 
 
 # %%
-# custom function for displaying the image
+# Custom function for displaying the image
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 
-# Temporary directory to save image
+# Temporary directory to save the image
 cwd = os.path.join(os.getcwd(), "out")
 
 
@@ -79,17 +79,17 @@ def display_image(image_name):
 
 
 # %%
-# Export Image and display
+# Export and display the image
 # ~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Fits the geometry in viewing area
+# Fits the geometry in the viewing area
 Graphics.Camera.SetFit()
 
 Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
 
-# Display image using matplotlib
+# Display the image using matplotlib
 display_image("geometry.png")
 
 # %%
