@@ -3,7 +3,7 @@
 from datetime import datetime
 
 import ansys.mechanical.core
-from ansys_sphinx_theme import ansys_favicon, pyansys_logo_black
+from ansys_sphinx_theme import ansys_favicon
 import pyvista
 from pyvista.plotting.utilities.sphinx_gallery import DynamicScraper
 from sphinx_gallery.sorting import FileNameSortKey
@@ -15,13 +15,14 @@ author = "ANSYS, Inc."
 release = version = "0.1.dev0"
 
 # Select desired logo, theme, and declare the html title
-html_logo = pyansys_logo_black
 html_favicon = ansys_favicon
 html_theme = "ansys_sphinx_theme"
 html_short_title = html_title = "PyMechanical Embedding Examples"
+html_show_sourcelink = False
 
 # specify the location of your github repo
 html_theme_options = {
+    "logo": "pyansys",
     "github_url": "https://github.com/ansys/pymechanical-embedding-examples",
     "show_prev_next": False,
     "show_breadcrumbs": True,
@@ -36,12 +37,6 @@ html_theme_options = {
             "icon": "fa fa-comment fa-fw",
         },
     ],
-    "cheatsheet": {
-        "url": "https://cheatsheets.docs.pyansys.com/pymechanical_cheat_sheet.pdf",
-        "title": "PyMechanical cheat sheet",
-        "thumbnail": "https://cheatsheets.docs.pyansys.com/pymechanical_cheat_sheet.png",
-        "needs_download": True,
-    },
 }
 
 # Sphinx extensions
