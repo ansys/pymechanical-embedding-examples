@@ -1,9 +1,9 @@
 """ .. _ref_tips_03:
 
-Display project tree
+Project tree
 --------------------
 
-Displays the heirarchial Mechanical project structure.
+Display the heirarchial Mechanical project structure.
 """
 
 # %%
@@ -40,7 +40,7 @@ app.open(mechdb_path)
 app.print_tree()
 
 # %%
-# Display only tree under first analysis
+# Display tree only under first analysis
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app.print_tree(Model.Analyses[0])

@@ -43,7 +43,7 @@ app.plot()
 
 # %%
 # .. note::
-#     This visualization is currently available only for geometry.
+#     This visualization is currently available only for geometry and on version 24R2 or later
 
 # %%
 # Cleanup

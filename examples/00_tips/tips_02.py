@@ -88,6 +88,8 @@ Graphics.Camera.SetFit()
 Graphics.ExportImage(
     os.path.join(cwd, "geometry.png"), image_export_format, settings_720p
 )
+
+# Display image using matplotlib
 display_image("geometry.png")
 
 # %%
