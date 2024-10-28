@@ -95,10 +95,6 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements/requirements_doc.txt
 
-      - name: Update PyMechanical version in examples for 251
-        run: |
-          find ./examples -type f -name "*.py" -exec sed -i 's/version=242/version=251/g' {} +
-
       - name: Build docs
         env:
           SPHINXOPTS: '-j auto'
