@@ -17,7 +17,7 @@ from ansys.mechanical.core.examples import delete_downloads, download_file
 # %%
 # Embed mechanical and set global variables
 
-app = mech.App(version=242)
+app = mech.App()
 app.update_globals(globals())
 print(app)
 
