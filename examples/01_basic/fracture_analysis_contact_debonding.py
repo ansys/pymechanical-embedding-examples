@@ -278,6 +278,7 @@ ANALYSIS_SETTINGS.MaximumSubsteps = 100
 ANALYSIS_SETTINGS.InitialSubsteps = 100
 ANALYSIS_SETTINGS.MinimumSubsteps = 100
 ANALYSIS_SETTINGS.LargeDeflection = True
+ANALYSIS_SETTINGS.SIFS = False
 
 # %%
 # Define boundary conditions
