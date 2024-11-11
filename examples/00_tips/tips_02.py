@@ -12,13 +12,13 @@ Export image and display
 
 import os
 
-import ansys.mechanical.core as mech
+from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
 
 # %%
 # Embed Mechanical and set global variables
 
-app = mech.App()
+app = App()
 app.update_globals(globals())
 print(app)
 
@@ -80,7 +80,7 @@ def display_image(image_name):
 
 # %%
 # Export and display the image
-# ~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Fits the geometry in the viewing area
 Graphics.Camera.SetFit()

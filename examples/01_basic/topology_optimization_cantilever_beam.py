@@ -14,7 +14,7 @@ load, which is then transferred to the topology optimization.
 
 import os
 
-import ansys.mechanical.core as mech
+from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
@@ -22,7 +22,7 @@ from matplotlib import pyplot as plt
 # %%
 # Embed Mechanical and set global variables
 
-app = mech.App()
+app = App()
 app.update_globals(globals())
 print(app)
 

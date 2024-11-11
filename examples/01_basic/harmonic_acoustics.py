@@ -16,7 +16,7 @@ that vary sinusoidally with time.
 import os
 
 from PIL import Image
-import ansys.mechanical.core as mech
+from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
@@ -25,7 +25,7 @@ from matplotlib.animation import FuncAnimation
 # %%
 # Embed mechanical and set global variables
 
-app = mech.App()
+app = App()
 app.update_globals(globals())
 print(app)
 
