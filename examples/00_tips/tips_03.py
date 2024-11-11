@@ -11,13 +11,13 @@ Display the heirarchial Mechanical project structure.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-import ansys.mechanical.core as mech
+from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
 
 # %%
 # Embed Mechanical and set global variables
 
-app = mech.App()
+app = App()
 app.update_globals(globals())
 print(app)
 
@@ -41,7 +41,7 @@ app.print_tree()
 
 # %%
 # Display the tree only under the first analysis
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app.print_tree(Model.Analyses[0])
 

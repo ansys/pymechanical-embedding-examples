@@ -11,13 +11,13 @@ Visualize 3D imported geometry
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-import ansys.mechanical.core as mech
+from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
 
 # %%
 # Embed mechanical and set global variables
 
-app = mech.App()
+app = App()
 app.update_globals(globals())
 print(app)
 
