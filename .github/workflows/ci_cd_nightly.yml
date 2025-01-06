@@ -1,4 +1,4 @@
-name: Nightly doc build
+name: Nightly doc build for candidate image
 
 on:
   workflow_dispatch:
@@ -8,8 +8,7 @@ on:
 env:
   MAIN_PYTHON_VERSION: '3.10'
   DEV_MAJOR_REV: '25'
-  DEV_MINOR_REV: '1'
-  DEV_REV: '25.1_candidate'
+  DEV_MINOR_REV: '2'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,9 +25,9 @@ jobs:
     name: Save variations of revn
     runs-on: ubuntu-latest
     outputs:
-      major: ${{ steps.save-versions.outputs.major }}                                         # 25
-      minor: ${{ steps.save-versions.outputs.minor }}                                         # 1
-      dev_docker_image_version: ${{ steps.save-versions.outputs.dev_docker_image_version }}   # ghcr.io/ansys/mechanical:25.1_candidate
+      major: ${{ steps.save-versions.outputs.major }}
+      minor: ${{ steps.save-versions.outputs.minor }}
+      dev_docker_image_version: ${{ steps.save-versions.outputs.dev_docker_image_version }}
     steps:
       - id: save-versions
         run: |
@@ -63,7 +62,7 @@ jobs:
           echo "::group::Docker Info"
           echo "docker_info=$PUSHED_AT" >> $GITHUB_OUTPUT
           echo "build_info=$BUILD_DATE" >> $GITHUB_OUTPUT
-          echo "${{ env.DEV_REV }} pushed at $PUSHED_AT"
+          echo "${{ env.DEV_MAJOR_REV }}.${{ env.DEV_MINOR_REV }}_candidate pushed at $PUSHED_AT"
           echo "Build date : $BUILD_DATE"
           echo "::endgroup::"
 
@@ -135,6 +134,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: Nightly build failure on ${{ env.DEV_REV }} build at ${{ needs.display-docker-info.outputs.build_info }} , pushed at ${{ needs.display-docker-info.outputs.docker_info }} (UTC)
+          notification-summary: Nightly build failure on ${{ env.DEV_MAJOR_REV }}.${{ env.DEV_MINOR_REV }}_candidate build at ${{ needs.display-docker-info.outputs.build_info }} , pushed at ${{ needs.display-docker-info.outputs.docker_info }} (UTC)
           notification-color: dc3545
           timezone: America/Chicago
