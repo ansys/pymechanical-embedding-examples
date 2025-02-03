@@ -1,4 +1,4 @@
-""" .. _ref_tips_02:
+""".. _ref_tips_02:
 
 Export image
 ------------

@@ -1,4 +1,4 @@
-""" .. _ref_contact:
+""".. _ref_contact:
 
 Fracture Analysis - Contact debonding
 -------------------------------------

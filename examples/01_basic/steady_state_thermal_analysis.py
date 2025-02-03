@@ -1,4 +1,4 @@
-""" .. _ref_steady_state_thermal:
+""".. _ref_steady_state_thermal:
 
 Steady state thermal analysis
 -----------------------------

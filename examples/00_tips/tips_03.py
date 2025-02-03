@@ -1,4 +1,4 @@
-""" .. _ref_tips_03:
+""".. _ref_tips_03:
 
 Project tree
 --------------------
