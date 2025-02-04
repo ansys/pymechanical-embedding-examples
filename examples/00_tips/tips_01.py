@@ -1,4 +1,4 @@
-""" .. _ref_tips_01:
+""".. _ref_tips_01:
 
 3D visualization
 ----------------

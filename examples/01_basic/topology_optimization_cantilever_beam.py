@@ -1,4 +1,4 @@
-""" .. _ref_topology_optimization:
+""".. _ref_topology_optimization:
 
 Topology optimization of a simple cantilever beam
 -------------------------------------------------

@@ -1,4 +1,4 @@
-""" .. _ref_harmonic_acoustics:
+""".. _ref_harmonic_acoustics:
 
 Harmonic acoustic analysis
 --------------------------

@@ -1,4 +1,4 @@
-""" .. _ref_non_linear_analysis_rubber_boot_seal:
+""".. _ref_non_linear_analysis_rubber_boot_seal:
 
 Nonlinear Analysis of a Rubber Boot Seal Model
 ----------------------------------------------
