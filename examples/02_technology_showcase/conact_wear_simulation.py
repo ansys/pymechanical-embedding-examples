@@ -37,8 +37,7 @@ from matplotlib.animation import FuncAnimation
 # %%
 # Embed mechanical and set global variables
 
-app = App()
-app.update_globals(globals())
+app = App(globals=globals())
 print(app)
 
 cwd = os.path.join(os.getcwd(), "out")
