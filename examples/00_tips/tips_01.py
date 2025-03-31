@@ -17,10 +17,8 @@ from ansys.mechanical.core.examples import delete_downloads, download_file
 # %%
 # Embed mechanical and set global variables
 
-app = App()
-app.update_globals(globals())
+app = App(globals=globals())
 print(app)
-
 
 # %%
 # Download and import geometry

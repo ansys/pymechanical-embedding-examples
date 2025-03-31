@@ -18,9 +18,9 @@ from ansys.mechanical.core.examples import delete_downloads, download_file
 # %%
 # Embed Mechanical and set global variables
 
-app = App(globals=globals())
+app = App()
+app.update_globals(globals())
 print(app)
-
 
 # %%
 # Download and import geometry
@@ -32,7 +32,7 @@ geometry_path = download_file("Valve.pmdb", "pymechanical", "embedding")
 # %%
 # Import geometry
 
-geometry_import = Model.GeometryImportGroup.AddGeometryImport()
+geometry_import = DataModel.Project.Model.GeometryImportGroup.AddGeometryImport()
 geometry_import.Import(geometry_path)
 
 # %%
@@ -54,7 +54,7 @@ settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
 # Rotate the geometry if needed
-ExtAPI.Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
+Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
 
 
 # %%

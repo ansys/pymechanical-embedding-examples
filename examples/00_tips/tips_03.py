@@ -20,7 +20,6 @@ from ansys.mechanical.core.examples import delete_downloads, download_file
 app = App(globals=globals())
 print(app)
 
-
 # %%
 # Download the mechdb file
 # ~~~~~~~~~~~~~~~~~~~~~~~~
