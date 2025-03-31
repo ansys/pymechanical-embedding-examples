@@ -6,7 +6,7 @@ on:
     - cron: "0 3 * * *"
 
 env:
-  MAIN_PYTHON_VERSION: '3.10'
+  MAIN_PYTHON_VERSION: '3.12'
   DEV_MAJOR_REV: '25'
   DEV_MINOR_REV: '2'
 
