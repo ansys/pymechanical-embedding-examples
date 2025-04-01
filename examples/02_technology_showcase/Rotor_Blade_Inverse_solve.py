@@ -399,6 +399,8 @@ selection = NS_GRP.Children[2]
 Imported_Pressure.Location = selection
 Imported_Pressure.AppliedBy = LoadAppliedBy.Direct
 Imported_Pressure.ImportLoad()
+Imported_Pressure.Properties[4].InternalValue = 1
+Imported_Pressure.ExternalLoadScopingType = ExternalLoadScopingType.Nodal
 
 Tree.Activate([Imported_Pressure])
 Graphics.Camera.SetFit()
