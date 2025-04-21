@@ -15,6 +15,7 @@ equivalent stresses, contact, and bolt
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from pathlib import Path
+import typing
 
 from PIL import Image
 from ansys.mechanical.core import App
@@ -32,7 +33,7 @@ print(app)
 # Import the enums and global variables instead of using app.update_globals(globals())
 # or App(globals=globals())
 from ansys.mechanical.core.embedding.enum_importer import *
-from ansys.mechanical.core.embedding.imports import Transaction
+from ansys.mechanical.core.embedding.transaction import Transaction
 
 clr.AddReference("System.Collections")
 clr.AddReference("Ansys.ACT.WB1")
