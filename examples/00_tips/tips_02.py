@@ -32,7 +32,7 @@ geometry_path = download_file("Valve.pmdb", "pymechanical", "embedding")
 # %%
 # Import geometry
 
-geometry_import = DataModel.Project.Model.GeometryImportGroup.AddGeometryImport()
+geometry_import = Model.GeometryImportGroup.AddGeometryImport()
 geometry_import.Import(geometry_path)
 
 # %%
@@ -40,7 +40,7 @@ geometry_import.Import(geometry_path)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Orientation
-Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 
 # Export format
 image_export_format = GraphicsImageExportFormat.PNG
