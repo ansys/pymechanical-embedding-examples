@@ -15,7 +15,7 @@ from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
 
 # %%
-# Embed Mechanical and set global variables
+# Create an instance of the Mechanical embedded application
 
 app = App(globals=globals())
 print(app)
@@ -41,12 +41,16 @@ app.print_tree()
 # Display the tree only under the first analysis
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-app.print_tree(Model.Analyses[0])
+first_analysis = app.Model.Analyses[0]
+app.print_tree(first_analysis)
 
 
 # %%
-# Cleanup
-# ~~~~~~~
+# Clean up the downloaded files and app
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Delete the downloaded files
 delete_downloads()
+
+# Refresh the app
 app.new()

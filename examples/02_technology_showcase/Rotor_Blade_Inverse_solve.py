@@ -60,16 +60,80 @@ from matplotlib import pyplot as plt
 app = App(globals=globals())
 print(app)
 
-cwd = Path.cwd() / "out"
+# %%
+# Set the image output path and create functions to fit the camera and display images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Set the path for the output files (images, gifs, mechdat)
+output_path = Path.cwd() / "out"
 
 
-def display_image(image_name):
-    plt.figure(figsize=(16, 9))
-    image_path = cwd / image_name
-    plt.imshow(mpimg.imread(str(image_path)))
-    plt.xticks([])
-    plt.yticks([])
-    plt.axis("off")
+def set_camera_and_display_image(
+    camera: Ansys.ACT.Common.Graphics.MechanicalCameraWrapper,
+    graphics: Ansys.ACT.Common.Graphics.MechanicalGraphicsWrapper,
+    graphics_image_export_settings: Ansys.Mechanical.Graphics.GraphicsImageExportSettings,
+    image_output_path: Path,
+    image_name: str,
+) -> None:
+    """Set the camera to fit the model and display the image.
+
+    Parameters
+    ----------
+    camera : Ansys.ACT.Common.Graphics.MechanicalCameraWrapper
+        The camera object to set the view.
+    graphics : Ansys.ACT.Common.Graphics.MechanicalGraphicsWrapper
+        The graphics object to export the image.
+    graphics_image_export_settings : Ansys.Mechanical.Graphics.GraphicsImageExportSettings
+        The settings for exporting the image.
+    image_output_path : Path
+        The path to save the exported image.
+    image_name : str
+        The name of the exported image file.
+    """
+    # Set the camera to fit the mesh
+    camera.SetFit()
+    # Export the mesh image with the specified settings
+    image_path = image_output_path / image_name
+    graphics.ExportImage(
+        str(image_path), image_export_format, graphics_image_export_settings
+    )
+    # Display the exported mesh image
+    display_image(image_path)
+
+
+def display_image(
+    image_path: str,
+    pyplot_figsize_coordinates: tuple = (16, 9),
+    plot_xticks: list = [],
+    plot_yticks: list = [],
+    plot_axis: str = "off",
+) -> None:
+    """Display the image with the specified parameters.
+
+    Parameters
+    ----------
+    image_path : str
+        The path to the image file to display.
+    pyplot_figsize_coordinates : tuple
+        The size of the figure in inches (width, height).
+    plot_xticks : list
+        The x-ticks to display on the plot.
+    plot_yticks : list
+        The y-ticks to display on the plot.
+    plot_axis : str
+        The axis visibility setting ('on' or 'off').
+    """
+    # Set the figure size based on the coordinates specified
+    plt.figure(figsize=pyplot_figsize_coordinates)
+    # Read the image from the file into an array
+    plt.imshow(mpimg.imread(image_path))
+    # Get or set the current tick locations and labels of the x-axis
+    plt.xticks(plot_xticks)
+    # Get or set the current tick locations and labels of the y-axis
+    plt.yticks(plot_yticks)
+    # Turn off the axis
+    plt.axis(plot_axis)
+    # Display the figure
     plt.show()
 
 
@@ -293,11 +357,9 @@ automatic_method_Blade3.TargetLocation = selection
 automatic_method_Blade3.SweepNumberDivisions = 5
 
 mesh.GenerateMesh()
-
-camera.SetFit()
-blade_mesh_image = cwd / "blade_mesh.png"
-graphics.ExportImage(str(blade_mesh_image), image_export_format, settings_720p)
-display_image(blade_mesh_image.name)
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, "blade_mesh.png"
+)
 
 # %%
 # Define analysis settings
@@ -403,11 +465,9 @@ imported_pressure.AppliedBy = LoadAppliedBy.Direct
 imported_pressure.ImportLoad()
 
 app.Tree.Activate([imported_pressure])
-camera.SetFit()
-imported_pressure_image = cwd / "imported_pressure.png"
-graphics.ExportImage(str(imported_pressure_image), image_export_format, settings_720p)
-display_image(imported_pressure_image.name)
-
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, "imported_pressure.png"
+)
 
 ###################################################################################
 # Import Temperature
@@ -468,10 +528,9 @@ imported_body_temperature.Location = selection
 imported_body_temperature.ImportLoad()
 
 app.Tree.Activate([imported_body_temperature])
-camera.SetFit()
-imported_temp_image = cwd / "imported_temperature.png"
-graphics.ExportImage(str(imported_temp_image), image_export_format, settings_720p)
-display_image(imported_temp_image.name)
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, "imported_temperature.png"
+)
 
 # %%
 # Postprocessing
@@ -513,24 +572,24 @@ app.Tree.Activate([total_deformation1])
 graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
     Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.ExtraModelDisplay.NoWireframe
 )
-deformation_image = cwd / "deformation.png"
-graphics.ExportImage(str(deformation_image), image_export_format, settings_720p)
-display_image(deformation_image.name)
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, "total_deformation.png"
+)
 
 # %%
 # Equivalent stress
 
 app.Tree.Activate([thermal_strain1])
-thermal_strain_image = cwd / "termal_strain.png"
-graphics.ExportImage(str(thermal_strain_image), image_export_format, settings_720p)
-display_image(thermal_strain_image.name)
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, "thermal_strain.png"
+)
 
 # %%
 # Cleanup
 # ~~~~~~~
 # Save project
 
-mechdat_file = cwd / "blade_inverse.mechdat"
+mechdat_file = output_path / "blade_inverse.mechdat"
 app.save(str(mechdat_file))
 app.new()
 

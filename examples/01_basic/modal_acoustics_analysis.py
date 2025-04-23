@@ -34,16 +34,80 @@ from matplotlib.animation import FuncAnimation
 app = App(globals=globals())
 print(app)
 
-cwd = Path.cwd() / "out"
+# %%
+# Set the image output path and create functions to fit the camera and display images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Set the path for the output files (images, gifs, mechdat)
+output_path = Path.cwd() / "out"
 
 
-def display_image(image_name):
-    plt.figure(figsize=(16, 9))
-    image_path = cwd / image_name
-    plt.imshow(mpimg.imread(str(image_path)))
-    plt.xticks([])
-    plt.yticks([])
-    plt.axis("off")
+def set_camera_and_display_image(
+    camera: Ansys.ACT.Common.Graphics.MechanicalCameraWrapper,
+    graphics: Ansys.ACT.Common.Graphics.MechanicalGraphicsWrapper,
+    graphics_image_export_settings: Ansys.Mechanical.Graphics.GraphicsImageExportSettings,
+    image_output_path: Path,
+    image_name: str,
+) -> None:
+    """Set the camera to fit the model and display the image.
+
+    Parameters
+    ----------
+    camera : Ansys.ACT.Common.Graphics.MechanicalCameraWrapper
+        The camera object to set the view.
+    graphics : Ansys.ACT.Common.Graphics.MechanicalGraphicsWrapper
+        The graphics object to export the image.
+    graphics_image_export_settings : Ansys.Mechanical.Graphics.GraphicsImageExportSettings
+        The settings for exporting the image.
+    image_output_path : Path
+        The path to save the exported image.
+    image_name : str
+        The name of the exported image file.
+    """
+    # Set the camera to fit the mesh
+    camera.SetFit()
+    # Export the mesh image with the specified settings
+    image_path = image_output_path / image_name
+    graphics.ExportImage(
+        str(image_path), image_export_format, graphics_image_export_settings
+    )
+    # Display the exported mesh image
+    display_image(image_path)
+
+
+def display_image(
+    image_path: str,
+    pyplot_figsize_coordinates: tuple = (16, 9),
+    plot_xticks: list = [],
+    plot_yticks: list = [],
+    plot_axis: str = "off",
+) -> None:
+    """Display the image with the specified parameters.
+
+    Parameters
+    ----------
+    image_path : str
+        The path to the image file to display.
+    pyplot_figsize_coordinates : tuple
+        The size of the figure in inches (width, height).
+    plot_xticks : list
+        The x-ticks to display on the plot.
+    plot_yticks : list
+        The y-ticks to display on the plot.
+    plot_axis : str
+        The axis visibility setting ('on' or 'off').
+    """
+    # Set the figure size based on the coordinates specified
+    plt.figure(figsize=pyplot_figsize_coordinates)
+    # Read the image from the file into an array
+    plt.imshow(mpimg.imread(image_path))
+    # Get or set the current tick locations and labels of the x-axis
+    plt.xticks(plot_xticks)
+    # Get or set the current tick locations and labels of the y-axis
+    plt.yticks(plot_yticks)
+    # Turn off the axis
+    plt.axis(plot_axis)
+    # Display the figure
     plt.show()
 
 
@@ -87,10 +151,9 @@ geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
-camera.SetFit()
-geometry_image = cwd / "geometry.png"
-graphics.ExportImage(str(geometry_image), image_export_format, settings_720p)
-display_image(geometry_image.name)
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, "geometry.png"
+)
 
 # %%
 # Store all variables necessary for analysis
@@ -274,9 +337,7 @@ method3.SourceTargetSelection = 4
 
 mesh.GenerateMesh()
 
-mesh_image = cwd / "mesh.png"
-graphics.ExportImage(str(mesh_image), image_export_format, settings_720p)
-display_image(mesh_image.name)
+set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh.png")
 
 # %%
 # Insert contacts
@@ -393,8 +454,9 @@ fixed_support.Location = fvert
 
 modal_acst.Activate()
 
-graphics.ExportImage(str(geometry_image), image_export_format, settings_720p)
-display_image(geometry_image.name)
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, "geometry.png"
+)
 
 # %%
 # Add results
@@ -462,20 +524,17 @@ else:
 # Total deformation - mode 1
 
 app.Tree.Activate([total_deformation_1])
-camera.SetFit()
-total_deformation_image = cwd / "total_deformation_1.png"
-graphics.ExportImage(str(total_deformation_image), image_export_format, settings_720p)
-display_image(total_deformation_image.name)
-
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, "total_deformation.png"
+)
 
 # %%
 # Acoustic pressure
 
 app.Tree.Activate([acoustic_pressure_result])
-acoustic_pressure_image = cwd / "acoustic_pressure.png"
-graphics.ExportImage(str(acoustic_pressure_image), image_export_format, settings_720p)
-display_image(acoustic_pressure_image.name)
-
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, "acoustic_pressure.png"
+)
 
 # %%
 # Display all modal frequency, force reaction
@@ -525,25 +584,53 @@ settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
 settings_720p.Width = 1280
 settings_720p.Height = 720
 
-deformation_gif = cwd / "deformation_10.gif"
+deformation_gif = output_path / "total_deformation_10.gif"
 total_deformation_10.ExportAnimation(
     str(deformation_gif), animation_export_format, settings_720p
 )
-gif = Image.open(deformation_gif)
-fig, ax = plt.subplots(figsize=(16, 9))
-ax.axis("off")
-img = ax.imshow(gif.convert("RGBA"))
 
 
-def update(frame):
+def update_animation(frame: int) -> list[mpimg.AxesImage]:
+    """Update the animation frame for the GIF.
+
+    Parameters
+    ----------
+    frame : int
+        The frame number to update the animation.
+
+    Returns
+    -------
+    list[mpimg.AxesImage]
+        A list containing the updated image for the animation.
+    """
+    # Seeks to the given frame in this sequence file
     gif.seek(frame)
-    img.set_array(gif.convert("RGBA"))
-    return [img]
+    # Set the image array to the current frame of the GIF
+    image.set_data(gif.convert("RGBA"))
+    # Return the updated image
+    return [image]
 
 
-ani = FuncAnimation(
-    fig, update, frames=range(gif.n_frames), interval=100, repeat=True, blit=True
+# Open the GIF file and create an animation
+gif = Image.open(deformation_gif)
+# Set the subplots for the animation and turn off the axis
+figure, axes = plt.subplots(figsize=(16, 9))
+axes.axis("off")
+# Change the color of the image
+image = axes.imshow(gif.convert("RGBA"))
+
+# Create the animation using the figure, update_animation function, and the GIF frames
+# Set the interval between frames to 200 milliseconds and repeat the animation
+FuncAnimation(
+    figure,
+    update_animation,
+    frames=range(gif.n_frames),
+    interval=100,
+    repeat=True,
+    blit=True,
 )
+
+# Show the animation
 plt.show()
 
 # %%
@@ -557,7 +644,7 @@ app.print_tree()
 # ~~~~~~~
 # Save project
 
-mechdat_file = cwd / "modal_acoustics.mechdat"
+mechdat_file = output_path / "modal_acoustics.mechdat"
 app.save(str(mechdat_file))
 app.new()
 

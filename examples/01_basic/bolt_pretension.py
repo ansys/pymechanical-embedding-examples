@@ -27,6 +27,7 @@ from matplotlib.animation import FuncAnimation
 
 # %%
 # Create an instance of the Mechanical embedded application
+
 app = App()
 print(app)
 
