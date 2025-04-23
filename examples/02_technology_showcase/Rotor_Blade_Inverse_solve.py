@@ -47,7 +47,7 @@ Inverse-Solving Analysis: A nonlinear static analysis using inverse solving
 
 """
 
-import os
+from pathlib import Path
 
 from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
@@ -60,12 +60,13 @@ from matplotlib import pyplot as plt
 app = App(globals=globals())
 print(app)
 
-cwd = os.path.join(os.getcwd(), "out")
+cwd = Path.cwd() / "out"
 
 
 def display_image(image_name):
     plt.figure(figsize=(16, 9))
-    plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
+    image_path = cwd / image_name
+    plt.imshow(mpimg.imread(str(image_path)))
     plt.xticks([])
     plt.yticks([])
     plt.axis("off")
@@ -107,11 +108,13 @@ temp_data_path = download_file(
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-cwd = os.path.join(os.getcwd(), "out")
-Graphics.Camera.SetSpecificViewOrientation(
+graphics = app.Graphics
+camera = graphics.Camera
+
+camera.SetSpecificViewOrientation(
     Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
 )
-Graphics.Camera.SetFit()
+camera.SetFit()
 image_export_format = Ansys.Mechanical.DataModel.Enums.GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = (
@@ -128,7 +131,9 @@ settings_720p.CurrentGraphicsDisplay = False
 # ~~~~~~~~~~~~~~~
 # Reads geometry file and display
 
-geometry_import_group = Model.GeometryImportGroup
+model = app.Model
+
+geometry_import_group = model.GeometryImportGroup
 geometry_import = geometry_import_group.AddGeometryImport()
 geometry_import_format = (
     Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
@@ -149,62 +154,61 @@ app.plot()
 # ~~~~~~~~~~~~~~~~
 # Import material from xml file and assign it to bodies
 
-materials = Model.Materials
+materials = model.Materials
 materials.Import(mat_path)
 
-PRT1 = [x for x in Tree.AllObjects if x.Name == "Component2\Rotor11"][0]
-PRT2 = [x for x in Tree.AllObjects if x.Name == "Component3"][0]
-PRT2_Blade_1 = PRT2.Children[0]
-PRT2_Blade_2 = PRT2.Children[1]
-PRT2_Blade_3 = PRT2.Children[2]
-PRT1.Material = "MAT1 (Setup, File1)"
-PRT2_Blade_1.Material = "MAT1 (Setup, File1)"
-PRT2_Blade_2.Material = "MAT1 (Setup, File1)"
-PRT2_Blade_3.Material = "MAT1 (Setup, File1)"
+part1 = [x for x in app.Tree.AllObjects if x.Name == "Component2\Rotor11"][0]
+part2 = [x for x in app.Tree.AllObjects if x.Name == "Component3"][0]
+part2_blade1 = part2.Children[0]
+part2_blade2 = part2.Children[1]
+part2_blade3 = part2.Children[2]
+part1.Material = "MAT1 (Setup, File1)"
+part2_blade1.Material = "MAT1 (Setup, File1)"
+part2_blade2.Material = "MAT1 (Setup, File1)"
+part2_blade3.Material = "MAT1 (Setup, File1)"
 
 # %%
 # Define units system and store variables
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Select MKS units
-ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
+app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
 # Store all main tree nodes as variables
-MODEL = Model
-GEOM = Model.Geometry
-MESH = Model.Mesh
-MAT_GRP = Model.Materials
-CS = Model.CoordinateSystems
-NS_GRP = Model.NamedSelections
+geometry = model.Geometry
+mesh = model.Mesh
+materials = model.Materials
+coordinate_systems = model.CoordinateSystems
+named_selections = model.NamedSelections
 
 # %%
 # Define named selection
 # ~~~~~~~~~~~~~~~~~~~~~~
 # Create NS for named selection
 
-BLADE_NS = [x for x in Tree.AllObjects if x.Name == "Blade"][0]
-BLADE_SURF_NS = [x for x in Tree.AllObjects if x.Name == "Blade_Surf"][0]
-FIX_SUPPORT_NS = [x for x in Tree.AllObjects if x.Name == "Fix_Support"][0]
-BLADE_HUB_NS = [x for x in Tree.AllObjects if x.Name == "Blade_Hub"][0]
-HUB_CONTACT_NS = [x for x in Tree.AllObjects if x.Name == "Hub_Contact"][0]
-BLADE_TARGET_NS = [x for x in Tree.AllObjects if x.Name == "Blade_Target"][0]
-Hub_Low_NS = [x for x in Tree.AllObjects if x.Name == "Hub_Low"][0]
-Hub_High_NS = [x for x in Tree.AllObjects if x.Name == "Hub_High"][0]
-BLADE1_NS = [x for x in Tree.AllObjects if x.Name == "Blade1"][0]
-BLADE1_Source_NS = [x for x in Tree.AllObjects if x.Name == "Blade1_Source"][0]
-BLADE1_TARGET_NS = [x for x in Tree.AllObjects if x.Name == "Blade1_Target"][0]
-BLADE2_NS = [x for x in Tree.AllObjects if x.Name == "Blade2"][0]
-BLADE2_Source_NS = [x for x in Tree.AllObjects if x.Name == "Blade2_Source"][0]
-BLADE2_TARGET_NS = [x for x in Tree.AllObjects if x.Name == "Blade2_Target"][0]
-BLADE3_NS = [x for x in Tree.AllObjects if x.Name == "Blade3"][0]
-BLADE3_Source_NS = [x for x in Tree.AllObjects if x.Name == "Blade3_Source"][0]
-BLADE3_TARGET_NS = [x for x in Tree.AllObjects if x.Name == "Blade3_Target"][0]
+blade_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade"][0]
+blade_surface_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade_Surf"][0]
+fix_support_ns = [x for x in app.Tree.AllObjects if x.Name == "Fix_Support"][0]
+blade_hub_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade_Hub"][0]
+hub_contact_ns = [x for x in app.Tree.AllObjects if x.Name == "Hub_Contact"][0]
+blade_target_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade_Target"][0]
+hub_low_ns = [x for x in app.Tree.AllObjects if x.Name == "Hub_Low"][0]
+hub_high_ns = [x for x in app.Tree.AllObjects if x.Name == "Hub_High"][0]
+blade1_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade1"][0]
+blade1_source_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade1_Source"][0]
+blade1_target_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade1_Target"][0]
+blade2_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade2"][0]
+blade2_source_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade2_Source"][0]
+blade2_target_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade2_Target"][0]
+blade3_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade3"][0]
+blade3_source_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade3_Source"][0]
+blade3_target_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade3_Target"][0]
 
 # %%
 # Define coordinate system
 # ~~~~~~~~~~~~~~~~~~~~~~~~
 # Create cylindrical coordinate system
 
-coordinate_systems = Model.CoordinateSystems
+coordinate_systems = model.CoordinateSystems
 coord_system = coordinate_systems.AddCoordinateSystem()
 coord_system.CoordinateSystemType = (
     Ansys.ACT.Interfaces.Analysis.CoordinateSystemTypeEnum.Cylindrical
@@ -218,35 +222,35 @@ coord_system.OriginDefineBy = CoordinateSystemAlignmentType.Fixed
 
 # Define connections
 
-CONN_GRP = Model.Connections
-CONT_REG1 = CONN_GRP.AddContactRegion()
-CONT_REG1.SourceLocation = NS_GRP.Children[6]
-CONT_REG1.TargetLocation = NS_GRP.Children[5]
-CONT_REG1.Behavior = ContactBehavior.AutoAsymmetric
-CONT_REG1.ContactFormulation = ContactFormulation.MPC
+connections = model.Connections
+contact_region1 = connections.AddContactRegion()
+contact_region1.SourceLocation = named_selections.Children[6]
+contact_region1.TargetLocation = named_selections.Children[5]
+contact_region1.Behavior = ContactBehavior.AutoAsymmetric
+contact_region1.ContactFormulation = ContactFormulation.MPC
 
 # %%
 # Define mesh settings and generate mesh
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-MSH = Model.Mesh
-MSH.ElementSize = Quantity(0.004, "m")
-MSH.UseAdaptiveSizing = False
-MSH.MaximumSize = Quantity(0.004, "m")
-MSH.ShapeChecking = 0
-automatic_method_Hub = MSH.AddAutomaticMethod()
-automatic_method_Hub.Location = NS_GRP.Children[0]
+mesh = model.Mesh
+mesh.ElementSize = Quantity(0.004, "m")
+mesh.UseAdaptiveSizing = False
+mesh.MaximumSize = Quantity(0.004, "m")
+mesh.ShapeChecking = 0
+automatic_method_Hub = mesh.AddAutomaticMethod()
+automatic_method_Hub.Location = named_selections.Children[0]
 automatic_method_Hub.Method = MethodType.Sweep
 automatic_method_Hub.SweepNumberDivisions = 6
 
-match_control_Hub = MSH.AddMatchControl()
-match_control_Hub.LowNamedSelection = NS_GRP.Children[7]
-match_control_Hub.HighNamedSelection = NS_GRP.Children[8]
+match_control_Hub = mesh.AddMatchControl()
+match_control_Hub.LowNamedSelection = named_selections.Children[7]
+match_control_Hub.HighNamedSelection = named_selections.Children[8]
 cyc_coordinate_system = coordinate_systems.Children[1]
 match_control_Hub.RotationAxis = cyc_coordinate_system
 
-sizing_Blade = MSH.AddSizing()
-selection = NS_GRP.Children[5]
+sizing_Blade = mesh.AddSizing()
+selection = named_selections.Children[5]
 sizing_Blade.Location = selection
 # sizing_Blade.ElementSize = Quantity(1e-3, "m")
 sizing_Blade.ElementSize = Quantity(1e-2, "m")
@@ -255,81 +259,80 @@ sizing_Blade.CurvatureNormalAngle = Quantity(0.31, "rad")
 # sizing_Blade.LocalMinimumSize = Quantity(0.00025, "m")
 sizing_Blade.LocalMinimumSize = Quantity(0.0005, "m")
 
-automatic_method_Blade1 = MSH.AddAutomaticMethod()
-selection = NS_GRP.Children[9]
+automatic_method_Blade1 = mesh.AddAutomaticMethod()
+selection = named_selections.Children[9]
 automatic_method_Blade1.Location = selection
 automatic_method_Blade1.Method = MethodType.Sweep
 automatic_method_Blade1.SourceTargetSelection = 2
-selection = NS_GRP.Children[10]
+selection = named_selections.Children[10]
 automatic_method_Blade1.SourceLocation = selection
-selection = NS_GRP.Children[11]
+selection = named_selections.Children[11]
 automatic_method_Blade1.TargetLocation = selection
 automatic_method_Blade1.SweepNumberDivisions = 5
 
-automatic_method_Blade2 = MSH.AddAutomaticMethod()
-selection = NS_GRP.Children[12]
+automatic_method_Blade2 = mesh.AddAutomaticMethod()
+selection = named_selections.Children[12]
 automatic_method_Blade2.Location = selection
 automatic_method_Blade2.Method = MethodType.Sweep
 automatic_method_Blade2.SourceTargetSelection = 2
-selection = NS_GRP.Children[13]
+selection = named_selections.Children[13]
 automatic_method_Blade2.SourceLocation = selection
-selection = NS_GRP.Children[14]
+selection = named_selections.Children[14]
 automatic_method_Blade2.TargetLocation = selection
 automatic_method_Blade2.SweepNumberDivisions = 5
 
-automatic_method_Blade3 = MSH.AddAutomaticMethod()
-selection = NS_GRP.Children[15]
+automatic_method_Blade3 = mesh.AddAutomaticMethod()
+selection = named_selections.Children[15]
 automatic_method_Blade3.Location = selection
 automatic_method_Blade3.Method = MethodType.Sweep
 automatic_method_Blade3.SourceTargetSelection = 2
-selection = NS_GRP.Children[16]
+selection = named_selections.Children[16]
 automatic_method_Blade3.SourceLocation = selection
-selection = NS_GRP.Children[17]
+selection = named_selections.Children[17]
 automatic_method_Blade3.TargetLocation = selection
 automatic_method_Blade3.SweepNumberDivisions = 5
 
-MSH.GenerateMesh()
+mesh.GenerateMesh()
 
-Graphics.Camera.SetFit()
-Graphics.ExportImage(
-    os.path.join(cwd, "blade_mesh.png"), image_export_format, settings_720p
-)
-display_image("blade_mesh.png")
+camera.SetFit()
+blade_mesh_image = cwd / "blade_mesh.png"
+graphics.ExportImage(str(blade_mesh_image), image_export_format, settings_720p)
+display_image(blade_mesh_image.name)
 
 # %%
 # Define analysis settings
 # ~~~~~~~~~~~~~~~~~~~~~~~~
 # Setup static structural settings with inverse solve
 
-Model.AddStaticStructuralAnalysis()
-STAT_STRUC = Model.Analyses[0]
-ANA_SETTINGS = ExtAPI.DataModel.Project.Model.Analyses[0].AnalysisSettings
-ANA_SETTINGS.AutomaticTimeStepping = AutomaticTimeStepping.On
-ANA_SETTINGS.NumberOfSubSteps = 10
+model.AddStaticStructuralAnalysis()
+static_structural_analysis = model.Analyses[0]
+analysis_settings = app.ExtAPI.DataModel.Project.Model.Analyses[0].AnalysisSettings
+analysis_settings.AutomaticTimeStepping = AutomaticTimeStepping.On
+analysis_settings.NumberOfSubSteps = 10
 
-ANA_SETTINGS.Activate()
+analysis_settings.Activate()
 
-CMD1 = STAT_STRUC.AddCommandSnippet()
+cmd1 = static_structural_analysis.AddCommandSnippet()
 # Add convergence criterion using command snippet.
-AWM = """CNVTOL,U,1.0,5e-5,1,,"""
-CMD1.AppendText(AWM)
+archard_wear_model = """CNVTOL,U,1.0,5e-5,1,,"""
+cmd1.AppendText(archard_wear_model)
 
-ANA_SETTINGS.InverseOption = True
-ANA_SETTINGS.LargeDeflection = True
+analysis_settings.InverseOption = True
+analysis_settings.LargeDeflection = True
 
 # %%
 # Define boundary conditions
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Apply rotational velocity
 
-ROT_VEL = STAT_STRUC.AddRotationalVelocity()
-ROT_VEL.DefineBy = LoadDefineBy.Components
-ROT_VEL.ZComponent.Inputs[0].DiscreteValues = [
+rotational_velocity = static_structural_analysis.AddRotationalVelocity()
+rotational_velocity.DefineBy = LoadDefineBy.Components
+rotational_velocity.ZComponent.Inputs[0].DiscreteValues = [
     Quantity("0 [s]"),
     Quantity("1 [s]"),
     Quantity("2 [s]"),
 ]
-ROT_VEL.ZComponent.Output.DiscreteValues = [
+rotational_velocity.ZComponent.Output.DiscreteValues = [
     Quantity("0 [rad/s]"),
     Quantity("1680 [rad/s]"),
     Quantity("1680 [rad/s]"),
@@ -337,9 +340,9 @@ ROT_VEL.ZComponent.Output.DiscreteValues = [
 
 # Apply Fixed Support Condition
 
-Fixed_Support = STAT_STRUC.AddFixedSupport()
-selection = NS_GRP.Children[3]
-Fixed_Support.Location = selection
+fixed_support = static_structural_analysis.AddFixedSupport()
+selection = named_selections.Children[3]
+fixed_support.Location = selection
 
 
 # %%
@@ -347,7 +350,7 @@ Fixed_Support.Location = selection
 # ~~~~~~~~~~~~~~~~~~~
 # Import CFX pressure data and apply it to structural blade surface
 
-Imported_Load_Group = STAT_STRUC.AddImportedLoadExternalData()
+imported_load_group = static_structural_analysis.AddImportedLoadExternalData()
 
 external_data_files = Ansys.Mechanical.ExternalData.ExternalDataFileCollection()
 external_data_files.SaveFilesWithProject = False
@@ -392,19 +395,18 @@ import_settings.UseColumn(
     "Pressure@D",
 )
 
-Imported_Load_Group.ImportExternalDataFiles(external_data_files)
-Imported_Pressure = Imported_Load_Group.AddImportedPressure()
-selection = NS_GRP.Children[2]
-Imported_Pressure.Location = selection
-Imported_Pressure.AppliedBy = LoadAppliedBy.Direct
-Imported_Pressure.ImportLoad()
+imported_load_group.ImportExternalDataFiles(external_data_files)
+imported_pressure = imported_load_group.AddImportedPressure()
+selection = named_selections.Children[2]
+imported_pressure.Location = selection
+imported_pressure.AppliedBy = LoadAppliedBy.Direct
+imported_pressure.ImportLoad()
 
-Tree.Activate([Imported_Pressure])
-Graphics.Camera.SetFit()
-Graphics.ExportImage(
-    os.path.join(cwd, "imported_pressure.png"), image_export_format, settings_720p
-)
-display_image("imported_pressure.png")
+app.Tree.Activate([imported_pressure])
+camera.SetFit()
+imported_pressure_image = cwd / "imported_pressure.png"
+graphics.ExportImage(str(imported_pressure_image), image_export_format, settings_720p)
+display_image(imported_pressure_image.name)
 
 
 ###################################################################################
@@ -412,7 +414,7 @@ display_image("imported_pressure.png")
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Import temperature data and apply it to structural blade
 
-Imported_Load_Group = STAT_STRUC.AddImportedLoadExternalData()
+imported_load_group = static_structural_analysis.AddImportedLoadExternalData()
 
 external_data_files = Ansys.Mechanical.ExternalData.ExternalDataFileCollection()
 external_data_files.SaveFilesWithProject = False
@@ -458,38 +460,37 @@ import_settings.UseColumn(
     "Temperature@D",
 )
 
-Imported_Load_Group.ImportExternalDataFiles(external_data_files)
-imported_body_temperature = Imported_Load_Group.AddImportedBodyTemperature()
+imported_load_group.ImportExternalDataFiles(external_data_files)
+imported_body_temperature = imported_load_group.AddImportedBodyTemperature()
 
-selection = NS_GRP.Children[1]
+selection = named_selections.Children[1]
 imported_body_temperature.Location = selection
 imported_body_temperature.ImportLoad()
 
-Tree.Activate([imported_body_temperature])
-Graphics.Camera.SetFit()
-Graphics.ExportImage(
-    os.path.join(cwd, "imported_temperature.png"), image_export_format, settings_720p
-)
-display_image("imported_temperature.png")
+app.Tree.Activate([imported_body_temperature])
+camera.SetFit()
+imported_temp_image = cwd / "imported_temperature.png"
+graphics.ExportImage(str(imported_temp_image), image_export_format, settings_720p)
+display_image(imported_temp_image.name)
 
 # %%
 # Postprocessing
 # ~~~~~~~~~~~~~~
 # Insert results
 
-SOLN = STAT_STRUC.Solution
+solution = static_structural_analysis.Solution
 
-TOT_DEF1 = SOLN.AddTotalDeformation()
-TOT_DEF1.DisplayTime = Quantity("1 [s]")
+total_deformation1 = solution.AddTotalDeformation()
+total_deformation1.DisplayTime = Quantity("1 [s]")
 
-EQV_STRS1 = SOLN.AddEquivalentStress()
-EQV_STRS1.DisplayTime = Quantity("1 [s]")
+equivalent_stress1 = solution.AddEquivalentStress()
+equivalent_stress1.DisplayTime = Quantity("1 [s]")
 
-EQV_TOT_STRN1 = SOLN.AddEquivalentTotalStrain()
-EQV_TOT_STRN1.DisplayTime = Quantity("1 [s]")
+equivalent_total_strain1 = solution.AddEquivalentTotalStrain()
+equivalent_total_strain1.DisplayTime = Quantity("1 [s]")
 
-THERM_STRN1 = SOLN.AddThermalStrain()
-THERM_STRN1.DisplayTime = Quantity("1 [s]")
+thermal_strain1 = solution.AddThermalStrain()
+thermal_strain1.DisplayTime = Quantity("1 [s]")
 
 
 # %%
@@ -497,8 +498,8 @@ THERM_STRN1.DisplayTime = Quantity("1 [s]")
 # ~~~~~~~~~~~~
 # Solve inverse analysis on blade model
 
-SOLN.Solve(True)
-STAT_STRUC_SS = SOLN.Status
+solution.Solve(True)
+soln_status = solution.Status
 
 # %%
 # Postprocessing
@@ -508,30 +509,29 @@ STAT_STRUC_SS = SOLN.Status
 # %%
 # Total deformation
 
-Tree.Activate([TOT_DEF1])
-Graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
+app.Tree.Activate([total_deformation1])
+graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
     Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.ExtraModelDisplay.NoWireframe
 )
-Graphics.ExportImage(
-    os.path.join(cwd, "deformation.png"), image_export_format, settings_720p
-)
-display_image("deformation.png")
+deformation_image = cwd / "deformation.png"
+graphics.ExportImage(str(deformation_image), image_export_format, settings_720p)
+display_image(deformation_image.name)
 
 # %%
 # Equivalent stress
 
-Tree.Activate([THERM_STRN1])
-Graphics.ExportImage(
-    os.path.join(cwd, "thermal_strain.png"), image_export_format, settings_720p
-)
-display_image("thermal_strain.png")
+app.Tree.Activate([thermal_strain1])
+thermal_strain_image = cwd / "termal_strain.png"
+graphics.ExportImage(str(thermal_strain_image), image_export_format, settings_720p)
+display_image(thermal_strain_image.name)
 
 # %%
 # Cleanup
 # ~~~~~~~
 # Save project
 
-app.save(os.path.join(cwd, "blade_inverse.mechdat"))
+mechdat_file = cwd / "blade_inverse.mechdat"
+app.save(str(mechdat_file))
 app.new()
 
 # %%

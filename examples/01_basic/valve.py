@@ -10,7 +10,7 @@ This example demonstrates a basic implementation of a valve in Python.
 # Import necessary libraries
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-import os
+from pathlib import Path
 
 from PIL import Image
 from ansys.mechanical.core import App
@@ -25,12 +25,13 @@ from matplotlib.animation import FuncAnimation
 app = App(globals=globals())
 print(app)
 
-cwd = os.path.join(os.getcwd(), "out")
+cwd = Path.cwd() / "out"
 
 
 def display_image(image_name):
     plt.figure(figsize=(16, 9))
-    plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
+    image_path = cwd / image_name
+    plt.imshow(mpimg.imread(str(image_path)))
     plt.xticks([])
     plt.yticks([])
     plt.axis("off")
@@ -41,7 +42,10 @@ def display_image(image_name):
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+graphics = app.Graphics
+camera = graphics.Camera
+
+camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -61,7 +65,9 @@ geometry_path = download_file("Valve.pmdb", "pymechanical", "embedding")
 # %%
 # Import geometry
 
-geometry_import = Model.GeometryImportGroup.AddGeometryImport()
+model = app.Model
+
+geometry_import = model.GeometryImportGroup.AddGeometryImport()
 geometry_import_format = (
     Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
 )
@@ -76,14 +82,14 @@ app.plot()
 # %%
 # Assign materials and mesh the geometry
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-material_assignment = Model.Materials.AddMaterialAssignment()
+material_assignment = model.Materials.AddMaterialAssignment()
 material_assignment.Material = "Structural Steel"
-sel = ExtAPI.SelectionManager.CreateSelectionInfo(
+sel = app.ExtAPI.SelectionManager.CreateSelectionInfo(
     Ansys.ACT.Interfaces.Common.SelectionTypeEnum.GeometryEntities
 )
 sel.Ids = [
     body.GetGeoBody().Id
-    for body in Model.Geometry.GetChildren(
+    for body in model.Geometry.GetChildren(
         Ansys.Mechanical.DataModel.Enums.DataModelObjectCategory.Body, True
     )
 ]
@@ -92,39 +98,39 @@ material_assignment.Location = sel
 # %%
 # Define mesh settings,  generate mesh
 
-mesh = Model.Mesh
+mesh = model.Mesh
 mesh.ElementSize = Quantity(25, "mm")
 mesh.GenerateMesh()
-Tree.Activate([mesh])
-Graphics.ExportImage(os.path.join(cwd, "mesh.png"), image_export_format, settings_720p)
-display_image("mesh.png")
+app.Tree.Activate([mesh])
+mesh_image = cwd / "mesh.png"
+graphics.ExportImage(str(mesh_image), image_export_format, settings_720p)
+display_image(mesh_image.name)
 
 # %%
 # Define analysis and boundary conditions
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-analysis = Model.AddStaticStructuralAnalysis()
+analysis = model.AddStaticStructuralAnalysis()
 
 fixed_support = analysis.AddFixedSupport()
-fixed_support.Location = ExtAPI.DataModel.GetObjectsByName("NSFixedSupportFaces")[0]
+fixed_support.Location = app.ExtAPI.DataModel.GetObjectsByName("NSFixedSupportFaces")[0]
 
 frictionless_support = analysis.AddFrictionlessSupport()
-frictionless_support.Location = ExtAPI.DataModel.GetObjectsByName(
+frictionless_support.Location = app.ExtAPI.DataModel.GetObjectsByName(
     "NSFrictionlessSupportFaces"
 )[0]
 
 pressure = analysis.AddPressure()
-pressure.Location = ExtAPI.DataModel.GetObjectsByName("NSInsideFaces")[0]
+pressure.Location = app.ExtAPI.DataModel.GetObjectsByName("NSInsideFaces")[0]
 
 pressure.Magnitude.Inputs[0].DiscreteValues = [Quantity("0 [s]"), Quantity("1 [s]")]
 pressure.Magnitude.Output.DiscreteValues = [Quantity("0 [Pa]"), Quantity("15 [MPa]")]
 
 analysis.Activate()
-Graphics.Camera.SetFit()
-Graphics.ExportImage(
-    os.path.join(cwd, "boundary_conditions.png"), image_export_format, settings_720p
-)
-display_image("boundary_conditions.png")
+camera.SetFit()
+boundary_conditions_image = cwd / "boundary_conditions.png"
+graphics.ExportImage(str(boundary_conditions_image), image_export_format, settings_720p)
+display_image(boundary_conditions_image.name)
 
 
 # %%
@@ -140,19 +146,19 @@ stress = solution.AddEquivalentStress()
 solution.Solve(True)
 
 # sphinx_gallery_start_ignore
-assert str(solution.Status) == "Done", "Solution status is not 'Done'"
+assert solution.Status == SolutionStatusType.Done, "Solution status is not 'Done'"
 # sphinx_gallery_end_ignore
 
 # %%
 # Messages
 # ~~~~~~~~
 
-Messages = ExtAPI.Application.Messages
-if Messages:
-    for message in Messages:
+messages = app.ExtAPI.Application.Messages
+if messages:
+    for message in messages:
         print(f"[{message.Severity}] {message.DisplayString}")
 else:
-    print("No [Info]/[Warning]/[Error] Messages")
+    print("No [Info]/[Warning]/[Error] messages")
 
 # %%
 # Results
@@ -161,20 +167,20 @@ else:
 # %%
 # Total deformation
 
-Tree.Activate([deformation])
-Graphics.ExportImage(
-    os.path.join(cwd, "totaldeformation_valve.png"), image_export_format, settings_720p
+app.Tree.Activate([deformation])
+total_deformation_valve_image = cwd / "total_deformation_valve.png"
+graphics.ExportImage(
+    str(total_deformation_valve_image), image_export_format, settings_720p
 )
-display_image("totaldeformation_valve.png")
+display_image(total_deformation_valve_image.name)
 
 # %%
 # Stress
 
-Tree.Activate([stress])
-Graphics.ExportImage(
-    os.path.join(cwd, "stress_valve.png"), image_export_format, settings_720p
-)
-display_image("stress_valve.png")
+app.Tree.Activate([stress])
+stress_valve_image = cwd / "stress_valve.png"
+graphics.ExportImage(str(stress_valve_image), image_export_format, settings_720p)
+display_image(stress_valve_image.name)
 
 # %%
 # Export stress animation
@@ -186,10 +192,9 @@ settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
 settings_720p.Width = 1280
 settings_720p.Height = 720
 
-stress.ExportAnimation(
-    os.path.join(cwd, "Valve.gif"), animation_export_format, settings_720p
-)
-gif = Image.open(os.path.join(cwd, "Valve.gif"))
+valve_gif = cwd / "valve.gif"
+stress.ExportAnimation(str(valve_gif), animation_export_format, settings_720p)
+gif = Image.open(valve_gif)
 fig, ax = plt.subplots(figsize=(16, 9))
 ax.axis("off")
 img = ax.imshow(gif.convert("RGBA"))
@@ -219,7 +224,7 @@ def write_file_contents_to_console(path):
 
 
 solve_path = analysis.WorkingDir
-solve_out_path = os.path.join(solve_path, "solve.out")
+solve_out_path = solve_path + "solve.out"
 if solve_out_path:
     write_file_contents_to_console(solve_out_path)
 
@@ -234,7 +239,8 @@ app.print_tree()
 # ~~~~~~~
 # Save project
 
-app.save(os.path.join(cwd, "Valve.mechdat"))
+mechdat_file = cwd / "valve.mechdat"
+app.save(str(mechdat_file))
 app.new()
 
 # %%

@@ -466,7 +466,7 @@ static_structural_analysis_solution.Solve(True)
 
 # sphinx_gallery_start_ignore
 assert (
-    str(static_structural_analysis_solution.Status) == "Done"
+    static_structural_analysis_solution.Status == SolutionStatusType.Done
 ), "Solution status is not 'Done'"
 # sphinx_gallery_end_ignore
 
