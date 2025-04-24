@@ -48,13 +48,12 @@ Inverse-Solving Analysis: A nonlinear static analysis using inverse solving
 """
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     import Ansys

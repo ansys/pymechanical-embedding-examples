@@ -14,6 +14,7 @@ double cantilever beam.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from PIL import Image
 from ansys.mechanical.core import App
@@ -21,8 +22,6 @@ from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     import Ansys
@@ -41,7 +40,9 @@ print(app)
 # Set camera orientation
 graphics = app.Graphics
 camera = graphics.Camera
-camera.SetSpecificViewOrientation(Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Front)
+camera.SetSpecificViewOrientation(
+    Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Front
+)
 
 # Set camera settings for 720p resolution
 image_export_format = GraphicsImageExportFormat.PNG
@@ -335,7 +336,9 @@ mesh.Activate()
 mesh.GenerateMesh()
 
 # Display the mesh image
-set_camera_and_display_image(camera, graphics, graphics_image_export_settings, output_path, "mesh.png")
+set_camera_and_display_image(
+    camera, graphics, graphics_image_export_settings, output_path, "mesh.png"
+)
 
 # %%
 # Add contact debonding object
@@ -442,7 +445,13 @@ displacement2_vertex = add_displacement(
 static_structural_analysis.Activate()
 
 # Set the camera to fit the model and display the image of the boundary conditions
-set_camera_and_display_image(camera, graphics, graphics_image_export_settings, output_path, "boundary_conditions.png")
+set_camera_and_display_image(
+    camera,
+    graphics,
+    graphics_image_export_settings,
+    output_path,
+    "boundary_conditions.png",
+)
 
 # %%
 # Add directional deformation and force reaction results to the solution
@@ -495,13 +504,19 @@ else:
 directional_deformation.Activate()
 # Set the camera to fit the model and display the image of the directional deformation
 set_camera_and_display_image(
-    camera, graphics, graphics_image_export_settings, output_path, "directional_deformation.png"
+    camera,
+    graphics,
+    graphics_image_export_settings,
+    output_path,
+    "directional_deformation.png",
 )
 
 # Activate the force reaction
 force_reaction.Activate()
 # Set the camera to fit the model and display the image of the force reaction
-set_camera_and_display_image(camera, graphics, graphics_image_export_settings, output_path, "force_reaction.png")
+set_camera_and_display_image(
+    camera, graphics, graphics_image_export_settings, output_path, "force_reaction.png"
+)
 
 # %%
 # Export animation

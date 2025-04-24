@@ -19,6 +19,7 @@ This example demonstrates a nonlinear 3D analysis of a rubber boot seal to:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from PIL import Image
 from ansys.mechanical.core import App
@@ -26,8 +27,6 @@ from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     import Ansys
@@ -122,7 +121,9 @@ def display_image(
 graphics = app.Graphics
 camera = graphics.Camera
 
-camera.SetSpecificViewOrientation(Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso)
+camera.SetSpecificViewOrientation(
+    Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
+)
 camera.SetFit()
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
