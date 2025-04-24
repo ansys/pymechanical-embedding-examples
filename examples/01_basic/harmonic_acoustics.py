@@ -44,6 +44,11 @@ from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import Ansys
+
 # %%
 # Embed mechanical and set global variables
 
@@ -60,9 +65,9 @@ output_path = Path.cwd() / "out"
 
 
 def set_camera_and_display_image(
-    camera: Ansys.ACT.Common.Graphics.MechanicalCameraWrapper,
-    graphics: Ansys.ACT.Common.Graphics.MechanicalGraphicsWrapper,
-    graphics_image_export_settings: Ansys.Mechanical.Graphics.GraphicsImageExportSettings,
+    camera,
+    graphics,
+    graphics_image_export_settings,
     image_output_path: Path,
     image_name: str,
 ) -> None:
@@ -134,7 +139,7 @@ def display_image(
 
 graphics = app.Graphics
 camera = graphics.Camera
-camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+camera.SetSpecificViewOrientation(Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso)
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -148,15 +153,19 @@ camera.Rotate(180, CameraAxisType.ScreenY)
 # Download geometry and materials files
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Download the geometry file from the ansys/example-data repository
 geometry_path = download_file("C_GEOMETRY.agdb", "pymechanical", "embedding")
+# Download the material file from the ansys/example-data repository
 mat_path = download_file("Air-material.xml", "pymechanical", "embedding")
 
 # %%
 # Import the geometry
 # ~~~~~~~~~~~~~~~~~~~
 
+# Define the model
 model = app.Model
 
+# Add the geometry import group and set its preferences
 geometry_import = model.GeometryImportGroup.AddGeometryImport()
 geometry_import_format = (
     Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
@@ -167,33 +176,20 @@ geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
+# Define the geometry in the model
 geometry = model.Geometry
 
-solid1 = geometry.Children[0]
-solid2 = geometry.Children[1]
-solid3 = geometry.Children[2]
-solid4 = geometry.Children[3]
-solid5 = geometry.Children[4]
-solid6 = geometry.Children[5]
-solid7 = geometry.Children[6]
-solid8 = geometry.Children[7]
-solid9 = geometry.Children[8]
-solid10 = geometry.Children[9]
-solid11 = geometry.Children[10]
+# Suppress the bodies at the specified geometry.Children indices
+suppressed_indices = [0, 1, 2, 3, 4, 6, 9, 10]
+for child in range(geometry.Children.Count):
+    if child in suppressed_indices:
+        geometry.Children[child].Suppressed = True
 
-solid1.Suppressed = True
-solid2.Suppressed = True
-solid3.Suppressed = True
-solid4.Suppressed = True
-solid5.Suppressed = True
-solid7.Suppressed = True
-solid10.Suppressed = True
-solid11.Suppressed = True
-
+# Visualize the model in 3D
 app.plot()
 
 # %%
-# Store all Variables necessary for analysis
+# Store all variables necessary for analysis
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 mesh = model.Mesh
@@ -203,23 +199,28 @@ coordinate_systems = model.CoordinateSystems
 mat = model.Materials
 
 # %%
-# Setup the Analysis
-# ~~~~~~~~~~~~~~~~~~
-# Add harmonic acoustics and unit system
+# Set up the analysis
+# ~~~~~~~~~~~~~~~~~~~
 
+# Add the harmonic acoustics analysis and unit system
 model.AddHarmonicAcousticAnalysis()
 app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
 # %%
 # Import and assign materials
 
+# Import the material file
 mat.Import(mat_path)
-solid6.Material = "Air"
-solid8.Material = "Air"
-solid9.Material = "Air"
+
+# Assign the material to geometry.Children bodies that are not suppressed
+for child in range(geometry.Children.Count):
+    if child not in suppressed_indices:
+        geometry.Children[child].Material = "Air"
 
 # %%
 # Create coordinate system
+
+# Add a coordinate system and set its properties
 lcs1 = coordinate_systems.AddCoordinateSystem()
 lcs1.OriginX = Quantity("0 [mm]")
 lcs1.OriginY = Quantity("0 [mm]")
@@ -227,11 +228,10 @@ lcs1.OriginZ = Quantity("0 [mm]")
 lcs1.PrimaryAxisDefineBy = CoordinateSystemAlignmentType.GlobalZ
 
 # %%
-# Generate mesh
+# Generate the mesh
 
 mesh.ElementSize = Quantity("200 [mm]")
 mesh.GenerateMesh()
-
 
 # %%
 # Create named selections
@@ -240,6 +240,7 @@ mesh.GenerateMesh()
 sf_velo = model.AddNamedSelection()
 sf_velo.ScopingMethod = GeometryDefineByType.Worksheet
 sf_velo.Name = "sf_velo"
+
 generation_criteria_1 = sf_velo.GenerationCriteria
 criteria_1 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
 criteria_1.Active = True
@@ -249,6 +250,7 @@ criteria_1.Criterion = SelectionCriterionType.Size
 criteria_1.Operator = SelectionOperatorType.Equal
 criteria_1.Value = Quantity("3e6 [mm^2]")
 generation_criteria_1.Add(criteria_1)
+
 criteria_2 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
 criteria_2.Active = True
 criteria_2.Action = SelectionActionType.Filter
@@ -257,12 +259,15 @@ criteria_2.Criterion = SelectionCriterionType.LocationZ
 criteria_2.Operator = SelectionOperatorType.Equal
 criteria_2.Value = Quantity("15000 [mm]")
 generation_criteria_1.Add(criteria_2)
+
 sf_velo.Activate()
 sf_velo.Generate()
+
 
 abs_face = model.AddNamedSelection()
 abs_face.ScopingMethod = GeometryDefineByType.Worksheet
 abs_face.Name = "abs_face"
+
 generation_criteria_2 = abs_face.GenerationCriteria
 criteria_1 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
 criteria_1.Active = True
@@ -272,6 +277,7 @@ criteria_1.Criterion = SelectionCriterionType.Size
 criteria_1.Operator = SelectionOperatorType.Equal
 criteria_1.Value = Quantity("1.5e6 [mm^2]")
 generation_criteria_2.Add(criteria_1)
+
 criteria_2 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
 criteria_2.Active = True
 criteria_2.Action = SelectionActionType.Filter
@@ -280,12 +286,15 @@ criteria_2.Criterion = SelectionCriterionType.LocationY
 criteria_2.Operator = SelectionOperatorType.Equal
 criteria_2.Value = Quantity("500 [mm]")
 generation_criteria_2.Add(criteria_2)
+
 abs_face.Activate()
 abs_face.Generate()
+
 
 pres_face = model.AddNamedSelection()
 pres_face.ScopingMethod = GeometryDefineByType.Worksheet
 pres_face.Name = "pres_face"
+
 generation_criteria_3 = pres_face.GenerationCriteria
 criteria_1 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
 criteria_1.Active = True
@@ -295,6 +304,7 @@ criteria_1.Criterion = SelectionCriterionType.Size
 criteria_1.Operator = SelectionOperatorType.Equal
 criteria_1.Value = Quantity("1.5e6 [mm^2]")
 generation_criteria_3.Add(criteria_1)
+
 criteria_2 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
 criteria_2.Active = True
 criteria_2.Action = SelectionActionType.Filter
@@ -303,12 +313,15 @@ criteria_2.Criterion = SelectionCriterionType.LocationY
 criteria_2.Operator = SelectionOperatorType.Equal
 criteria_2.Value = Quantity("4500 [mm]")
 generation_criteria_3.Add(criteria_2)
+
 pres_face.Activate()
 pres_face.Generate()
+
 
 acoustic_region = model.AddNamedSelection()
 acoustic_region.ScopingMethod = GeometryDefineByType.Worksheet
 acoustic_region.Name = "acoustic_region"
+
 generation_criteria_4 = acoustic_region.GenerationCriteria
 criteria_1 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
 criteria_1.Active = True
@@ -318,6 +331,7 @@ criteria_1.Criterion = SelectionCriterionType.Type
 criteria_1.Operator = SelectionOperatorType.Equal
 criteria_1.Value = 8
 generation_criteria_4.Add(criteria_1)
+
 acoustic_region.Activate()
 acoustic_region.Generate()
 

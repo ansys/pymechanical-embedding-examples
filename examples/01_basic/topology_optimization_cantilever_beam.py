@@ -21,6 +21,11 @@ from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import Ansys
+
 # %%
 # Embed Mechanical and set global variables
 
@@ -37,9 +42,9 @@ output_path = Path.cwd() / "out"
 
 
 def set_camera_and_display_image(
-    camera: Ansys.ACT.Common.Graphics.MechanicalCameraWrapper,
-    graphics: Ansys.ACT.Common.Graphics.MechanicalGraphicsWrapper,
-    graphics_image_export_settings: Ansys.Mechanical.Graphics.GraphicsImageExportSettings,
+    camera,
+    graphics,
+    graphics_image_export_settings,
     image_output_path: Path,
     image_name: str,
 ) -> None:
@@ -111,7 +116,7 @@ def display_image(
 graphics = app.Graphics
 camera = graphics.Camera
 
-camera.SetSpecificViewOrientation(ViewOrientationType.Front)
+camera.SetSpecificViewOrientation(Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Front)
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution

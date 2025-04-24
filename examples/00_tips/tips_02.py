@@ -45,7 +45,7 @@ geometry_import.Import(geometry_path)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Set the orientation of the camera
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+ExtAPI.Graphics.Camera.SetSpecificViewOrientation(Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso)
 
 # Set the image export format
 image_export_format = GraphicsImageExportFormat.PNG
@@ -69,7 +69,7 @@ from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 
 # Directory to save the image
-output_path = Path.output_path() / "out"
+output_path = Path.cwd() / "out"
 
 
 def display_image(image_name) -> None:
