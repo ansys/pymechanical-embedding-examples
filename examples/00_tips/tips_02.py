@@ -45,9 +45,7 @@ geometry_import.Import(geometry_path)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Set the orientation of the camera
-ExtAPI.Graphics.Camera.SetSpecificViewOrientation(
-    Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
-)
+ExtAPI.Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 
 # Set the image export format
 image_export_format = GraphicsImageExportFormat.PNG

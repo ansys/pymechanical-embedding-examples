@@ -179,9 +179,7 @@ temp_data_path = download_file(
 graphics = app.Graphics
 camera = graphics.Camera
 
-camera.SetSpecificViewOrientation(
-    Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
-)
+camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 camera.SetFit()
 image_export_format = Ansys.Mechanical.DataModel.Enums.GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()

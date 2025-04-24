@@ -49,9 +49,7 @@ from Ansys.Core.Units import Quantity
 # Set camera orientation
 graphics = app.Graphics
 camera = graphics.Camera
-camera.SetSpecificViewOrientation(
-    Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
-)
+camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 camera.SetFit()
 camera.Rotate(180, CameraAxisType.ScreenY)
 

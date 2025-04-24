@@ -40,9 +40,7 @@ print(app)
 # Set camera orientation
 graphics = app.Graphics
 camera = graphics.Camera
-camera.SetSpecificViewOrientation(
-    Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Front
-)
+camera.SetSpecificViewOrientation(ViewOrientationType.Front)
 
 # Set camera settings for 720p resolution
 image_export_format = GraphicsImageExportFormat.PNG

@@ -118,9 +118,7 @@ def display_image(
 graphics = app.Graphics
 camera = graphics.Camera
 
-camera.SetSpecificViewOrientation(
-    Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
-)
+camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 camera.SetFit()
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
