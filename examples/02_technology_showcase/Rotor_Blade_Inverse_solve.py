@@ -59,7 +59,7 @@ if TYPE_CHECKING:
     import Ansys
 
 # %%
-# Embed mechanical and set global variables
+# Create an instance of the Mechanical embedded application
 
 app = App(globals=globals())
 print(app)
@@ -181,7 +181,7 @@ camera = graphics.Camera
 
 camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 camera.SetFit()
-image_export_format = Ansys.Mechanical.DataModel.Enums.GraphicsImageExportFormat.PNG
+image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = (
     Ansys.Mechanical.DataModel.Enums.GraphicsResolutionType.EnhancedResolution

@@ -49,7 +49,7 @@ if TYPE_CHECKING:
     import Ansys
 
 # %%
-# Embed mechanical and set global variables
+# Create an instance of the Mechanical embedded application
 
 app = App()
 app.update_globals(globals())
@@ -69,6 +69,7 @@ def set_camera_and_display_image(
     graphics_image_export_settings,
     image_output_path: Path,
     image_name: str,
+    set_fit: bool = False,
 ) -> None:
     """Set the camera to fit the model and display the image.
 
@@ -85,8 +86,9 @@ def set_camera_and_display_image(
     image_name : str
         The name of the exported image file.
     """
-    # Set the camera to fit the mesh
-    camera.SetFit()
+    if set_fit:
+        # Set the camera to fit the mesh
+        camera.SetFit()
     # Export the mesh image with the specified settings
     image_path = image_output_path / image_name
     graphics.ExportImage(
@@ -138,7 +140,11 @@ def display_image(
 
 graphics = app.Graphics
 camera = graphics.Camera
+
+# Set the camera orientation to isometric view
 camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+
+# Set the image export format to PNG and configure the export settings
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -171,6 +177,8 @@ geometry_import_format = (
 )
 geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
 geometry_import_preferences.ProcessNamedSelections = True
+
+# Import the geometry file with the specified format and preferences
 geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
@@ -234,109 +242,125 @@ mesh.GenerateMesh()
 
 # %%
 # Create named selections
-# ~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~
 
-sf_velo = model.AddNamedSelection()
-sf_velo.ScopingMethod = GeometryDefineByType.Worksheet
-sf_velo.Name = "sf_velo"
 
-generation_criteria_1 = sf_velo.GenerationCriteria
-criteria_1 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-criteria_1.Active = True
-criteria_1.Action = SelectionActionType.Add
-criteria_1.EntityType = SelectionType.GeoFace
-criteria_1.Criterion = SelectionCriterionType.Size
-criteria_1.Operator = SelectionOperatorType.Equal
-criteria_1.Value = Quantity("3e6 [mm^2]")
-generation_criteria_1.Add(criteria_1)
+def setup_named_selection(scoping_method, name):
+    """Create a named selection with the specified scoping method and name.
 
-criteria_2 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-criteria_2.Active = True
-criteria_2.Action = SelectionActionType.Filter
-criteria_2.EntityType = SelectionType.GeoFace
-criteria_2.Criterion = SelectionCriterionType.LocationZ
-criteria_2.Operator = SelectionOperatorType.Equal
-criteria_2.Value = Quantity("15000 [mm]")
-generation_criteria_1.Add(criteria_2)
+    Parameters
+    ----------
+    scoping_method : GeometryDefineByType
+        The scoping method for the named selection.
+    name : str
+        The name of the named selection.
 
+    Returns
+    -------
+    Ansys.ACT.Automation.Mechanical.NamedSelection
+        The created named selection.
+    """
+    ns = model.AddNamedSelection()
+    ns.ScopingMethod = scoping_method
+    ns.Name = name
+    return ns
+
+
+def add_generation_criteria(
+    named_selection,
+    value,
+    active=True,
+    action=SelectionActionType.Add,
+    entity_type=SelectionType.GeoFace,
+    criterion=SelectionCriterionType.Size,
+    operator=SelectionOperatorType.Equal,
+):
+    """Add generation criteria to the named selection.
+
+    Parameters
+    ----------
+    named_selection : Ansys.ACT.Automation.Mechanical.NamedSelection
+        The named selection to which the criteria will be added.
+    value : Quantity
+        The value for the criteria.
+    active : bool
+        Whether the criteria is active.
+    action : SelectionActionType
+        The action type for the criteria.
+    entity_type : SelectionType
+        The entity type for the criteria.
+    criterion : SelectionCriterionType
+        The criterion type for the criteria.
+    operator : SelectionOperatorType
+        The operator for the criteria.
+    """
+    generation_criteria = named_selection.GenerationCriteria
+    criteria = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
+    criteria.Active = active
+    criteria.Action = action
+    criteria.EntityType = entity_type
+    criteria.Criterion = criterion
+    criteria.Operator = operator
+    criteria.Value = value
+    generation_criteria.Add(criteria)
+
+
+# Add a named selection for the surface velocity and define its generation criteria
+sf_velo = setup_named_selection(GeometryDefineByType.Worksheet, "sf_velo")
+add_generation_criteria(sf_velo, Quantity("3e6 [mm^2]"))
+add_generation_criteria(
+    sf_velo,
+    Quantity("15000 [mm]"),
+    action=SelectionActionType.Filter,
+    criterion=SelectionCriterionType.LocationZ,
+)
+# Activate and generate the named selection
 sf_velo.Activate()
 sf_velo.Generate()
 
-
-abs_face = model.AddNamedSelection()
-abs_face.ScopingMethod = GeometryDefineByType.Worksheet
-abs_face.Name = "abs_face"
-
-generation_criteria_2 = abs_face.GenerationCriteria
-criteria_1 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-criteria_1.Active = True
-criteria_1.Action = SelectionActionType.Add
-criteria_1.EntityType = SelectionType.GeoFace
-criteria_1.Criterion = SelectionCriterionType.Size
-criteria_1.Operator = SelectionOperatorType.Equal
-criteria_1.Value = Quantity("1.5e6 [mm^2]")
-generation_criteria_2.Add(criteria_1)
-
-criteria_2 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-criteria_2.Active = True
-criteria_2.Action = SelectionActionType.Filter
-criteria_2.EntityType = SelectionType.GeoFace
-criteria_2.Criterion = SelectionCriterionType.LocationY
-criteria_2.Operator = SelectionOperatorType.Equal
-criteria_2.Value = Quantity("500 [mm]")
-generation_criteria_2.Add(criteria_2)
-
+# Add named selections for the absorption faces and define its generation criteria
+abs_face = setup_named_selection(GeometryDefineByType.Worksheet, "abs_face")
+add_generation_criteria(abs_face, Quantity("1.5e6 [mm^2]"))
+add_generation_criteria(
+    abs_face,
+    Quantity("500 [mm]"),
+    action=SelectionActionType.Filter,
+    criterion=SelectionCriterionType.LocationY,
+)
+# Activate and generate the named selection
 abs_face.Activate()
 abs_face.Generate()
 
-
-pres_face = model.AddNamedSelection()
-pres_face.ScopingMethod = GeometryDefineByType.Worksheet
-pres_face.Name = "pres_face"
-
-generation_criteria_3 = pres_face.GenerationCriteria
-criteria_1 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-criteria_1.Active = True
-criteria_1.Action = SelectionActionType.Add
-criteria_1.EntityType = SelectionType.GeoFace
-criteria_1.Criterion = SelectionCriterionType.Size
-criteria_1.Operator = SelectionOperatorType.Equal
-criteria_1.Value = Quantity("1.5e6 [mm^2]")
-generation_criteria_3.Add(criteria_1)
-
-criteria_2 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-criteria_2.Active = True
-criteria_2.Action = SelectionActionType.Filter
-criteria_2.EntityType = SelectionType.GeoFace
-criteria_2.Criterion = SelectionCriterionType.LocationY
-criteria_2.Operator = SelectionOperatorType.Equal
-criteria_2.Value = Quantity("4500 [mm]")
-generation_criteria_3.Add(criteria_2)
-
+# Add named selections for the pressure faces and define its generation criteria
+pres_face = setup_named_selection(GeometryDefineByType.Worksheet, "pres_face")
+add_generation_criteria(pres_face, Quantity("1.5e6 [mm^2]"))
+add_generation_criteria(
+    pres_face,
+    Quantity("4500 [mm]"),
+    action=SelectionActionType.Filter,
+    criterion=SelectionCriterionType.LocationY,
+)
+# Activate and generate the named selection
 pres_face.Activate()
 pres_face.Generate()
 
-
-acoustic_region = model.AddNamedSelection()
-acoustic_region.ScopingMethod = GeometryDefineByType.Worksheet
-acoustic_region.Name = "acoustic_region"
-
-generation_criteria_4 = acoustic_region.GenerationCriteria
-criteria_1 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-criteria_1.Active = True
-criteria_1.Action = SelectionActionType.Add
-criteria_1.EntityType = SelectionType.GeoBody
-criteria_1.Criterion = SelectionCriterionType.Type
-criteria_1.Operator = SelectionOperatorType.Equal
-criteria_1.Value = 8
-generation_criteria_4.Add(criteria_1)
-
+# Add named selections for the acoustic region and define its generation criteria
+acoustic_region = setup_named_selection(
+    GeometryDefineByType.Worksheet, "acoustic_region"
+)
+add_generation_criteria(
+    acoustic_region,
+    8,
+    entity_type=SelectionType.GeoBody,
+    criterion=SelectionCriterionType.Type,
+)
+# Activate and generate the named selection
 acoustic_region.Activate()
 acoustic_region.Generate()
 
 # %%
-# Analysis settings
-# ~~~~~~~~~~~~~~~~~
+# Set up the analysis settings
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 analysis_settings = model.Analyses[0].AnalysisSettings
 analysis_settings.RangeMaximum = Quantity("100 [Hz]")
@@ -349,19 +373,24 @@ analysis_settings.CalculateVolumeEnergy = True
 # Boundary conditions and load
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Get the harmonic acoustics analysis
 harmonic_acoustics = model.Analyses[0]
 
 # %%
 # Acoustic region
 
+# Get the acoustics region from the harmonic acoustics analysis
+# and set its location to the acoustic region named selection
 acoustics_region = [
-    x for x in harmonic_acoustics.Children if x.Name == "Acoustics Region"
+    child for child in harmonic_acoustics.Children if child.Name == "Acoustics Region"
 ][0]
 acoustics_region.Location = acoustic_region
 
 # %%
 # Surface velocity
 
+# Add a surface velocity boundary condition to the harmonic acoustics analysis
+# and set its location to the sf_velo named selection
 surface_velocity = harmonic_acoustics.AddAcousticSurfaceVelocity()
 surface_velocity.Location = sf_velo
 surface_velocity.Magnitude.Output.DiscreteValues = [Quantity("5000 [mm s-1]")]
@@ -369,6 +398,8 @@ surface_velocity.Magnitude.Output.DiscreteValues = [Quantity("5000 [mm s-1]")]
 # %%
 # Acoustic pressure
 
+# Add an acoustic pressure boundary condition to the harmonic acoustics analysis
+# and set its location to the pres_face named selection
 acoustic_pressure = harmonic_acoustics.AddAcousticPressure()
 acoustic_pressure.Location = pres_face
 acoustic_pressure.Magnitude = Quantity("1.5e-7 [MPa]")
@@ -376,99 +407,138 @@ acoustic_pressure.Magnitude = Quantity("1.5e-7 [MPa]")
 # %%
 # Acoustic absoption surface
 
+# Add an acoustic absorption surface to the harmonic acoustics analysis
+# and set its location to the abs_face named selection
 absorption_surface = harmonic_acoustics.AddAcousticAbsorptionSurface()
 absorption_surface.Location = abs_face
 absorption_surface.AbsorptionCoefficient.Output.DiscreteValues = [Quantity("0.02")]
 
+# Activate the harmonic acoustics analysis
 harmonic_acoustics.Activate()
+# Set the camera to fit the mesh and export the image
 set_camera_and_display_image(
-    camera, graphics, settings_720p, output_path, "bounday_conditions.png"
+    camera, graphics, settings_720p, output_path, "bounday_conditions.png", set_fit=True
 )
 
 # %%
-# Add results
-# ~~~~~~~~~~~
+# Add results to the harmonic acoustics solution
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Get the harmonic acoustics solution
 solution = model.Analyses[0].Solution
 
 # %%
-# Acoustic pressure
+# Add the acoustic pressure result
 
 acoustic_pressure_result_1 = solution.AddAcousticPressureResult()
 acoustic_pressure_result_1.By = SetDriverStyle.ResultSet
 acoustic_pressure_result_1.SetNumber = 25
 
 # %%
-# Acoustic velocity - total and directional
+# Add the acoustic total and directional velocity results
 
+# Add the acoustic total velocity result and set its frequency
 acoustic_total_velocity_1 = solution.AddAcousticTotalVelocityResult()
 acoustic_total_velocity_1.Frequency = Quantity("50 [Hz]")
 
+# Add the acoustic directional velocity result and set its frequency and coordinate system
 acoustic_directional_velocity_1 = solution.AddAcousticDirectionalVelocityResult()
 acoustic_directional_velocity_1.Frequency = Quantity("50 [Hz]")
 acoustic_directional_velocity_1.CoordinateSystem = lcs1
 
+# Add the acoustic total velocity result and set its orientation
 acoustic_directional_velocity_2 = solution.AddAcousticDirectionalVelocityResult()
 acoustic_directional_velocity_2.NormalOrientation = NormalOrientationType.ZAxis
 acoustic_directional_velocity_2.By = SetDriverStyle.ResultSet
 acoustic_directional_velocity_2.SetNumber = 25
 
 # %%
-# Acoustic sound pressure and frequency bands
+# Add the acoustic sound pressure levels and frequency band responses
 
+# Add the acoustic sound pressure level and set its frequency
 acoustic_spl = solution.AddAcousticSoundPressureLevel()
 acoustic_spl.Frequency = Quantity("50 [Hz]")
 
+# Add the acoustic A-weighted sound pressure level and set its frequency
 acoustic_a_spl = solution.AddAcousticAWeightedSoundPressureLevel()
 acoustic_a_spl.Frequency = Quantity("50 [Hz]")
 
+# Add the acoustic frequency band sound pressure level
 acoustic_frq_band_spl = solution.AddAcousticFrequencyBandSPL()
 
+# Add the acoustic A-weighted frequency band sound pressure level
 a_freq_band_spl = solution.AddAcousticFrequencyBandAWeightedSPL()
 
+# Add the acoustic velocity frequency response and set its orientation and location
 z_velocity_response = solution.AddAcousticVelocityFrequencyResponse()
 z_velocity_response.NormalOrientation = NormalOrientationType.ZAxis
+# Set the location to the pressure face named selection
 z_velocity_response.Location = pres_face
-z_velocity_response.NormalOrientation = NormalOrientationType.ZAxis
 
 # %%
-# Acoustic kinetic  and potentional energy frequency response
+# Add the acoustic kinetic and potentional energy frequency responses
 
+# Add the acoustic kinetic energy frequency response and set its location
+# to the absorption face named selection
 ke_response = solution.AddAcousticKineticEnergyFrequencyResponse()
 ke_response.Location = abs_face
-KE_display = ke_response.TimeHistoryDisplay
+ke_display = ke_response.TimeHistoryDisplay
 
+# Add the acoustic potential energy frequency response and set its location
+# to the absorption face named selection
 pe_response = solution.AddAcousticPotentialEnergyFrequencyResponse()
 pe_response.Location = abs_face
-PE_display = pe_response.TimeHistoryDisplay
+pe_display = pe_response.TimeHistoryDisplay
 
 # %%
-# Acoustic total and directional velocity
+# Add the acoustic total and directional velocity results
 
+
+def set_properties(
+    element,
+    frequency,
+    location,
+    amplitude=True,
+    normal_orientation=None,
+):
+    """Set the properties of the acoustic velocity result."""
+    element.Frequency = frequency
+    element.Amplitude = amplitude
+    if normal_orientation:
+        element.NormalOrientation = normal_orientation
+    # Set the location to the specified named selection
+    element.Location = location
+    return element
+
+
+# Add the acoustic total velocity result and set its frequency to 30 Hz
+# and its location to the pressure face named selection
 acoustic_total_velocity_2 = solution.AddAcousticTotalVelocityResult()
-acoustic_total_velocity_2.Location = pres_face
-acoustic_total_velocity_2.Frequency = Quantity("30 [Hz]")
-acoustic_total_velocity_2.Amplitude = True
+set_properties(acoustic_total_velocity_2, Quantity("30 [Hz]"), pres_face)
 
+# Add the acoustic directional velocity result and set its frequency to 10 Hz,
+# its location to the pressure face named selection, and its orientation to the Z-axis
 acoustic_directional_velocity_3 = solution.AddAcousticDirectionalVelocityResult()
-acoustic_directional_velocity_3.NormalOrientation = NormalOrientationType.ZAxis
-acoustic_directional_velocity_3.Location = pres_face
-acoustic_directional_velocity_3.Frequency = Quantity("10 [Hz]")
-acoustic_directional_velocity_3.Amplitude = True
+set_properties(
+    acoustic_directional_velocity_3,
+    Quantity("10 [Hz]"),
+    pres_face,
+    normal_orientation=NormalOrientationType.ZAxis,
+)
 
+# Add the acoustic velocity frequency response and set its frequency
+# to 68 Hz and its location to the absorption face named selection
 acoustic_ke = solution.AddAcousticKineticEnergy()
-acoustic_ke.Location = abs_face
-acoustic_ke.Frequency = Quantity("68 [Hz]")
-acoustic_ke.Amplitude = True
+set_properties(acoustic_ke, Quantity("68 [Hz]"), abs_face)
 
+# Add the acoustic potential energy frequency response and set its frequency
+# to 10 Hz and its location to the absorption face named selection
 acoustic_pe = solution.AddAcousticPotentialEnergy()
-acoustic_pe.Location = abs_face
-acoustic_pe.Frequency = Quantity("10 [Hz]")
-acoustic_pe.Amplitude = True
+set_properties(acoustic_pe, Quantity("10 [Hz]"), abs_face)
 
 # %%
-# Solve
-# ~~~~~
+# Solve the harmonic acoustics analysis solution
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 solution.Solve(True)
 
@@ -477,15 +547,15 @@ assert solution.Status == SolutionStatusType.Done, "Solution status is not 'Done
 # sphinx_gallery_end_ignore
 
 # %%
-# messages
-# ~~~~~~~~
+# Print messages
+# ~~~~~~~~~~~~~~
 
 messages = app.ExtAPI.Application.Messages
 if messages:
     for message in messages:
         print(f"[{message.Severity}] {message.DisplayString}")
 else:
-    print("No [Info]/[Warning]/[Error] messages")
+    print("No [Info]/[Warning]/[Error] Messages")
 
 
 # %%
@@ -493,17 +563,17 @@ else:
 # ~~~~~~~~~~~~~~
 
 # %%
-# Total acoustic pressure
-# ^^^^^^^^^^^^^^^^^^^^^^^
+# Display the total acoustic pressure result
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 app.Tree.Activate([acoustic_pressure_result_1])
 set_camera_and_display_image(
-    camera, graphics, settings_720p, output_path, "acoustic_pressure.png"
+    camera, graphics, settings_720p, output_path, "pressure.png"
 )
 
 # %%
-# Total acoustic velocity
-# ^^^^^^^^^^^^^^^^^^^^^^^
+# Display the total acoustic velocity
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 app.Tree.Activate([acoustic_pressure_result_1])
 set_camera_and_display_image(
@@ -511,26 +581,26 @@ set_camera_and_display_image(
 )
 
 # %%
-# Sound pressure level
-# ^^^^^^^^^^^^^^^^^^^^
+# Display the acoustic sound pressure level
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 app.Tree.Activate([acoustic_spl])
 set_camera_and_display_image(
-    camera, graphics, settings_720p, output_path, "sound_pressure.png"
+    camera, graphics, settings_720p, output_path, "sound_pressure_level.png"
 )
 
 # %%
-# Total velocity on pressure surface
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Display the acoustic directional velocity
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-app.Tree.Activate([acoustic_total_velocity_2])
+app.Tree.Activate([acoustic_directional_velocity_3])
 set_camera_and_display_image(
-    camera, graphics, settings_720p, output_path, "total_velocity_pressure.png"
+    camera, graphics, settings_720p, output_path, "directional_velocity.png"
 )
 
 # %%
-# Kinetic energy on absorption face
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Display the acoustic kinetic energy
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 app.Tree.Activate([acoustic_ke])
 set_camera_and_display_image(
@@ -538,20 +608,32 @@ set_camera_and_display_image(
 )
 
 # %%
-# Total acoustic pressure animation
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Display the total acoustic pressure animation
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+# Set the animation export format to GIF
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
 )
+
+# Configure the export settings for the animation
 settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
 settings_720p.Width = 1280
 settings_720p.Height = 720
 
+# Export the animation of the acoustic pressure result
 press_gif = output_path / "press.gif"
 acoustic_pressure_result_1.ExportAnimation(
     str(press_gif), animation_export_format, settings_720p
 )
+
+# Open the GIF file and create an animation
+gif = Image.open(press_gif)
+# Set the subplots for the animation and turn off the axis
+figure, axes = plt.subplots(figsize=(16, 9))
+axes.axis("off")
+# Change the color of the image
+image = axes.imshow(gif.convert("RGBA"))
 
 
 def update_animation(frame: int) -> list[mpimg.AxesImage]:
@@ -575,21 +657,13 @@ def update_animation(frame: int) -> list[mpimg.AxesImage]:
     return [image]
 
 
-# Open the GIF file and create an animation
-gif = Image.open(press_gif)
-# Set the subplots for the animation and turn off the axis
-figure, axes = plt.subplots(figsize=(16, 9))
-axes.axis("off")
-# Change the color of the image
-image = axes.imshow(gif.convert("RGBA"))
-
 # Create the animation using the figure, update_animation function, and the GIF frames
 # Set the interval between frames to 200 milliseconds and repeat the animation
-FuncAnimation(
+ani = FuncAnimation(
     figure,
     update_animation,
     frames=range(gif.n_frames),
-    interval=100,
+    interval=200,
     repeat=True,
     blit=True,
 )
@@ -598,8 +672,8 @@ FuncAnimation(
 plt.show()
 
 # %%
-# Display output file from solve
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Display the output file from solve
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 def write_file_contents_to_console(path):
@@ -609,25 +683,29 @@ def write_file_contents_to_console(path):
             print(line, end="")
 
 
+# Get the working directory of the solve
 solve_path = harmonic_acoustics.WorkingDir
 solve_out_path = Path(solve_path) / "solve.out"
+# Check if the solve output file exists and write its contents to the console
 if solve_out_path:
     write_file_contents_to_console(solve_out_path)
 
 # %%
-# Project tree
-# ~~~~~~~~~~~~
+# Print the project tree
+# ~~~~~~~~~~~~~~~~~~~~~~
 
 app.print_tree()
 
 # %%
-# Cleanup
-# ~~~~~~~
-# Save project
+# Clean up the project
+# ~~~~~~~~~~~~~~~~~~~~
 
+# Save the project
 mechdat_file = output_path / "harmonic_acoustics.mechdat"
 app.save(str(mechdat_file))
+
+# Refresh the app
 app.new()
 
-# delete example file
+# Delete the example file
 delete_downloads()

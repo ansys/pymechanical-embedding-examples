@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     import Ansys
 
 # %%
-# Embed mechanical and set global variables
+# Create an instance of the Mechanical embedded application
 
 app = App(globals=globals())
 print(app)

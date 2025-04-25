@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     import Ansys
 
 # %%
-# Embed mechanical and set global variables
+# Create an instance of the Mechanical embedded application
 
 app = App(globals=globals())
 print(app)
@@ -52,6 +52,7 @@ def set_camera_and_display_image(
     graphics_image_export_settings,
     image_output_path: Path,
     image_name: str,
+    set_fit: bool = False,
 ) -> None:
     """Set the camera to fit the model and display the image.
 
@@ -67,9 +68,13 @@ def set_camera_and_display_image(
         The path to save the exported image.
     image_name : str
         The name of the exported image file.
+    set_fit: bool, Optional
+        If True, set the camera to fit the mesh.
+        If False, do not set the camera to fit the mesh.
     """
-    # Set the camera to fit the mesh
-    camera.SetFit()
+    if set_fit:
+        # Set the camera to fit the mesh
+        camera.SetFit()
     # Export the mesh image with the specified settings
     image_path = image_output_path / image_name
     graphics.ExportImage(
@@ -116,13 +121,16 @@ def display_image(
 
 
 # %%
-# Configure graphics for image export
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Configure the graphics for image export
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 graphics = app.Graphics
 camera = graphics.Camera
 
+# Set the camera orientation to isometric view
 camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+
+# Set the image export format and settings
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -132,18 +140,22 @@ settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
 # %%
-# Download geometry and materials files
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Download the geometry and material files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Download the geometry file from the ansys/example-data repository
 geometry_path = download_file("sloshing_geometry.agdb", "pymechanical", "embedding")
+# Download the water material file from the ansys/example-data repository
 mat_path = download_file("Water_material_explicit.xml", "pymechanical", "embedding")
-
 
 # %%
 # Import the geometry
 # ~~~~~~~~~~~~~~~~~~~
 
+# Define the model
 model = app.Model
+
+# Add the geometry import group and set its preferences
 geometry_import_group = model.GeometryImportGroup
 geometry_import = geometry_import_group.AddGeometryImport()
 geometry_import_format = (
@@ -151,12 +163,15 @@ geometry_import_format = (
 )
 geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
 geometry_import_preferences.ProcessNamedSelections = True
+
+# Import the geometry file with the specified format and preferences
 geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
+# Set the camera to fit the model and display the image
 set_camera_and_display_image(
-    camera, graphics, settings_720p, output_path, "geometry.png"
+    camera, graphics, settings_720p, output_path, "geometry.png", set_fit=True
 )
 
 # %%
@@ -170,252 +185,259 @@ connections = model.Connections
 materials = model.Materials
 
 # %%
-# Import material setup analysis
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add modal acoustic analysis and import the material
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Add a modal acoustic analysis to the model
 model.AddModalAcousticAnalysis()
+# Set the unit system to Standard MKS
 app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
+# Import the water material from the specified XML file
 materials.Import(mat_path)
-print("Material Import Done !")
 
 # %%
-# Get all required named selections and assign materials
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Assign material to solid bodies
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-acst_bodies = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Acoustic_bodies"
-][0]
-struct_bodies = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Structural_bodies"
-][0]
-top_bodies = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "top_bodies"
-][0]
-cont_bodies = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "container_bodies"
-][0]
-cont_V1 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Cont_V1"
-][0]
-cont_V2 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Cont_V2"
-][0]
-cont_V3 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Cont_V3"
-][0]
-cont_face1 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Cont_face1"
-][0]
-cont_face2 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Cont_face2"
-][0]
-cont_face3 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Cont_face3"
-][0]
-cont_face4 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Cont_face4"
-][0]
-free_faces = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Free_faces"
-][0]
-fsi_faces = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "FSI_faces"
-][0]
 
-solid1 = [
-    i
-    for i in geometry.GetChildren[Ansys.ACT.Automation.Mechanical.Body](True)
-    if i.Name == "Solid1"
-][0]
-solid2 = [
-    i
-    for i in geometry.GetChildren[Ansys.ACT.Automation.Mechanical.Body](True)
-    if i.Name == "Solid2"
-][0]
-solid3 = [
-    i
-    for i in geometry.GetChildren[Ansys.ACT.Automation.Mechanical.Body](True)
-    if i.Name == "Solid3"
-][0]
-solid4 = [
-    i
-    for i in geometry.GetChildren[Ansys.ACT.Automation.Mechanical.Body](True)
-    if i.Name == "Solid4"
-][0]
+def get_solid_set_material(name: str) -> None:
+    """Get the solid body by name and assign the material.
+
+    Parameters
+    ----------
+    name : str
+        The name of the solid body to get.
+    """
+    # Get the solid body by name
+    solid = [
+        i
+        for i in geometry.GetChildren[Ansys.ACT.Automation.Mechanical.Body](True)
+        if i.Name == name
+    ][0]
+
+    # Assign material water to acoustic parts
+    solid.Material = "WATER"
+
+
+# Assign material water to acoustic parts for solids 1 to 4
+for i in range(1, 5):
+    solid_name = f"Solid{i}"
+    get_solid_set_material(solid_name)
 
 
 # %%
-# Assign material water to acoustic parts
+# Add mesh methods, sizings, and generate the mesh
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-solid1.Material = "WATER"
-solid2.Material = "WATER"
-solid3.Material = "WATER"
-solid4.Material = "WATER"
 
-# %%
-# Mesh
-# ~~~~
+def get_named_selection(name: str) -> Ansys.ACT.Automation.Mechanical.NamedSelection:
+    """Get the named selection by name.
 
+    Parameters
+    ----------
+    name : str
+        The name of the named selection to get.
+
+    Returns
+    -------
+    Ansys.ACT.Automation.Mechanical.NamedSelection
+        The named selection object.
+    """
+    return [
+        child
+        for child in named_selections.GetChildren[
+            Ansys.ACT.Automation.Mechanical.NamedSelection
+        ](True)
+        if child.Name == name
+    ][0]
+
+
+def set_mesh_properties(
+    mesh_element,
+    named_selection,
+    method_type=None,
+    element_size=None,
+    behavior=None,
+):
+    """Set the properties for mesh automatic methods and sizings.
+
+    Parameters
+    ----------
+    mesh_element
+        The mesh element to set properties for.
+    named_selection : Ansys.ACT.Automation.Mechanical.NamedSelection
+        The named selection to set the location for the mesh element.
+    method_type : MethodType, optional
+        The method type for the mesh (default is None).
+    element_size : Quantity, optional
+        The element size for the mesh (default is None).
+    behavior : SizingBehavior, optional
+        The sizing behavior for the mesh (default is None).
+    """
+    mesh_element.Location = named_selection
+    if method_type:
+        mesh_element.Method = method_type
+    if element_size:
+        mesh_element.ElementSize = element_size
+    if behavior:
+        mesh_element.Behavior = behavior
+
+
+# Set the mesh element order to quadratic
 mesh.ElementOrder = ElementOrder.Quadratic
 
+# Add an automatic mesh method
 method1 = mesh.AddAutomaticMethod()
-method1.Location = acst_bodies
-method1.Method = MethodType.AllTriAllTet
+acst_bodies = get_named_selection("Acoustic_bodies")
+# Set the automatic method location to the acoustic bodies and the method type to AllTriAllTet
+set_mesh_properties(method1, acst_bodies, MethodType.AllTriAllTet)
 
+# Add an automatic mesh method
 method2 = mesh.AddAutomaticMethod()
-method2.Location = top_bodies
-method2.Method = MethodType.Automatic
+top_bodies = get_named_selection("top_bodies")
+# Set the automatic method location to the top bodies and the method type to Automatic
+set_mesh_properties(method2, top_bodies, MethodType.Automatic)
 
 # Add mesh sizing
-
 sizing1 = mesh.AddSizing()
-sizing1.Location = top_bodies
-sizing1.ElementSize = Quantity("0.2 [m]")
-sizing1.Behavior = SizingBehavior.Hard
+# Set the mesh sizing location to the top bodies, the element size to 0.2m, and
+# the sizing behavior to hard
+set_mesh_properties(
+    sizing1, top_bodies, element_size=Quantity("0.2 [m]"), behavior=SizingBehavior.Hard
+)
 
 # Add mesh sizing
-
 sizing2 = mesh.AddSizing()
-sizing2.Location = acst_bodies
-sizing2.ElementSize = Quantity("0.2 [m]")
-sizing2.Behavior = SizingBehavior.Hard
+# Set the mesh sizing location to the acoustic bodies, the element size to 0.2m, and
+# the sizing behavior to hard
+set_mesh_properties(
+    sizing2, acst_bodies, element_size=Quantity("0.2 [m]"), behavior=SizingBehavior.Hard
+)
 
-# Add mesh method
-
+# Add an automatic mesh method
 method3 = mesh.AddAutomaticMethod()
-method3.Location = cont_bodies
-method3.Method = MethodType.Sweep
+container_bodies = get_named_selection("container_bodies")
+# Set the automatic method location to the container bodies and the method type to Sweep
+set_mesh_properties(method3, container_bodies, MethodType.Sweep)
+# Set the source target selection to 4
 method3.SourceTargetSelection = 4
 
+# Generate the mesh and display the image
 mesh.GenerateMesh()
-
 set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh.png")
 
 # %%
-# Insert contacts
-# ~~~~~~~~~~~~~~~
-# Contact 1
+# Set up the contact regions in the connection group
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+def set_contact_region_properties(
+    contact_region,
+    source_location,
+    target_location,
+    contact_formulation=ContactFormulation.MPC,
+    contact_behavior=ContactBehavior.Asymmetric,
+    pinball_region=ContactPinballType.Radius,
+    pinball_radius=Quantity("0.25 [m]"),
+    set_target_before_src=False,
+):
+    """Set the properties for the contact region.
+
+    Parameters
+    ----------
+    contact_region : Ansys.ACT.Automation.Mechanical.ContactRegion
+        The contact region to set properties for.
+    source_location : Ansys.ACT.Automation.Mechanical.NamedSelection
+        The source location for the contact region.
+    target_location : Ansys.ACT.Automation.Mechanical.NamedSelection
+        The target location for the contact region.
+    contact_formulation : ContactFormulation, optional
+        The contact formulation for the contact region (default is MPC).
+    contact_behavior : ContactBehavior, optional
+        The contact behavior for the contact region (default is Asymmetric).
+    pinball_region : ContactPinballType, optional
+        The pinball region type for the contact region (default is Radius).
+    pinball_radius : Quantity, optional
+        The pinball radius for the contact region (default is 0.25 m).
+    set_target_before_src : bool, optional
+        Whether to set the target location before the source location (default is False).
+    """
+    # If the target location is set before the source location
+    if set_target_before_src:
+        contact_region.TargetLocation = get_named_selection(target_location)
+        contact_region.SourceLocation = source_location
+    else:
+        contact_region.SourceLocation = get_named_selection(source_location)
+        contact_region.TargetLocation = get_named_selection(target_location)
+    contact_region.ContactFormulation = contact_formulation
+    contact_region.Behavior = contact_behavior
+    contact_region.PinballRegion = pinball_region
+    contact_region.PinballRadius = pinball_radius
+
+
+# Add a connection group to the model
 connection_group = connections.AddConnectionGroup()
+
+# Add the first contact region to the connection group
 contact_region_1 = connection_group.AddContactRegion()
-contact_region_1.SourceLocation = cont_V1
-contact_region_1.TargetLocation = cont_face1
-contact_region_1.ContactFormulation = ContactFormulation.MPC
-contact_region_1.Behavior = ContactBehavior.Asymmetric
-contact_region_1.PinballRegion = ContactPinballType.Radius
-contact_region_1.PinballRadius = Quantity("0.25 [m]")
+# Set the source location to the Cont_V1 named selection and the target location to the Cont_face1
+# named selection
+set_contact_region_properties(contact_region_1, "Cont_V1", "Cont_face1")
 
-# %%
-# Contact 2
-
+# Add the second contact region to the connection group
 contact_region_2 = connection_group.AddContactRegion()
-contact_region_2.SourceLocation = cont_V2
-contact_region_2.TargetLocation = cont_face2
-contact_region_2.ContactFormulation = ContactFormulation.MPC
-contact_region_2.Behavior = ContactBehavior.Asymmetric
-contact_region_2.PinballRegion = ContactPinballType.Radius
-contact_region_2.PinballRadius = Quantity("0.25 [m]")
+# Set the source location to the Cont_V2 named selection and the target location to the Cont_face2
+# named selection
+set_contact_region_properties(contact_region_2, "Cont_V2", "Cont_face2")
 
-# %%
-# Contact 3
-
+# Add the third contact region to the connection group
 contact_region_3 = connection_group.AddContactRegion()
-contact_region_3.SourceLocation = cont_V3
-contact_region_3.TargetLocation = cont_face3
-contact_region_3.ContactFormulation = ContactFormulation.MPC
-contact_region_3.Behavior = ContactBehavior.Asymmetric
-contact_region_3.PinballRegion = ContactPinballType.Radius
-contact_region_3.PinballRadius = Quantity("0.25 [m]")
+# Set the source location to the Cont_V3 named selection and the target location to the Cont_face3
+# named selection
+set_contact_region_properties(contact_region_3, "Cont_V3", "Cont_face3")
 
-# %%
-# Contact 3
-
+# Set the selection manager
 sel_manager = app.ExtAPI.SelectionManager
-cnv4 = DataModel.GeoData.Assemblies[0].Parts[1].Bodies[0].Vertices[3]
-cont_V4 = sel_manager.CreateSelectionInfo(SelectionTypeEnum.GeometryEntities)
-cont_V4.Entities = [cnv4]
+# Get the contact vertex from the geometry
+contact_vertex = DataModel.GeoData.Assemblies[0].Parts[1].Bodies[0].Vertices[3]
+# Create a selection info object for the contact vertex
+contact_vertex_4 = sel_manager.CreateSelectionInfo(SelectionTypeEnum.GeometryEntities)
+# Set the contact vertex as the selected entity
+contact_vertex_4.Entities = [contact_vertex]
 
-# %%
-# Contact 4
-
+# Add the fourth contact region to the connection group
 contact_region_4 = connection_group.AddContactRegion()
-contact_region_4.TargetLocation = cont_face4
-contact_region_4.SourceLocation = cont_V4
-contact_region_4.ContactFormulation = ContactFormulation.MPC
-contact_region_4.Behavior = ContactBehavior.Asymmetric
-contact_region_4.PinballRegion = ContactPinballType.Radius
-contact_region_4.PinballRadius = Quantity("0.25 [m]")
+# Set the target location to the contact vertex and the source location to the Cont_face4
+# named selection
+set_contact_region_properties(
+    contact_region_4, contact_vertex_4, "Cont_face4", set_target_before_src=True
+)
 
 # %%
-# Fully define Modal Multiphysics region with two physics regions
+# Fully define the modal multiphysics region with two physics regions
 
+# Get the modal acoustic analysis object
 modal_acst = DataModel.Project.Model.Analyses[0]
+# Get the acoustic region from the modal acoustic analysis
 acoustic_region = modal_acst.Children[2]
+# Set the acoustic region to the acoustic bodies named selection
 acoustic_region.Location = acst_bodies
 
-
+# Add a physics region to the modal acoustic analysis
 structural_region = modal_acst.AddPhysicsRegion()
+# Set the physics region to structural and rename it based on the definition
 structural_region.Structural = True
 structural_region.RenameBasedOnDefinition()
-structural_region.Location = struct_bodies
-
+# Set the structural region to the structural bodies named selection
+structural_region.Location = get_named_selection("Structural_bodies")
 
 # %%
-# Analysis settings
-# ~~~~~~~~~~~~~~~~~
+# Set up the analysis settings
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Get the analysis settings from the modal acoustic analysis
 analysis_settings = modal_acst.Children[1]
+# Set the analysis settings properties
 analysis_settings.MaximumModesToFind = 12
 analysis_settings.SearchRangeMinimum = Quantity("0.1 [Hz]")
 analysis_settings.SolverType = SolverType.Unsymmetric
@@ -423,96 +445,98 @@ analysis_settings.GeneralMiscellaneous = True
 analysis_settings.CalculateReactions = True
 
 # %%
-# Boundary conditions and load
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Free surface
+# Set the boundary conditions and load
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Add an acoustic free surface to the modal acoustic analysis
 free_surface = modal_acst.AddAcousticFreeSurface()
-free_surface.Location = free_faces
+# Set the free surface location to the free faces named selection
+free_surface.Location = get_named_selection("Free_faces")
 
 # %%
-# Solid fluid interface
+# Add the solid fluid interface
 
+# Add a fluid solid interface to the modal acoustic analysis
 fsi_object = modal_acst.AddFluidSolidInterface()
-fsi_object.Location = fsi_faces
+# Set the fluid solid interface location to the FSI faces named selection
+fsi_object.Location = get_named_selection("FSI_faces")
 
 # %%
-# Gravity
+# Add the gravity load
 
+# Add gravity to the modal acoustic analysis
 acceleration = modal_acst.AddAcceleration()
+# Set the components and the Y-component of the acceleration to
+# 9.81 m/s^2 (gravitational acceleration)
 acceleration.DefineBy = LoadDefineBy.Components
 acceleration.YComponent.Output.DiscreteValues = [Quantity("9.81 [m sec^-1 sec^-1]")]
 
 # %%
-# Fixed Support
+# Add fixed support
 
-fv1 = DataModel.GeoData.Assemblies[0].Parts[1].Bodies[0].Vertices[0]
-fv2 = DataModel.GeoData.Assemblies[0].Parts[1].Bodies[1].Vertices[0]
-fv3 = DataModel.GeoData.Assemblies[0].Parts[1].Bodies[2].Vertices[0]
-fv4 = DataModel.GeoData.Assemblies[0].Parts[1].Bodies[3].Vertices[0]
+# Get vertices from the geometry
+vertices = []
+for body in range(0, 4):
+    vertices.append(DataModel.GeoData.Assemblies[0].Parts[1].Bodies[body].Vertices[0])
 
+# Create a selection info object for the geometry entities
 fvert = sel_manager.CreateSelectionInfo(SelectionTypeEnum.GeometryEntities)
-fvert.Entities = [fv1, fv2, fv3, fv4]
+# Set the list of vertices as the geometry entities
+fvert.Entities = vertices
+
+# Add a fixed support to the modal acoustic analysis
 fixed_support = modal_acst.AddFixedSupport()
+# Set the location of the fixed support to the geometry entities
 fixed_support.Location = fvert
 
+# Activate the modal acoustic analysis and display the image
 modal_acst.Activate()
-
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "geometry.png"
 )
 
 # %%
-# Add results
-# ~~~~~~~~~~~
-# Add 10 modes
+# Add results to the solution
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-soln = model.Analyses[0].Solution
-total_deformation_1 = soln.AddTotalDeformation()
-total_deformation_2 = soln.AddTotalDeformation()
-total_deformation_2.Mode = 2
-total_deformation_3 = soln.AddTotalDeformation()
-total_deformation_3.Mode = 3
-total_deformation_4 = soln.AddTotalDeformation()
-total_deformation_4.Mode = 4
-total_deformation_5 = soln.AddTotalDeformation()
-total_deformation_5.Mode = 5
-total_deformation_6 = soln.AddTotalDeformation()
-total_deformation_6.Mode = 6
-total_deformation_7 = soln.AddTotalDeformation()
-total_deformation_7.Mode = 7
-total_deformation_8 = soln.AddTotalDeformation()
-total_deformation_8.Mode = 8
-total_deformation_9 = soln.AddTotalDeformation()
-total_deformation_9.Mode = 9
-total_deformation_10 = soln.AddTotalDeformation()
-total_deformation_10.Mode = 10
+# Get the solution object from the modal acoustic analysis
+solution = model.Analyses[0].Solution
+
+# Add 10 total deformation results, setting the mode for every result except the first
+total_deformation_results = []
+for mode in range(1, 11):
+    total_deformation = solution.AddTotalDeformation()
+    if mode > 1:
+        total_deformation.Mode = mode
+    total_deformation_results.append(total_deformation)
 
 # %%
-# Add acoustic pressure
+# Add the acoustic pressure result to the solution
 
-acoustic_pressure_result = soln.AddAcousticPressureResult()
+acoustic_pressure_result = solution.AddAcousticPressureResult()
 
 # %%
-# Add force reaction scoped to fixed Support
+# Scope the force reaction to the fixed Support
 
-force_reaction_1 = soln.AddForceReaction()
+# Add a force reaction to the solution
+force_reaction_1 = solution.AddForceReaction()
+# Set the boundary condition selection to the fixed support
 force_reaction_1.BoundaryConditionSelection = fixed_support
 
 # %%
-# Solve
-# ~~~~~
+# Solve the solution
+# ~~~~~~~~~~~~~~~~~~
 
-soln.Solve(True)
+solution.Solve(True)
 
 # sphinx_gallery_start_ignore
-assert soln.Status == SolutionStatusType.Done, "Solution status is not 'Done'"
+assert solution.Status == SolutionStatusType.Done, "Solution status is not 'Done'"
 # sphinx_gallery_end_ignore
 
 
 # %%
-# Messages
-# ~~~~~~~~
+# Print messages
+# ~~~~~~~~~~~~~~
 
 messages = app.ExtAPI.Application.Messages
 if messages:
@@ -523,17 +547,19 @@ else:
 
 
 # %%
-# Results
-# ~~~~~~~
-# Total deformation - mode 1
+# Display the results
+# ~~~~~~~~~~~~~~~~~~~
 
-app.Tree.Activate([total_deformation_1])
+# %%
+# Activate the first total deformation result and display the image
+
+app.Tree.Activate([total_deformation_results[0]])
 set_camera_and_display_image(
-    camera, graphics, settings_720p, output_path, "total_deformation.png"
+    camera, graphics, settings_720p, output_path, "total_deformation.png", set_fit=True
 )
 
 # %%
-# Acoustic pressure
+# Activate the acoustic pressure result and display the image
 
 app.Tree.Activate([acoustic_pressure_result])
 set_camera_and_display_image(
@@ -541,55 +567,48 @@ set_camera_and_display_image(
 )
 
 # %%
-# Display all modal frequency, force reaction
-# and acoustic pressure values
-
-frequency_1 = total_deformation_1.ReportedFrequency.Value
-frequency_2 = total_deformation_2.ReportedFrequency.Value
-frequency_3 = total_deformation_3.ReportedFrequency.Value
-frequency_4 = total_deformation_4.ReportedFrequency.Value
-frequency_5 = total_deformation_5.ReportedFrequency.Value
-frequency_6 = total_deformation_6.ReportedFrequency.Value
-frequency_7 = total_deformation_7.ReportedFrequency.Value
-frequency_8 = total_deformation_8.ReportedFrequency.Value
-frequency_9 = total_deformation_9.ReportedFrequency.Value
-frequency_10 = total_deformation_10.ReportedFrequency.Value
-
-pressure_result_max = acoustic_pressure_result.Maximum.Value
-pressure_result_min = acoustic_pressure_result.Minimum.Value
-
-force_reaction_1_x = force_reaction_1.XAxis.Value
-force_reaction_1_z = force_reaction_1.ZAxis.Value
+# Display all modal frequency, force reaction, and acoustic pressure values
 
 print("Modal Acoustic Results")
 print("----------------------")
-print("Frequency for mode 1 : ", frequency_1)
-print("Frequency for mode 2 : ", frequency_2)
-print("Frequency for mode 3 : ", frequency_3)
-print("Frequency for mode 4 : ", frequency_4)
-print("Frequency for mode 5 : ", frequency_5)
-print("Frequency for mode 6 : ", frequency_6)
-print("Frequency for mode 7 : ", frequency_7)
-print("Frequency for mode 8 : ", frequency_8)
-print("Frequency for mode 9 : ", frequency_9)
-print("Frequency for mode 10 : ", frequency_10)
+
+# Print the frequency values for each mode
+for result in total_deformation_results:
+    frequency_value = result.ReportedFrequency.Value
+    print(f"Frequency for mode {i}: ", frequency_value)
+
+# Get the maximum and minimum values of the acoustic pressure result
+pressure_result_max = acoustic_pressure_result.Maximum.Value
+pressure_result_min = acoustic_pressure_result.Minimum.Value
+
+# Get the force reaction values for the x and z axes
+force_reaction_1_x = force_reaction_1.XAxis.Value
+force_reaction_1_z = force_reaction_1.ZAxis.Value
+
+# Print the results
 print("Acoustic pressure minimum : ", pressure_result_min)
 print("Acoustic pressure Maximum : ", pressure_result_max)
 print("Force reaction x-axis : ", force_reaction_1_x)
 print("Force reaction z-axis : ", force_reaction_1_z)
 
 # %%
-# Total deformation animation for mode 10
+# Play the total deformation animation for mode 10
 
+# Set the animation export format to GIF
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
 )
+
+# Set the export settings for the animation
 settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
 settings_720p.Width = 1280
 settings_720p.Height = 720
 
-deformation_gif = output_path / "total_deformation_10.gif"
-total_deformation_10.ExportAnimation(
+# Export the total deformation animation for the last result
+deformation_gif = (
+    output_path / f"total_deformation_{len(total_deformation_results)}.gif"
+)
+total_deformation_results[-1].ExportAnimation(
     str(deformation_gif), animation_export_format, settings_720p
 )
 
@@ -638,21 +657,21 @@ FuncAnimation(
 plt.show()
 
 # %%
-# Project tree
-# ~~~~~~~~~~~~
+# Print the project tree
+# ~~~~~~~~~~~~~~~~~~~~~~
 
 app.print_tree()
 
 # %%
-# Cleanup
-# ~~~~~~~
-# Save project
+# Clean up the downloaded files and app
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Save the project file
 mechdat_file = output_path / "modal_acoustics.mechdat"
 app.save(str(mechdat_file))
+
+# Refresh the app
 app.new()
 
-# %%
-# Delete example file
-
+# Delete example files
 delete_downloads()

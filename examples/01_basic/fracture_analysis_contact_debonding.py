@@ -27,10 +27,10 @@ if TYPE_CHECKING:
     import Ansys
 
 # %%
-# Create an instance of the Mechanical embedded application with global variables
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create an instance of the Mechanical embedded application
 
-app = App(globals=globals())
+app = App()  # globals=globals()
+app.update_globals(globals())
 print(app)
 
 # %%
@@ -60,9 +60,9 @@ output_path = Path.cwd() / "out"
 
 
 def set_camera_and_display_image(
-    camera: Ansys.ACT.Common.Graphics.MechanicalCameraWrapper,
-    graphics: Ansys.ACT.Common.Graphics.MechanicalGraphicsWrapper,
-    graphics_image_export_settings: Ansys.Mechanical.Graphics.GraphicsImageExportSettings,
+    camera,
+    graphics,
+    graphics_image_export_settings,
     image_output_path: Path,
     image_name: str,
 ) -> None:
