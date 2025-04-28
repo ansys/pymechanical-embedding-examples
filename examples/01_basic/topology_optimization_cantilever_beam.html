@@ -1,0 +1,896 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Topology optimization of a simple cantilever beam &#8212; PyMechanical Embedding Examples</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/ansys_sphinx_theme.css?v=0909a4fa" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../_static/documentation_options.js?v=e7fb764e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/thebelab-helper.js"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/01_basic/topology_optimization_cantilever_beam';</script>
+    <link rel="icon" href="../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Basic Valve Implementation" href="valve.html" />
+    <link rel="prev" title="Steady state thermal analysis" href="steady_state_thermal_analysis.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.dev0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyMechanical Embedding Examples - Home"/>
+    <img src="../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyMechanical Embedding Examples - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../00_tips/index.html">
+    Tips
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Basic
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../02_technology_showcase/index.html">
+    Technology showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../00_tips/index.html">
+    Tips
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Basic
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../02_technology_showcase/index.html">
+    Technology showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="bolt_pretension.html">Bolt Pretension</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fracture_analysis_contact_debonding.html">Fracture Analysis - Contact debonding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="harmonic_acoustics.html">Harmonic acoustic analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modal_acoustics_analysis.html">Modal acoustics analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="steady_state_thermal_analysis.html">Steady state thermal analysis</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Topology optimization of a simple cantilever beam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="valve.html">Basic Valve Implementation</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+       
+    <li class="breadcrumb-item">
+      <a href="https://mechanical.docs.pyansys.com/" class="nav-link">PyMechanical</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Basic</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Topology optimization of a simple cantilever beam</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-examples-01-basic-topology-optimization-cantilever-beam-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="topology-optimization-of-a-simple-cantilever-beam">
+<span id="ref-topology-optimization"></span><span id="sphx-glr-examples-01-basic-topology-optimization-cantilever-beam-py"></span><h1>Topology optimization of a simple cantilever beam<a class="headerlink" href="#topology-optimization-of-a-simple-cantilever-beam" title="Link to this heading">#</a></h1>
+<p>This example demonstrates the structural topology optimization of a simple
+cantilever beam. The structural analysis is performed with basic constraints and
+load, which is then transferred to the topology optimization.</p>
+<section id="import-necessary-libraries">
+<h2>Import necessary libraries<a class="headerlink" href="#import-necessary-libraries" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.mechanical.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">App</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.mechanical.core.examples</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete_downloads</span><span class="p">,</span> <span class="n">download_file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">image</span> <span class="k">as</span> <span class="n">mpimg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+</pre></div>
+</div>
+<p>Embed Mechanical and set global variables</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">()</span>
+<span class="n">app</span><span class="o">.</span><span class="n">update_globals</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">display_image</span><span class="p">(</span><span class="n">image_name</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><a href="https://docs.python.org/dev/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a><span class="p">,</span> <span class="n">image_name</span><span class="p">)))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a> <span class="o">=</span> <a href="https://docs.python.org/dev/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/dev/library/os.html#os.getcwd" title="os.getcwd" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span></a><span class="p">(),</span> <span class="s2">&quot;out&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Ansys Mechanical [Ansys Mechanical Enterprise]
+Product Version:251
+Software build date: 11/27/2024 09:34:44
+</pre></div>
+</div>
+<p>Configure graphics for image export</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Graphics</span><span class="o">.</span><span class="n">Camera</span><span class="o">.</span><span class="n">SetSpecificViewOrientation</span><span class="p">(</span><span class="n">ViewOrientationType</span><span class="o">.</span><span class="n">Front</span><span class="p">)</span>
+<span class="n">image_export_format</span> <span class="o">=</span> <span class="n">GraphicsImageExportFormat</span><span class="o">.</span><span class="n">PNG</span>
+<span class="n">settings_720p</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">GraphicsImageExportSettings</span><span class="p">()</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Resolution</span> <span class="o">=</span> <span class="n">GraphicsResolutionType</span><span class="o">.</span><span class="n">EnhancedResolution</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Background</span> <span class="o">=</span> <span class="n">GraphicsBackgroundType</span><span class="o">.</span><span class="n">White</span>
+<a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">settings_720p</span><span class="o">.</span><span class="n">Width</span></a> <span class="o">=</span> <span class="mi">1280</span>
+<a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">settings_720p</span><span class="o">.</span><span class="n">Height</span></a> <span class="o">=</span> <span class="mi">720</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">CurrentGraphicsDisplay</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</section>
+<section id="import-structural-analsys">
+<h2>Import structural analsys<a class="headerlink" href="#import-structural-analsys" title="Link to this heading">#</a></h2>
+<p>Download <code class="docutils literal notranslate"><span class="pre">.mechdat</span></code> file</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">structural_mechdat_file</span></a> <span class="o">=</span> <span class="n">download_file</span><span class="p">(</span>
+    <span class="s2">&quot;cantilever.mechdat&quot;</span><span class="p">,</span> <span class="s2">&quot;pymechanical&quot;</span><span class="p">,</span> <span class="s2">&quot;embedding&quot;</span>
+<span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">structural_mechdat_file</span></a><span class="p">)</span>
+<span class="n">STRUCT</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">STRUCT_SLN</span> <span class="o">=</span> <span class="n">STRUCT</span><span class="o">.</span><span class="n">Solution</span>
+<span class="n">STRUCT_SLN</span><span class="o">.</span><span class="n">Solve</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="display-structural-analsys-results">
+<h2>Display structural analsys results<a class="headerlink" href="#display-structural-analsys-results" title="Link to this heading">#</a></h2>
+<p>Total deformation</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">STRUCT_SLN</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">Camera</span><span class="o">.</span><span class="n">SetFit</span><span class="p">()</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">ExportImage</span><span class="p">(</span>
+    <a href="https://docs.python.org/dev/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a><span class="p">,</span> <span class="s2">&quot;total_deformation.png&quot;</span><span class="p">),</span> <span class="n">image_export_format</span><span class="p">,</span> <span class="n">settings_720p</span>
+<span class="p">)</span>
+<span class="n">display_image</span><span class="p">(</span><span class="s2">&quot;total_deformation.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_topology_optimization_cantilever_beam_001.png" srcset="../../_images/sphx_glr_topology_optimization_cantilever_beam_001.png" alt="topology optimization cantilever beam" class = "sphx-glr-single-img"/><p>Equivalent stress</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">STRUCT_SLN</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">Camera</span><span class="o">.</span><span class="n">SetFit</span><span class="p">()</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">ExportImage</span><span class="p">(</span>
+    <a href="https://docs.python.org/dev/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a><span class="p">,</span> <span class="s2">&quot;equivalent_stress.png&quot;</span><span class="p">),</span> <span class="n">image_export_format</span><span class="p">,</span> <span class="n">settings_720p</span>
+<span class="p">)</span>
+<span class="n">display_image</span><span class="p">(</span><span class="s2">&quot;equivalent_stress.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_topology_optimization_cantilever_beam_002.png" srcset="../../_images/sphx_glr_topology_optimization_cantilever_beam_002.png" alt="topology optimization cantilever beam" class = "sphx-glr-single-img"/></section>
+<section id="topology-optimization">
+<h2>Topology optimization<a class="headerlink" href="#topology-optimization" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set MKS unit system</span>
+
+<span class="n">ExtAPI</span><span class="o">.</span><span class="n">Application</span><span class="o">.</span><span class="n">ActiveUnitSystem</span> <span class="o">=</span> <span class="n">MechanicalUnitSystem</span><span class="o">.</span><span class="n">StandardMKS</span>
+
+<span class="c1"># Get structural analysis and link to topology optimization</span>
+
+<span class="n">TOPO_OPT</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">AddTopologyOptimizationAnalysis</span><span class="p">()</span>
+<span class="n">TOPO_OPT</span><span class="o">.</span><span class="n">TransferDataFrom</span><span class="p">(</span><span class="n">STRUCT</span><span class="p">)</span>
+
+<span class="n">OPT_REG</span> <span class="o">=</span> <span class="n">DataModel</span><span class="o">.</span><span class="n">GetObjectsByType</span><span class="p">(</span><span class="n">DataModelObjectCategory</span><span class="o">.</span><span class="n">OptimizationRegion</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">OPT_REG</span><span class="o">.</span><span class="n">BoundaryCondition</span> <span class="o">=</span> <span class="n">BoundaryConditionType</span><span class="o">.</span><span class="n">AllLoadsAndSupports</span>
+<span class="n">OPT_REG</span><span class="o">.</span><span class="n">OptimizationType</span> <span class="o">=</span> <span class="n">OptimizationType</span><span class="o">.</span><span class="n">TopologyDensity</span>
+
+
+<span class="c1"># Insert volume response constraint object for topology optimization</span>
+<span class="c1"># Delete mass response constraint</span>
+
+<span class="n">MASS_CONSTRN</span> <span class="o">=</span> <span class="n">TOPO_OPT</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">MASS_CONSTRN</span><span class="o">.</span><span class="n">Delete</span><span class="p">()</span>
+
+<span class="c1"># Add volume response constraint</span>
+
+<span class="n">VOL_CONSTRN</span> <span class="o">=</span> <span class="n">TOPO_OPT</span><span class="o">.</span><span class="n">AddVolumeConstraint</span><span class="p">()</span>
+
+<span class="c1"># Insert member size manufacturing constraint</span>
+
+<span class="n">MEM_SIZE_MFG_CONSTRN</span> <span class="o">=</span> <span class="n">TOPO_OPT</span><span class="o">.</span><span class="n">AddMemberSizeManufacturingConstraint</span><span class="p">()</span>
+<span class="n">MEM_SIZE_MFG_CONSTRN</span><span class="o">.</span><span class="n">Minimum</span> <span class="o">=</span> <span class="n">ManuMemberSizeControlledType</span><span class="o">.</span><span class="n">Manual</span>
+<span class="n">MEM_SIZE_MFG_CONSTRN</span><span class="o">.</span><span class="n">MinSize</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;2.4 [m]&quot;</span><span class="p">)</span>
+
+
+<span class="n">TOPO_OPT</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">Camera</span><span class="o">.</span><span class="n">SetFit</span><span class="p">()</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">ExportImage</span><span class="p">(</span>
+    <a href="https://docs.python.org/dev/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a><span class="p">,</span> <span class="s2">&quot;boundary_conditions.png&quot;</span><span class="p">),</span> <span class="n">image_export_format</span><span class="p">,</span> <span class="n">settings_720p</span>
+<span class="p">)</span>
+<span class="n">display_image</span><span class="p">(</span><span class="s2">&quot;boundary_conditions.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_topology_optimization_cantilever_beam_003.png" srcset="../../_images/sphx_glr_topology_optimization_cantilever_beam_003.png" alt="topology optimization cantilever beam" class = "sphx-glr-single-img"/></section>
+<section id="solve">
+<h2>Solve<a class="headerlink" href="#solve" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">TOPO_OPT_SLN</span> <span class="o">=</span> <span class="n">TOPO_OPT</span><span class="o">.</span><span class="n">Solution</span>
+<span class="n">TOPO_OPT_SLN</span><span class="o">.</span><span class="n">Solve</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="messages">
+<h2>Messages<a class="headerlink" href="#messages" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Messages</span> <span class="o">=</span> <span class="n">ExtAPI</span><span class="o">.</span><span class="n">Application</span><span class="o">.</span><span class="n">Messages</span>
+<span class="k">if</span> <span class="n">Messages</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">Messages</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">Severity</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">message</span><span class="o">.</span><span class="n">DisplayString</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No [Info]/[Warning]/[Error] Messages&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[Info] For geometric constraint (Mass, Volume, Center of Gravity or Moment of Inertia constraints), it is recommended to use Criterion of the upstream Measure folder (inserted from Model object).
+[Warning] The application requires the use of OpenGL version 4.3. The detected version 3.1 Mesa 21.2.6 does not meet this requirement. This discrepancy may produce graphical display issues for certain features. Furthermore, future versions of Mechanical may not support systems that do not meet this requirement.
+[Warning] The license manager is delayed in its response. The latest requests were answered after 21 seconds.
+[Warning] The default mesh size calculations have changed in 18.2. Specifically, the default min size values and/or defeature size values scale dynamically in relation to the element (max face) size. These settings could lead to a significantly different mesh, so the model will be resumed using the previous values for min size and defeature size rather than leaving those values as default.
+</pre></div>
+</div>
+</section>
+<section id="display-results">
+<h2>Display results<a class="headerlink" href="#display-results" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">TOPO_OPT_SLN</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">TOPO_DENS</span> <span class="o">=</span> <span class="n">TOPO_OPT_SLN</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Add smoothing to the STL</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">TOPO_DENS</span><span class="o">.</span><span class="n">AddSmoothing</span><span class="p">()</span>
+<span class="n">TOPO_OPT</span><span class="o">.</span><span class="n">Solution</span><span class="o">.</span><span class="n">EvaluateAllResults</span><span class="p">()</span>
+<span class="n">TOPO_DENS</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">Camera</span><span class="o">.</span><span class="n">SetFit</span><span class="p">()</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">ExportImage</span><span class="p">(</span>
+    <a href="https://docs.python.org/dev/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a><span class="p">,</span> <span class="s2">&quot;topo_opitimized_smooth.png&quot;</span><span class="p">),</span> <span class="n">image_export_format</span><span class="p">,</span> <span class="n">settings_720p</span>
+<span class="p">)</span>
+<span class="n">display_image</span><span class="p">(</span><span class="s2">&quot;topo_opitimized_smooth.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_topology_optimization_cantilever_beam_004.png" srcset="../../_images/sphx_glr_topology_optimization_cantilever_beam_004.png" alt="topology optimization cantilever beam" class = "sphx-glr-single-img"/><p>Export animation</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">animation_export_format</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Enums</span><span class="o">.</span><span class="n">GraphicsAnimationExportFormat</span><span class="o">.</span><span class="n">GIF</span>
+<span class="p">)</span>
+<span class="n">settings_720p</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">AnimationExportSettings</span><span class="p">()</span>
+<a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">settings_720p</span><span class="o">.</span><span class="n">Width</span></a> <span class="o">=</span> <span class="mi">1280</span>
+<a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">settings_720p</span><span class="o">.</span><span class="n">Height</span></a> <span class="o">=</span> <span class="mi">720</span>
+
+<span class="n">TOPO_DENS</span><span class="o">.</span><span class="n">ExportAnimation</span><span class="p">(</span>
+    <a href="https://docs.python.org/dev/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a><span class="p">,</span> <span class="s2">&quot;Topo_opitimized.gif&quot;</span><span class="p">),</span> <span class="n">animation_export_format</span><span class="p">,</span> <span class="n">settings_720p</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../../_images/Topo_opitimized.gif" src="../../_images/Topo_opitimized.gif" />
+<p>Review the results</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print topology density results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Topology Density Results&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Minimum Density: &quot;</span><span class="p">,</span> <span class="n">TOPO_DENS</span><span class="o">.</span><span class="n">Minimum</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Maximum Density: &quot;</span><span class="p">,</span> <span class="n">TOPO_DENS</span><span class="o">.</span><span class="n">Maximum</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Iteration Number: &quot;</span><span class="p">,</span> <span class="n">TOPO_DENS</span><span class="o">.</span><span class="n">IterationNumber</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Original Volume: &quot;</span><span class="p">,</span> <span class="n">TOPO_DENS</span><span class="o">.</span><span class="n">OriginalVolume</span><span class="o">.</span><span class="n">Value</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Volume: &quot;</span><span class="p">,</span> <span class="n">TOPO_DENS</span><span class="o">.</span><span class="n">FinalVolume</span><span class="o">.</span><span class="n">Value</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Percent Volume of Original: &quot;</span><span class="p">,</span> <span class="n">TOPO_DENS</span><span class="o">.</span><span class="n">PercentVolumeOfOriginal</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Original Mass: &quot;</span><span class="p">,</span> <span class="n">TOPO_DENS</span><span class="o">.</span><span class="n">OriginalMass</span><span class="o">.</span><span class="n">Value</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final Mass: &quot;</span><span class="p">,</span> <span class="n">TOPO_DENS</span><span class="o">.</span><span class="n">FinalMass</span><span class="o">.</span><span class="n">Value</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Percent Mass of Original: &quot;</span><span class="p">,</span> <span class="n">TOPO_DENS</span><span class="o">.</span><span class="n">PercentMassOfOriginal</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Topology Density Results
+Minimum Density:  0.0010000000474974513
+Maximum Density:  1.0
+Iteration Number:  35
+Original Volume:  1000.0000054389238
+Final Volume:  522.4924773573875
+Percent Volume of Original:  52.24924745155908
+Original Mass:  7849999.975463867
+Final Mass:  4101565.9057617188
+Percent Mass of Original:  52.24924737046705
+</pre></div>
+</div>
+</section>
+<section id="project-tree">
+<h2>Project tree<a class="headerlink" href="#project-tree" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">print_tree</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>├── Project
+|  ├── Model
+|  |  ├── Geometry Imports (✓)
+|  |  |  ├── Geometry Import (✓)
+|  |  ├── Geometry (✓)
+|  |  |  ├── Surface Body Bodies
+|  |  |  |  ├── Surface Body
+|  |  ├── Materials (✓)
+|  |  |  ├── Structural Steel (✓)
+|  |  ├── Coordinate Systems (✓)
+|  |  |  ├── Global Coordinate System (✓)
+|  |  |  ├── Coordinate System (✓)
+|  |  |  ├── Coordinate System 2 (✓)
+|  |  |  ├── Coordinate System 3 (✓)
+|  |  |  ├── Coordinate System 4 (✓)
+|  |  |  ├── Coordinate System 5 (✓)
+|  |  |  ├── Coordinate System 6 (✓)
+|  |  |  ├── Coordinate System 7 (✓)
+|  |  |  ├── Coordinate System 8 (✓)
+|  |  ├── Remote Points (✓)
+|  |  ├── Mesh (✓)
+|  |  |  ├── Face Sizing (✓)
+|  |  ├── Named Selections
+|  |  |  ├── Selection (✓)
+|  |  |  ├── Bottom_Elements (✓)
+|  |  |  ├── Top_Elements (✓)
+|  |  |  ├── Middle1_Elements (✓)
+|  |  |  ├── Middle2_Elements (✓)
+|  |  |  ├── Left1_Elements (✓)
+|  |  |  ├── Left2_Elements (✓)
+|  |  |  ├── Right1_Elements (✓)
+|  |  |  ├── Right2_Elements (✓)
+|  |  |  ├── Optimized_Shape (✓)
+|  |  |  ├── Outside_Optimized_Shape (✓)
+|  |  |  ├── Selection 2 (✓)
+|  |  |  ├── Selection 3 (✓)
+|  |  |  ├── Selection 4 (✓)
+|  |  |  ├── Selection 5 (✓)
+|  |  ├── Static Structural (✓)
+|  |  |  ├── Analysis Settings (✓)
+|  |  |  ├── Fixed Support (✓)
+|  |  |  ├── Nodal Force (✓)
+|  |  |  ├── Solution (✓)
+|  |  |  |  ├── Solution Information (✓)
+|  |  |  |  ├── Total Deformation (✓)
+|  |  |  |  ├── Equivalent Stress (✓)
+|  |  ├── Structural Optimization (✓)
+|  |  |  ├── Analysis Settings (✓)
+|  |  |  ├── Optimization Region (✓)
+|  |  |  ├── Objective (✓)
+|  |  |  ├── Response Constraint (✓)
+|  |  |  ├── Manufacturing Constraint (✓)
+|  |  |  ├── Solution (✓)
+|  |  |  |  ├── Solution Information (✓)
+|  |  |  |  |  ├── Topology Density Tracker (✓)
+|  |  |  |  ├── Topology Density (✓)
+|  |  |  |  |  ├── Smoothing (✓)
+</pre></div>
+</div>
+</section>
+<section id="cleanup">
+<h2>Cleanup<a class="headerlink" href="#cleanup" title="Link to this heading">#</a></h2>
+<p>Save project</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><a href="https://docs.python.org/dev/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a><span class="p">,</span> <span class="s2">&quot;cantilever_beam_topology_optimization.mechdat&quot;</span><span class="p">))</span>
+<span class="n">app</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Delete the example files</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">delete_downloads</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 53.751 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-01-basic-topology-optimization-cantilever-beam-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/ea1df54f6a486710f90b175d7d9aed27/topology_optimization_cantilever_beam.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">topology_optimization_cantilever_beam.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/5cca7bbfb83f27054c87ca3998eab5c0/topology_optimization_cantilever_beam.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">topology_optimization_cantilever_beam.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/53f90cc3d67b2b48fa7c3af3cbb3d8ac/topology_optimization_cantilever_beam.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">topology_optimization_cantilever_beam.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-necessary-libraries">Import necessary libraries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-structural-analsys">Import structural analsys</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-structural-analsys-results">Display structural analsys results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#topology-optimization">Topology optimization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solve">Solve</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#messages">Messages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-results">Display results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-tree">Project tree</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cleanup">Cleanup</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+<!-- If there is no fix edit button function, use the PyData edit-this-button-->
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../_static/search.json";
+</script>
+
+
+<script src="../../_static/js/search.js"></script>
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2025 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.3.2. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
