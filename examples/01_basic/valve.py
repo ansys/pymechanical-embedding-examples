@@ -113,7 +113,10 @@ def display_image(
 graphics = app.Graphics
 camera = graphics.Camera
 
+# Set the camera orientation to the front view
 camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+
+# Set the image export format and settings
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -122,90 +125,123 @@ settings_720p.Width = 1280
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
-
 # %%
-# Download geometry and import
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Download geometry
+# Download and import the geometry file
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Download the geometry file
 geometry_path = download_file("Valve.pmdb", "pymechanical", "embedding")
 
 # %%
-# Import geometry
+# Import the geometry
 
+# Define the model
 model = app.Model
 
+# Add a geometry import to the geometry import group
 geometry_import = model.GeometryImportGroup.AddGeometryImport()
+
+# Set the geometry import settings
 geometry_import_format = (
     Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
 )
 geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
 geometry_import_preferences.ProcessNamedSelections = True
+
+# Import the geometry file with the specified settings
 geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
+# Visualize the model in 3D
 app.plot()
 
 # %%
 # Assign materials and mesh the geometry
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Add the material assignment to the model materials
 material_assignment = model.Materials.AddMaterialAssignment()
+
+# Set the material to structural steel
 material_assignment.Material = "Structural Steel"
-sel = app.ExtAPI.SelectionManager.CreateSelectionInfo(
+
+# Create selection information for the geometry entities
+selection_info = app.ExtAPI.SelectionManager.CreateSelectionInfo(
     Ansys.ACT.Interfaces.Common.SelectionTypeEnum.GeometryEntities
 )
-sel.Ids = [
+
+# Get the geometric bodies from the model and add their IDs to the selection info IDs list
+selection_info.Ids = [
     body.GetGeoBody().Id
     for body in model.Geometry.GetChildren(
         Ansys.Mechanical.DataModel.Enums.DataModelObjectCategory.Body, True
     )
 ]
-material_assignment.Location = sel
+# Set the material assignment location to the selected geometry entities
+material_assignment.Location = selection_info
 
 # %%
-# Define mesh settings,  generate mesh
+# Define the mesh settings and generate the mesh
 
+# Define the mesh
 mesh = model.Mesh
+# Set the mesh element size to 25mm
 mesh.ElementSize = Quantity(25, "mm")
+
+# Generate the mesh
 mesh.GenerateMesh()
+
+# Activate the mesh and display the image
 app.Tree.Activate([mesh])
 set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh.png")
 
 # %%
-# Define analysis and boundary conditions
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Define the static structural analysis and boundary conditions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Add a static structural analysis to the model
 analysis = model.AddStaticStructuralAnalysis()
 
+# Add a fixed support to the analysis
 fixed_support = analysis.AddFixedSupport()
+# Set the fixed support location to the "NSFixedSupportFaces" object
 fixed_support.Location = app.ExtAPI.DataModel.GetObjectsByName("NSFixedSupportFaces")[0]
 
+# Add a frictionless support to the analysis
 frictionless_support = analysis.AddFrictionlessSupport()
+# Set the frictionless support location to the "NSFrictionlessSupportFaces" object
 frictionless_support.Location = app.ExtAPI.DataModel.GetObjectsByName(
     "NSFrictionlessSupportFaces"
 )[0]
 
+# Add pressure to the analysis
 pressure = analysis.AddPressure()
+# Set the pressure location to the "NSInsideFaces" object
 pressure.Location = app.ExtAPI.DataModel.GetObjectsByName("NSInsideFaces")[0]
 
+# Set the pressure magnitude's input and output values
 pressure.Magnitude.Inputs[0].DiscreteValues = [Quantity("0 [s]"), Quantity("1 [s]")]
 pressure.Magnitude.Output.DiscreteValues = [Quantity("0 [Pa]"), Quantity("15 [MPa]")]
 
+# Activate the analysis and display the image
 analysis.Activate()
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "boundary_conditions.png"
 )
 
 # %%
-# Add results
+# Add results to the analysis solution
 
+# Define the solution for the analysis
 solution = analysis.Solution
+
+# Add the total deformation and equivalent stress results to the solution
 deformation = solution.AddTotalDeformation()
 stress = solution.AddEquivalentStress()
 
 # %%
-# Solve
+# Solve the solution
 
 solution.Solve(True)
 
@@ -214,8 +250,8 @@ assert solution.Status == SolutionStatusType.Done, "Solution status is not 'Done
 # sphinx_gallery_end_ignore
 
 # %%
-# Messages
-# ~~~~~~~~
+# Print the messages
+# ~~~~~~~~~~~~~~~~~~
 
 messages = app.ExtAPI.Application.Messages
 if messages:
@@ -229,24 +265,27 @@ else:
 # ~~~~~~~
 
 # %%
-# Total deformation
+# Show the total deformation
 
+# Activate the total deformation result and display the image
 app.Tree.Activate([deformation])
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "total_deformation_valve.png"
 )
 
 # %%
-# Stress
+# Show the equivalent stress
 
+# Activate the equivalent stress result and display the image
 app.Tree.Activate([stress])
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "stress_valve.png"
 )
 
 # %%
-# Export stress animation
+# Export the stress animation
 
+# Set the animation export format and settings
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
 )
@@ -254,6 +293,7 @@ settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
 settings_720p.Width = 1280
 settings_720p.Height = 720
 
+# Export the animation of the equivalent stress result
 valve_gif = output_path / "valve.gif"
 stress.ExportAnimation(str(valve_gif), animation_export_format, settings_720p)
 
@@ -302,38 +342,35 @@ FuncAnimation(
 plt.show()
 
 # %%
-# Display output file from solve
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Display the output file from the solve
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-def write_file_contents_to_console(path):
-    """Write file contents to console."""
-    with open(path, "rt") as file:
+# Get the path to the solve output file
+solve_path = analysis.WorkingDir
+# Get the solve output file path
+solve_out_path = solve_path + "solve.out"
+# If the solve output file exists, print its contents
+if solve_out_path:
+    with open(solve_out_path, "rt") as file:
         for line in file:
             print(line, end="")
 
-
-solve_path = analysis.WorkingDir
-solve_out_path = solve_path + "solve.out"
-if solve_out_path:
-    write_file_contents_to_console(solve_out_path)
-
 # %%
-# Project tree
-# ~~~~~~~~~~~~
+# Print the project tree
+# ~~~~~~~~~~~~~~~~~~~~~~
 
 app.print_tree()
 
 # %%
-# Cleanup
-# ~~~~~~~
-# Save project
+# Clean up the project
+# ~~~~~~~~~~~~~~~~~~~~
 
+# Save the project
 mechdat_file = output_path / "valve.mechdat"
 app.save(str(mechdat_file))
+
+# Refresh the app
 app.new()
 
-# %%
-# delete example files
-
+# Delete the example files
 delete_downloads()
