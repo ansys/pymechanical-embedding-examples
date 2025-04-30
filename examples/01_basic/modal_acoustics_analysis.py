@@ -663,7 +663,7 @@ plt.show()
 app.print_tree()
 
 # %%
-# Clean up the downloaded files and app
+# Clean up the app and downloaded files
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Save the project file
@@ -673,5 +673,5 @@ app.save(str(mechdat_file))
 # Refresh the app
 app.new()
 
-# Delete example files
+# Delete the example files
 delete_downloads()

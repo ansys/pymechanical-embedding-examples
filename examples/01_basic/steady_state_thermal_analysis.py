@@ -118,8 +118,11 @@ def display_image(
 graphics = app.Graphics
 camera = graphics.Camera
 
+# Set the camera orientation to isometric view
 camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 camera.SetFit()
+
+# Set the image export format and settings
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -128,19 +131,21 @@ settings_720p.Width = 1280
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
-
 # %%
-# Download and import geometry
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Download the geometry file.
+# Download the geometry file
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Download the geometry file from the ansys/example-data repository
 geometry_path = download_file("LONGBAR.x_t", "pymechanical", "embedding")
 
 # %%
 # Import the geometry
+# ~~~~~~~~~~~~~~~~~~~
 
+# Define the model
 model = app.Model
 
+# Add the geometry import group and set its preferences
 geometry_import_group = model.GeometryImportGroup
 geometry_import = geometry_import_group.AddGeometryImport()
 geometry_import_format = (
@@ -148,21 +153,31 @@ geometry_import_format = (
 )
 geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
 geometry_import_preferences.ProcessNamedSelections = True
+
+# Import the geometry file with the specified format and preferences
 geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
+# Visualize the model in 3D
 app.plot()
-
 
 # %%
 # Add steady state thermal analysis
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Add a steady state thermal analysis to the model
 model.AddSteadyStateThermalAnalysis()
+# Set the Mechanical unit system to Standard MKS
 app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
+
+# Get the steady state thermal analysis
 stat_therm = model.Analyses[0]
+
+# Add a coordinate system to the model
 coordinate_systems = model.CoordinateSystems
+
+# Add two coordinate systems
 lcs1 = coordinate_systems.AddCoordinateSystem()
 lcs1.OriginX = Quantity("0 [m]")
 
@@ -173,172 +188,274 @@ lcs2.PrimaryAxisDefineBy = CoordinateSystemAlignmentType.GlobalY
 # %%
 # Create named selections and construction geometry
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Create named selections
 
-face1 = model.AddNamedSelection()
-face1.ScopingMethod = GeometryDefineByType.Worksheet
-face1.Name = "Face1"
-gen_crt1 = face1.GenerationCriteria
-crt1 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-crt1.Active = True
-crt1.Action = SelectionActionType.Add
-crt1.EntityType = SelectionType.GeoFace
-crt1.Criterion = SelectionCriterionType.LocationZ
-crt1.Operator = SelectionOperatorType.Equal
-crt1.Value = Quantity("20 [m]")
-gen_crt1.Add(crt1)
+
+def setup_named_selection(name, scoping_method=GeometryDefineByType.Worksheet):
+    """Create a named selection with the specified scoping method and name.
+
+    Parameters
+    ----------
+    name : str
+        The name of the named selection.
+    scoping_method : GeometryDefineByType
+        The scoping method for the named selection.
+
+    Returns
+    -------
+    Ansys.ACT.Automation.Mechanical.NamedSelection
+        The created named selection.
+    """
+    ns = model.AddNamedSelection()
+    ns.ScopingMethod = scoping_method
+    ns.Name = name
+    return ns
+
+
+def add_generation_criteria(
+    named_selection,
+    value,
+    set_active_action_criteria=True,
+    active=True,
+    action=SelectionActionType.Add,
+    entity_type=SelectionType.GeoFace,
+    criterion=SelectionCriterionType.Size,
+    operator=SelectionOperatorType.Equal,
+):
+    """Add generation criteria to the named selection.
+
+    Parameters
+    ----------
+    named_selection : Ansys.ACT.Automation.Mechanical.NamedSelection
+        The named selection to which the criteria will be added.
+    value : Quantity
+        The value for the criteria.
+    active : bool
+        Whether the criteria is active.
+    action : SelectionActionType
+        The action type for the criteria.
+    entity_type : SelectionType
+        The entity type for the criteria.
+    criterion : SelectionCriterionType
+        The criterion type for the criteria.
+    operator : SelectionOperatorType
+        The operator for the criteria.
+    """
+    generation_criteria = named_selection.GenerationCriteria
+    criteria = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
+
+    set_criteria_properties(
+        criteria,
+        value,
+        set_active_action_criteria,
+        active,
+        action,
+        entity_type,
+        criterion,
+        operator,
+    )
+
+    if set_active_action_criteria:
+        generation_criteria.Add(criteria)
+
+
+def set_criteria_properties(
+    criteria,
+    value,
+    set_active_action_criteria=True,
+    active=True,
+    action=SelectionActionType.Add,
+    entity_type=SelectionType.GeoFace,
+    criterion=SelectionCriterionType.Size,
+    operator=SelectionOperatorType.Equal,
+):
+    """Set the properties of the generation criteria.
+
+    Parameters
+    ----------
+    criteria : Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion
+        The generation criteria to set properties for.
+    active : bool
+        Whether the criteria is active.
+    action : SelectionActionType
+        The action type for the criteria.
+    entity_type : SelectionType
+        The entity type for the criteria.
+    criterion : SelectionCriterionType
+        The criterion type for the criteria.
+    operator : SelectionOperatorType
+        The operator for the criteria.
+    """
+    if set_active_action_criteria:
+        criteria.Active = active
+        criteria.Action = action
+
+    criteria.EntityType = entity_type
+    criteria.Criterion = criterion
+    criteria.Operator = operator
+    criteria.Value = value
+
+    return criteria
+
+
+# Add a named selection to the model
+face1 = setup_named_selection("Face1")
+add_generation_criteria(
+    face1, Quantity("20 [m]"), criterion=SelectionCriterionType.LocationZ
+)
 face1.Activate()
 face1.Generate()
 
-face2 = model.AddNamedSelection()
-face2.ScopingMethod = GeometryDefineByType.Worksheet
-face2.Name = "Face2"
-gen_crt2 = face2.GenerationCriteria
-crt1 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-crt1.Active = True
-crt1.Action = SelectionActionType.Add
-crt1.EntityType = SelectionType.GeoFace
-crt1.Criterion = SelectionCriterionType.LocationZ
-crt1.Operator = SelectionOperatorType.Equal
-crt1.Value = Quantity("0 [m]")
-gen_crt2.Add(crt1)
+face2 = setup_named_selection("Face2")
+add_generation_criteria(
+    face2, Quantity("0 [m]"), criterion=SelectionCriterionType.LocationZ
+)
 face2.Activate()
 face2.Generate()
 
-face3 = model.AddNamedSelection()
-face3.ScopingMethod = GeometryDefineByType.Worksheet
-face3.Name = "Face3"
-gen_crt3 = face3.GenerationCriteria
-crt1 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-crt1.Active = True
-crt1.Action = SelectionActionType.Add
-crt1.EntityType = SelectionType.GeoFace
-crt1.Criterion = SelectionCriterionType.LocationX
-crt1.Operator = SelectionOperatorType.Equal
-crt1.Value = Quantity("1 [m]")
-gen_crt3.Add(crt1)
-crt2 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-crt2.Active = True
-crt2.Action = SelectionActionType.Filter
-crt2.EntityType = SelectionType.GeoFace
-crt2.Criterion = SelectionCriterionType.LocationY
-crt2.Operator = SelectionOperatorType.Equal
-crt2.Value = Quantity("2 [m]")
-gen_crt3.Add(crt2)
-crt3 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-crt3.Active = True
-crt3.Action = SelectionActionType.Filter
-crt3.EntityType = SelectionType.GeoFace
-crt3.Criterion = SelectionCriterionType.LocationZ
-crt3.Operator = SelectionOperatorType.Equal
-crt3.Value = Quantity("12 [m]")
-gen_crt3.Add(crt3)
-crt4 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-crt4.Active = True
-crt4.Action = SelectionActionType.Add
-crt4.EntityType = SelectionType.GeoFace
-crt4.Criterion = SelectionCriterionType.LocationZ
-crt4.Operator = SelectionOperatorType.Equal
-crt4.Value = Quantity("4.5 [m]")
-gen_crt3.Add(crt4)
-crt5 = Ansys.ACT.Automation.Mechanical.NamedSelectionCriterion()
-crt5.Active = True
-crt5.Action = SelectionActionType.Filter
-crt5.EntityType = SelectionType.GeoFace
-crt5.Criterion = SelectionCriterionType.LocationY
-crt5.Operator = SelectionOperatorType.Equal
-crt5.Value = Quantity("2 [m]")
-gen_crt3.Add(crt5)
+face3 = setup_named_selection("Face3")
+add_generation_criteria(
+    face3, Quantity("1 [m]"), criterion=SelectionCriterionType.LocationX
+)
+add_generation_criteria(
+    face3,
+    Quantity("2 [m]"),
+    criterion=SelectionCriterionType.LocationY,
+    action=SelectionActionType.Filter,
+)
+add_generation_criteria(
+    face3,
+    Quantity("12 [m]"),
+    criterion=SelectionCriterionType.LocationZ,
+    action=SelectionActionType.Filter,
+)
+add_generation_criteria(
+    face3, Quantity("4.5 [m]"), criterion=SelectionCriterionType.LocationZ
+)
+add_generation_criteria(
+    face3,
+    Quantity("2 [m]"),
+    criterion=SelectionCriterionType.LocationY,
+    action=SelectionActionType.Filter,
+)
 face3.Activate()
 face3.Generate()
 
-body1 = model.AddNamedSelection()
-body1.ScopingMethod = GeometryDefineByType.Worksheet
-body1.Name = "Body1"
+body1 = setup_named_selection("Body1")
 body1.GenerationCriteria.Add(None)
-body1.GenerationCriteria[0].EntityType = SelectionType.GeoFace
-body1.GenerationCriteria[0].Criterion = SelectionCriterionType.LocationZ
-body1.GenerationCriteria[0].Operator = SelectionOperatorType.Equal
-body1.GenerationCriteria[0].Value = Quantity("1 [m]")
+set_criteria_properties(
+    body1.GenerationCriteria[0],
+    Quantity("1 [m]"),
+    set_active_action_criteria=False,
+    criterion=SelectionCriterionType.LocationZ,
+)
 body1.GenerationCriteria.Add(None)
-body1.GenerationCriteria[1].EntityType = SelectionType.GeoFace
-body1.GenerationCriteria[1].Criterion = SelectionCriterionType.LocationZ
-body1.GenerationCriteria[1].Operator = SelectionOperatorType.Equal
-body1.GenerationCriteria[1].Value = Quantity("1 [m]")
+set_criteria_properties(
+    body1.GenerationCriteria[1],
+    Quantity("1 [m]"),
+    set_active_action_criteria=False,
+    criterion=SelectionCriterionType.LocationZ,
+)
 body1.Generate()
 
 # %%
 # Create construction geometry
 
+# Add construction geometry to the model
 construction_geometry = model.AddConstructionGeometry()
-Path = construction_geometry.AddPath()
-Path.StartYCoordinate = Quantity(2, "m")
-Path.StartZCoordinate = Quantity(20, "m")
-Path.StartZCoordinate = Quantity(20, "m")
-Path.EndXCoordinate = Quantity(2, "m")
+# Add a path to the construction geometry
+construction_geom_path = construction_geometry.AddPath()
+
+# Set the coordinate system for the construction geometry path
+construction_geom_path.StartYCoordinate = Quantity(2, "m")
+construction_geom_path.StartZCoordinate = Quantity(20, "m")
+construction_geom_path.StartZCoordinate = Quantity(20, "m")
+construction_geom_path.EndXCoordinate = Quantity(2, "m")
+
+# Add a surface to the construction geometry
 surface = construction_geometry.AddSurface()
+# Set the coordinate system for the surface
 surface.CoordinateSystem = lcs2
+# Update the solids in the construction geometry
 construction_geometry.UpdateAllSolids()
 
 # %%
-# Define boundary condition and add results
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Add temperature boundary conditions
+# Define the boundary condition and add results
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
+def set_loc_and_output(temp, location, values):
+    """Add a temperature set output to the boundary condition.
+
+    Parameters
+    ----------
+    temp : Ansys.Mechanical.DataModel.SteadyStateThermal.Temperature
+        The temperature boundary condition.
+    location : Ansys.Mechanical.DataModel.Geometry.GeometryObject
+        The location of the temperature boundary condition.
+    values : list[Quantity]
+        The list of values for the temperature.
+    """
+    temp.Location = location
+    temp.Magnitude.Output.DiscreteValues = [Quantity(value) for value in values]
+
+
+def set_inputs_and_outputs(
+    condition,
+    input_quantities: list = ["0 [sec]", "1 [sec]", "2 [sec]"],
+    output_quantities: list = ["22[C]", "30[C]", "40[C]"],
+):
+    """Set the temperature inputs for the boundary condition.
+
+    Parameters
+    ----------
+    condition : Ansys.Mechanical.DataModel.SteadyStateThermal.Temperature
+        The temperature boundary condition.
+    inputs : list[Quantity]
+        The list of input values for the temperature.
+    """
+    # Set the magnitude for temperature or the ambient temperature for radiation
+    if "Temperature" in str(type(condition)):
+        prop = condition.Magnitude
+    elif "Radiation" in str(type(condition)):
+        prop = condition.AmbientTemperature
+
+    # Set the inputs and outputs for the temperature or radiation
+    prop.Inputs[0].DiscreteValues = [Quantity(value) for value in input_quantities]
+    prop.Output.DiscreteValues = [Quantity(value) for value in output_quantities]
+
+
+# Add temperature boundary conditions to the steady state thermal analysis
 temp = stat_therm.AddTemperature()
-temp.Location = face1
-temp.Magnitude.Output.DiscreteValues = [Quantity("22[C]"), Quantity("30[C]")]
+set_loc_and_output(temp, face1, ["22[C]", "30[C]"])
 
+# Add temperature boundary conditions to the steady state thermal analysis
 temp2 = stat_therm.AddTemperature()
-temp2.Location = face2
-temp2.Magnitude.Output.DiscreteValues = [Quantity("22[C]"), Quantity("60[C]")]
+set_loc_and_output(temp2, face2, ["22[C]", "60[C]"])
 
-temp.Magnitude.Inputs[0].DiscreteValues = [
-    Quantity("0 [sec]"),
-    Quantity("1 [sec]"),
-    Quantity("2 [sec]"),
-]
-temp.Magnitude.Output.DiscreteValues = [
-    Quantity("22[C]"),
-    Quantity("30[C]"),
-    Quantity("40[C]"),
-]
+# Set the temperature inputs and outputs for temp
+set_inputs_and_outputs(temp)
 
-temp2.Magnitude.Inputs[0].DiscreteValues = [
-    Quantity("0 [sec]"),
-    Quantity("1 [sec]"),
-    Quantity("2 [sec]"),
-]
-temp2.Magnitude.Output.DiscreteValues = [
-    Quantity("22[C]"),
-    Quantity("50[C]"),
-    Quantity("80[C]"),
-]
+# Set the temperature inputs and outputs for temp2
+set_inputs_and_outputs(temp2, output_quantities=["22[C]", "50[C]", "80[C]"])
 
 # %%
 # Add radiation
 
+# Add a radiation boundary condition to the steady state thermal analysis
 radiation = stat_therm.AddRadiation()
 radiation.Location = face3
-radiation.AmbientTemperature.Inputs[0].DiscreteValues = [
-    Quantity("0 [sec]"),
-    Quantity("1 [sec]"),
-    Quantity("2 [sec]"),
-]
-radiation.AmbientTemperature.Output.DiscreteValues = [
-    Quantity("22[C]"),
-    Quantity("30[C]"),
-    Quantity("40[C]"),
-]
+set_inputs_and_outputs(radiation)
 radiation.Correlation = RadiationType.SurfaceToSurface
 
 # %%
-# Analysis settings
+# Set up the analysis settings
 
+# Set the analysis settings for the steady state thermal analysis
 analysis_settings = stat_therm.AnalysisSettings
 analysis_settings.NumberOfSteps = 2
 analysis_settings.CalculateVolumeEnergy = True
 
+# Activate the static thermal analysis and display the image
 stat_therm.Activate()
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "bc_steady_state.png"
@@ -349,65 +466,89 @@ set_camera_and_display_image(
 # ~~~~~~~~~~~
 # Temperature
 
+# Get the solution object for the steady state thermal analysis
 stat_therm_soln = model.Analyses[0].Solution
+
+# Add four temperature results to the solution
 temp_rst = stat_therm_soln.AddTemperature()
 temp_rst.By = SetDriverStyle.MaximumOverTime
 
+# Set the temperature location to the body1 named selection
 temp_rst2 = stat_therm_soln.AddTemperature()
 temp_rst2.Location = body1
 
+# Set the temperature location to the construction geometry path
 temp_rst3 = stat_therm_soln.AddTemperature()
-temp_rst3.Location = Path
+temp_rst3.Location = construction_geom_path
 
+# Set the temperaature location to the construction geometry surface
 temp_rst4 = stat_therm_soln.AddTemperature()
 temp_rst4.Location = surface
 
 # %%
-# Total  and directional heat flux
+# Add the total and directional heat flux to the solution
 
 total_heat_flux = stat_therm_soln.AddTotalHeatFlux()
 directional_heat_flux = stat_therm_soln.AddTotalHeatFlux()
+
+# Set the thermal result type and normal orientation for the directional heat flux
 directional_heat_flux.ThermalResultType = TotalOrDirectional.Directional
 directional_heat_flux.NormalOrientation = NormalOrientationType.ZAxis
 
+# Set the coordinate system's primary axis for the directional heat flux
 lcs2.PrimaryAxisDefineBy = CoordinateSystemAlignmentType.GlobalZ
 directional_heat_flux.CoordinateSystem = lcs2
+
+# Set the display option for the directional heat flux
 directional_heat_flux.DisplayOption = ResultAveragingType.Averaged
 
 # %%
-# Thermal error
+# Add thermal error and temperature probes
 
+# Add a thermal error to the solution
 thermal_error = stat_therm_soln.AddThermalError()
 
-# %%
-# Temperature probe
-
+# Add a temperature probe to the solution
 temp_probe = stat_therm_soln.AddTemperatureProbe()
+
+# Set the temperature probe location to the face1 named selection
 temp_probe.GeometryLocation = face1
+
+# Set the temperature probe location method to the coordinate system
 temp_probe.LocationMethod = LocationDefinitionMethod.CoordinateSystem
 temp_probe.CoordinateSystemSelection = lcs2
 
 # %%
-# Heat flux probe
+# Add a heat flux probe
 
 hflux_probe = stat_therm_soln.AddHeatFluxProbe()
+
+# Set the location method for the heat flux probe
 hflux_probe.LocationMethod = LocationDefinitionMethod.CoordinateSystem
+# Set the coordinate system for the heat flux probe
 hflux_probe.CoordinateSystemSelection = lcs2
+# Set the result selection to the z-axis for the heat flux probe
 hflux_probe.ResultSelection = ProbeDisplayFilter.ZAxis
 
 # %%
-# Reaction probe
+# Add a reaction probe
 
+# Update the analysis settings to allow output control nodal forces
 analysis_settings.NodalForces = OutputControlsNodalForcesType.Yes
+
+# Add a reaction probe to the solution
 reaction_probe = stat_therm_soln.AddReactionProbe()
+# Set the reaction probe geometry location to the face1 named selection
 reaction_probe.LocationMethod = LocationDefinitionMethod.GeometrySelection
 reaction_probe.GeometryLocation = face1
 
 # %%
-# Radiation probe
+# Add a radiation probe
 
 radiation_probe = stat_therm_soln.AddRadiationProbe()
+# Set the radiation probe boundary condition to the radiation boundary condition
 radiation_probe.BoundaryConditionSelection = radiation
+# Display all results for the radiation probe
 radiation_probe.ResultSelection = ProbeDisplayFilter.All
 
 
@@ -415,6 +556,7 @@ radiation_probe.ResultSelection = ProbeDisplayFilter.All
 # Solve
 # ~~~~~
 
+# Solve the steady state thermal analysis solution
 stat_therm_soln.Solve(True)
 
 # sphinx_gallery_start_ignore
@@ -424,8 +566,8 @@ assert (
 # sphinx_gallery_end_ignore
 
 # %%
-# Messages
-# ~~~~~~~~
+# Print messages
+# ~~~~~~~~~~~~~~
 
 messages = app.ExtAPI.Application.Messages
 if messages:
@@ -436,8 +578,8 @@ else:
 
 # Display results
 # ~~~~~~~~~~~~~~~
-# Total body temperature
 
+# Activate the total body temperature and display the image
 app.Tree.Activate([temp_rst])
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "total_body_temp.png"
@@ -446,6 +588,7 @@ set_camera_and_display_image(
 # %%
 # Temperature on part of the body
 
+# Activate the temperature on part of the body and display the image
 app.Tree.Activate([temp_rst2])
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "part_temp_body.png"
@@ -454,6 +597,7 @@ set_camera_and_display_image(
 # %%
 # Temperature distribution along the specific path
 
+# Activate the temperature distribution along the specific path and display the image
 app.Tree.Activate([temp_rst3])
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "path_temp_distribution.png"
@@ -462,17 +606,20 @@ set_camera_and_display_image(
 # %%
 # Temperature of bottom surface
 
+# Activate the temperature of the bottom surface and display the image
 app.Tree.Activate([temp_rst4])
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "bottom_surface_temp.png"
 )
 
 # %%
-# Export directional heat flux animation
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Directional heat flux
+# Export the directional heat flux animation
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Activate the directional heat flux
 app.Tree.Activate([directional_heat_flux])
+
+# Set the animation export format and settings
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
 )
@@ -480,6 +627,7 @@ settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
 settings_720p.Width = 1280
 settings_720p.Height = 720
 
+# Export the directional heat flux animation as a GIF
 directional_heat_flux_gif = output_path / "directional_heat_flux.gif"
 directional_heat_flux.ExportAnimation(
     str(directional_heat_flux_gif), animation_export_format, settings_720p
@@ -517,7 +665,7 @@ image = axes.imshow(gif.convert("RGBA"))
 
 # Create the animation using the figure, update_animation function, and the GIF frames
 # Set the interval between frames to 200 milliseconds and repeat the animation
-FuncAnimation(
+ani = FuncAnimation(
     figure,
     update_animation,
     frames=range(gif.n_frames),
@@ -530,38 +678,35 @@ FuncAnimation(
 plt.show()
 
 # %%
-# Display output file from solve
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Display the output file from the solve
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-def write_file_contents_to_console(path):
-    """Write file contents to console."""
-    with open(path, "rt") as file:
+# Get the working directory for the steady state thermal analysis
+solve_path = stat_therm.WorkingDir
+# Get the path to the solve.out file
+solve_out_path = solve_path + "solve.out"
+# Print the output of the solve.out file if applicable
+if solve_out_path:
+    with open(solve_out_path, "rt") as file:
         for line in file:
             print(line, end="")
 
-
-solve_path = stat_therm.WorkingDir
-solve_out_path = solve_path + "solve.out"
-if solve_out_path:
-    write_file_contents_to_console(solve_out_path)
-
 # %%
-# Project tree
-# ~~~~~~~~~~~~
+# Print the project tree
+# ~~~~~~~~~~~~~~~~~~~~~~
 
 app.print_tree()
 
 # %%
-# Cleanup
-# ~~~~~~~
-# Save project
+# Clean up the app and downloaded files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Save the project file
 mechdat_path = output_path / "steady_state_thermal.mechdat"
 app.save(str(mechdat_path))
+
+# Refresh the app
 app.new()
 
-# %%
-# Delete example files
-
+# Delete the example files
 delete_downloads()
