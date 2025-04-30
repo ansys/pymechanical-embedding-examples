@@ -15,12 +15,10 @@ load, which is then transferred to the topology optimization.
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PIL import Image
 from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
-from matplotlib.animation import FuncAnimation
 
 if TYPE_CHECKING:
     import Ansys
@@ -30,7 +28,6 @@ if TYPE_CHECKING:
 
 app = App(globals=globals())
 print(app)
-
 
 # %%
 # Set the image output path and create functions to fit the camera and display images
@@ -115,7 +112,10 @@ def display_image(
 graphics = app.Graphics
 camera = graphics.Camera
 
+# Set the camera orientation to the front view
 camera.SetSpecificViewOrientation(ViewOrientationType.Front)
+
+# Set the image export format and settings
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -125,38 +125,46 @@ settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
 # %%
-# Import structural analsys
-# ~~~~~~~~~~~~~~~~~~~~~~~~~
-# Download ``.mechdat`` file
+# Import the structural analysis model
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Download ``.mechdat`` file
 structural_mechdat_file = download_file(
     "cantilever.mechdat", "pymechanical", "embedding"
 )
+
+# Open the project file
 app.open(structural_mechdat_file)
+
+# Define the model
+model = app.Model
+
+# Get the structural analysis object
 struct = model.Analyses[0]
 
 # sphinx_gallery_start_ignore
 assert struct.ObjectState == ObjectState.Solved
 # sphinx_gallery_end_ignore
+
+# Get the structural analysis object's solution and solve it
 struct_sln = struct.Solution
 struct_sln.Solve(True)
+
 # sphinx_gallery_start_ignore
 assert struct_sln.Status == SolutionStatusType.Done, "Solution status is not 'Done'"
 # sphinx_gallery_end_ignore
 
 # %%
-# Display structural analsys results
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Total deformation
+# Display the structural analysis results
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Activate the total deformation result and display the image
 struct_sln.Children[1].Activate()
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "total_deformation.png"
 )
 
-# %%
-# Equivalent stress
-
+# Activate the equivalent stress result and display the image
 struct_sln.Children[2].Activate()
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "equivalent_stress.png"
@@ -166,44 +174,43 @@ set_camera_and_display_image(
 # Topology optimization
 # ~~~~~~~~~~~~~~~~~~~~~
 
-# Set MKS unit system
-
+# Set the MKS unit system
 app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
-# Get structural analysis and link to topology optimization
-
+# Add the topology optimization analysis to the model and transfer data from the
+# structural analysis
 topology_optimization = model.AddTopologyOptimizationAnalysis()
 topology_optimization.TransferDataFrom(struct)
 
+# Get the optimization region from the data model
 optimization_region = DataModel.GetObjectsByType(
     DataModelObjectCategory.OptimizationRegion
 )[0]
+# Set the optimization region's boundary condition to all loads and supports
 optimization_region.BoundaryCondition = BoundaryConditionType.AllLoadsAndSupports
+# Set the optimization region's optimization type to topology density
 optimization_region.OptimizationType = OptimizationType.TopologyDensity
 
 # sphinx_gallery_start_ignore
 assert topology_optimization.ObjectState == ObjectState.NotSolved
 # sphinx_gallery_end_ignore
 
-# Insert volume response constraint object for topology optimization
-# Delete mass response constraint
-
+# Delete the mass response constraint from the topology optimization
 mass_constraint = topology_optimization.Children[3]
 mass_constraint.Delete()
 
-# Add volume response constraint
-
+# Add a volume response constraint to the topology optimization
 volume_constraint = topology_optimization.AddVolumeConstraint()
 
-# Insert member size manufacturing constraint
-
+# Add a member size manufacturing constraint to the topology optimization
 mem_size_manufacturing_constraint = (
     topology_optimization.AddMemberSizeManufacturingConstraint()
 )
+# Set the constraint's minimum to manual and its minimum size to 2.4m
 mem_size_manufacturing_constraint.Minimum = ManuMemberSizeControlledType.Manual
 mem_size_manufacturing_constraint.MinSize = Quantity("2.4 [m]")
 
-
+# Activate the topology optimization analysis and display the image
 topology_optimization.Activate()
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "boundary_conditions.png"
@@ -213,15 +220,18 @@ set_camera_and_display_image(
 # Solve
 # ~~~~~
 
+# Get the topology optimization analysis solution
 top_opt_sln = topology_optimization.Solution
+# Solve the solution
 top_opt_sln.Solve(True)
+
 # sphinx_gallery_start_ignore
 assert top_opt_sln.Status == SolutionStatusType.Done, "Solution status is not 'Done'"
 # sphinx_gallery_end_ignore
 
 # %%
-# Messages
-# ~~~~~~~~
+# Print messages
+# ~~~~~~~~~~~~~~
 
 messages = app.ExtAPI.Application.Messages
 if messages:
@@ -234,22 +244,31 @@ else:
 # Display results
 # ~~~~~~~~~~~~~~~
 
+# Get the topology density result and activate it
 top_opt_sln.Children[1].Activate()
 topology_density = top_opt_sln.Children[1]
 
 # %%
-# Add smoothing to the STL
+# Add smoothing to the stereolithography (STL)
 
+# Add smoothing to the topology density result
 topology_density.AddSmoothing()
+
+# Evaluate all results for the topology optimization solution
 topology_optimization.Solution.EvaluateAllResults()
+
+# Activate the topology density result after smoothing and display the image
 topology_density.Children[0].Activate()
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "topo_opitimized_smooth.png"
 )
 
 # %%
-# Export animation
+# Export the animation
 
+app.Tree.Activate([topology_density])
+
+# Set the animation export format and settings
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
 )
@@ -257,59 +276,21 @@ settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
 settings_720p.Width = 1280
 settings_720p.Height = 720
 
+# Export the animation of the topology density result
 topology_optimized_gif = output_path / "topology_opitimized.gif"
 topology_density.ExportAnimation(
     str(topology_optimized_gif), animation_export_format, settings_720p
 )
 
+# Use saved GIF file to display the animation since matplotlib.FuncAnimation
+# does not work for this animation in Sphinx
 
-def update_animation(frame: int) -> list[mpimg.AxesImage]:
-    """Update the animation frame for the GIF.
-
-    Parameters
-    ----------
-    frame : int
-        The frame number to update the animation.
-
-    Returns
-    -------
-    list[mpimg.AxesImage]
-        A list containing the updated image for the animation.
-    """
-    # Seeks to the given frame in this sequence file
-    gif.seek(frame)
-    # Set the image array to the current frame of the GIF
-    image.set_data(gif.convert("RGBA"))
-    # Return the updated image
-    return [image]
-
-
-# Open the GIF file and create an animation
-gif = Image.open(topology_optimized_gif)
-# Set the subplots for the animation and turn off the axis
-figure, axes = plt.subplots(figsize=(16, 9))
-axes.axis("off")
-# Change the color of the image
-image = axes.imshow(gif.convert("RGBA"))
-
-# Create the animation using the figure, update_animation function, and the GIF frames
-# Set the interval between frames to 200 milliseconds and repeat the animation
-FuncAnimation(
-    figure,
-    update_animation,
-    frames=range(gif.n_frames),
-    interval=100,
-    repeat=True,
-    blit=True,
-)
-
-# Show the animation
-plt.show()
+# .. image:: /_static/basic/Topo_opitimized.gif
 
 # %%
 # Review the results
 
-# Print topology density results
+# Print the topology density results
 print("Topology Density Results")
 print("Minimum Density: ", topology_density.Minimum)
 print("Maximum Density: ", topology_density.Maximum)
@@ -321,23 +302,22 @@ print("Original Mass: ", topology_density.OriginalMass.Value)
 print("Final Mass: ", topology_density.FinalMass.Value)
 print("Percent Mass of Original: ", topology_density.PercentMassOfOriginal)
 
-
 # %%
-# Project tree
-# ~~~~~~~~~~~~
+# Display the project tree
+# ~~~~~~~~~~~~~~~~~~~~~~~~
 
 app.print_tree()
 
 # %%
-# Cleanup
-# ~~~~~~~
-# Save project
+# Clean up the app and downloaded files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Save the project file
 mechdat_file = output_path / "cantilever_beam_topology_optimization.mechdat"
 app.save(str(mechdat_file))
+
+# Refresh the app
 app.new()
 
-# %%
 # Delete the example files
-
 delete_downloads()
