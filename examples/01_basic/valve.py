@@ -113,7 +113,7 @@ def display_image(
 graphics = app.Graphics
 camera = graphics.Camera
 
-# Set the camera orientation to the front view
+# Set the camera orientation to the isometric view
 camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 
 # Set the image export format and settings

@@ -128,7 +128,10 @@ def display_image(
 graphics = app.Graphics
 camera = graphics.Camera
 
+# Set the camera orientation to the front view
 camera.SetSpecificViewOrientation(ViewOrientationType.Front)
+
+# Set the image export format and settings
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -136,50 +139,61 @@ settings_720p.Background = GraphicsBackgroundType.White
 settings_720p.Width = 1280
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
+
+# Rotate the camera on the y-axis
 camera.Rotate(180, CameraAxisType.ScreenY)
 
 # %%
-# Download geometry and materials files
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Download the geometry and material files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Download the geometry and material files from the specified paths
 geometry_path = download_file("example_07_td43_wear.agdb", "pymechanical", "00_basic")
 mat1_path = download_file("example_07_Mat_Copper.xml", "pymechanical", "00_basic")
 mat2_path = download_file("example_07_Mat_Steel.xml", "pymechanical", "00_basic")
 
 # %%
-# Import geometry
-# ~~~~~~~~~~~~~~~
+# Import the geometry
+# ~~~~~~~~~~~~~~~~~~~
 
+# Define the model
 model = app.Model
 
+# Add a geometry import to the geometry import group
 geometry_import = model.GeometryImportGroup.AddGeometryImport()
+
+# Set the geometry import settings
 geometry_import_format = (
     Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
 )
 geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
 geometry_import_preferences.ProcessNamedSelections = True
 geometry_import_preferences.ProcessCoordinateSystems = True
+
+# Import the geometry using the specified settings
 geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
+# Visualize the model in 3D
 app.plot()
 
 # %%
-# Import materials
-# ~~~~~~~~~~~~~~~~
+# Import the materials
+# ~~~~~~~~~~~~~~~~~~~~
 
+# Define the materials for the model
 materials = model.Materials
+
+# Import the copper and steel materials
 materials.Import(mat1_path)
 materials.Import(mat2_path)
 
-print("Material import done !")
-
 # %%
-# Setup the Analysis
-# ~~~~~~~~~~~~~~~~~~
-# Set up the unit system
+# Set up the analysis
+# ~~~~~~~~~~~~~~~~~~~
 
+# Set up the unit system
 app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
 
 # %%
@@ -192,46 +206,63 @@ mesh = model.Mesh
 named_selections = model.NamedSelections
 
 # %%
-# Add static structural analysis
+# Add the static structural analysis
 
 model.AddStaticStructuralAnalysis()
 static_structural_analysis = model.Analyses[0]
+
+# Store the static structural analysis solution
 stat_struct_soln = static_structural_analysis.Solution
-stat_struct_analysis_settings = static_structural_analysis.Children[0]
+
+# Get the analysis settings for the static structural analysis
+analysis_settings = static_structural_analysis.Children[0]
 
 # %%
-# Store name selection
+# Store named selection
 
-curve_named_selection = [x for x in app.Tree.AllObjects if x.Name == "curve"][0]
-dia_named_selection = [x for x in app.Tree.AllObjects if x.Name == "dia"][0]
-ver_edge1 = [x for x in app.Tree.AllObjects if x.Name == "v1"][0]
-ver_edge2 = [x for x in app.Tree.AllObjects if x.Name == "v2"][0]
-hor_edge1 = [x for x in app.Tree.AllObjects if x.Name == "h1"][0]
-hor_edge2 = [x for x in app.Tree.AllObjects if x.Name == "h2"][0]
-all_bodies_named_selection = [x for x in app.Tree.AllObjects if x.Name == "all_bodies"][
-    0
-]
+
+def get_named_selection(name: str):
+    """Get the named selection by name."""
+    return [obj for obj in app.Tree.AllObjects if obj.Name == name][0]
+
+
+curve_named_selection = get_named_selection("curve")
+dia_named_selection = get_named_selection("dia")
+ver_edge1 = get_named_selection("v1")
+ver_edge2 = get_named_selection("v2")
+hor_edge1 = get_named_selection("h1")
+hor_edge2 = get_named_selection("h2")
+all_bodies_named_selection = get_named_selection("all_bodies")
 
 # %%
-# Assign material to bodies and change behavior to axisymmetric
+# Assign material to the bodies and change the behavior to axi-symmetric
 
+# Set the model's 2D behavior to axi-symmetric
 geometry.Model2DBehavior = Model2DBehavior.AxiSymmetric
 
-surface1 = geometry.Children[0].Children[0]
-surface1.Material = "Steel"
-surface1.Dimension = ShellBodyDimension.Two_D
 
-surface2 = geometry.Children[1].Children[0]
-surface2.Material = "Copper"
-surface2.Dimension = ShellBodyDimension.Two_D
+def set_material_and_dimension(
+    surface_child_index, material, dimension=ShellBodyDimension.Two_D
+):
+    """Set the material and dimension for a given surface."""
+    surface = geometry.Children[surface_child_index].Children[0]
+    surface.Material = material
+    surface.Dimension = dimension
+
+
+# Set the material and dimensions for the surface
+set_material_and_dimension(0, "Steel")
+set_material_and_dimension(1, "Copper")
 
 # %%
 # Change contact settings
 
+# Add a contact region between the hemispherical ring and the flat ring
 contact_region = connections.AddContactRegion()
+# Set the source and target locations for the contact region
 contact_region.SourceLocation = named_selections.Children[6]
 contact_region.TargetLocation = named_selections.Children[3]
-# contact_region.FlipContactTarget()
+# Set contact region properties
 contact_region.ContactType = ContactType.Frictionless
 contact_region.Behavior = ContactBehavior.Asymmetric
 contact_region.ContactFormulation = ContactFormulation.AugmentedLagrange
@@ -259,134 +290,183 @@ cmd1 = contact_region.AddCommandSnippet()
 cmd1.AppendText(archard_wear_model)
 
 # %%
-# Insert remote point
+# Insert a remote point
 
+# Add a remote point to the model
 remote_point = model.AddRemotePoint()
+# Set the remote point location to the center of the hemispherical ring
 remote_point.Location = dia_named_selection
 remote_point.Behavior = LoadBehavior.Rigid
 
 # %%
-# Mesh
-# ~~~~
+# Set properties for the mesh
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Set the mesh element order and size
 mesh.ElementOrder = ElementOrder.Linear
 mesh.ElementSize = Quantity("1 [mm]")
 
-edge_sizing1 = mesh.AddSizing()
-edge_sizing1.Location = hor_edge1
-edge_sizing1.Type = SizingType.NumberOfDivisions
-edge_sizing1.NumberOfDivisions = 70
 
-edge_sizing2 = mesh.AddSizing()
-edge_sizing2.Location = hor_edge2
-edge_sizing2.Type = SizingType.NumberOfDivisions
-edge_sizing2.NumberOfDivisions = 70
+def add_edge_sizing_and_properties(
+    mesh, location, divisions, sizing_type=SizingType.NumberOfDivisions
+):
+    """Set the sizing properties for a given mesh.
 
-edge_sizing3 = mesh.AddSizing()
-edge_sizing3.Location = ver_edge1
-edge_sizing3.Type = SizingType.NumberOfDivisions
-edge_sizing3.NumberOfDivisions = 35
+    Parameters
+    ----------
+    mesh : Ansys.Mechanical.DataModel.Mesh
+        The mesh object to set the properties for.
+    location : Ansys.Mechanical.DataModel.NamedSelection
+        The location of the edge to set the sizing for.
+    divisions : int
+        The number of divisions for the edge.
+    sizing_type : SizingType
+        The type of sizing to apply (default is NumberOfDivisions).
+    """
+    edge_sizing = mesh.AddSizing()
+    edge_sizing.Location = location
+    edge_sizing.Type = sizing_type
+    edge_sizing.NumberOfDivisions = divisions
 
-edge_sizing4 = mesh.AddSizing()
-edge_sizing4.Location = ver_edge2
-edge_sizing4.Type = SizingType.NumberOfDivisions
-edge_sizing4.NumberOfDivisions = 35
 
-edge_sizing5 = mesh.AddSizing()
-edge_sizing5.Location = dia_named_selection
-edge_sizing5.Type = SizingType.NumberOfDivisions
-edge_sizing5.NumberOfDivisions = 40
+# Add edge sizing and properties to the mesh for each named selection
+add_edge_sizing_and_properties(mesh, hor_edge1, 70)
+add_edge_sizing_and_properties(mesh, hor_edge2, 70)
+add_edge_sizing_and_properties(mesh, ver_edge1, 35)
+add_edge_sizing_and_properties(mesh, ver_edge2, 35)
+add_edge_sizing_and_properties(mesh, dia_named_selection, 40)
+add_edge_sizing_and_properties(mesh, curve_named_selection, 60)
 
-edge_sizing6 = mesh.AddSizing()
-edge_sizing6.Location = curve_named_selection
-edge_sizing6.Type = SizingType.NumberOfDivisions
-edge_sizing6.NumberOfDivisions = 60
-
+# Generate the mesh and display the image
 mesh.GenerateMesh()
 set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh.png")
 
 # %%
-# Analysis settings
-# ~~~~~~~~~~~~~~~~~
+# Set the analysis settings
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stat_struct_analysis_settings.NumberOfSteps = 2
-stat_struct_analysis_settings.CurrentStepNumber = 1
-stat_struct_analysis_settings.AutomaticTimeStepping = AutomaticTimeStepping.On
-stat_struct_analysis_settings.DefineBy = TimeStepDefineByType.Time
-stat_struct_analysis_settings.InitialTimeStep = Quantity("0.1 [s]")
-stat_struct_analysis_settings.MinimumTimeStep = Quantity("0.0001 [s]")
-stat_struct_analysis_settings.MaximumTimeStep = Quantity("1 [s]")
-stat_struct_analysis_settings.CurrentStepNumber = 2
-stat_struct_analysis_settings.Activate()
-stat_struct_analysis_settings.StepEndTime = Quantity("4 [s]")
-stat_struct_analysis_settings.AutomaticTimeStepping = AutomaticTimeStepping.On
-stat_struct_analysis_settings.DefineBy = TimeStepDefineByType.Time
-stat_struct_analysis_settings.InitialTimeStep = Quantity("0.01 [s]")
-stat_struct_analysis_settings.MinimumTimeStep = Quantity("0.000001 [s]")
-stat_struct_analysis_settings.MaximumTimeStep = Quantity("0.02 [s]")
 
-stat_struct_analysis_settings.LargeDeflection = True
+def set_time_steps(initial, min, max):
+    """Set the time step properties for the analysis settings.
+
+    Parameters
+    ----------
+    initial : str
+        The initial time step value.
+    min : str
+        The minimum time step value.
+    max : str
+        The maximum time step value.
+    """
+    analysis_settings.InitialTimeStep = Quantity(initial)
+    analysis_settings.MinimumTimeStep = Quantity(min)
+    analysis_settings.MaximumTimeStep = Quantity(max)
+
+
+# Set the analysis settings for the static structural analysis
+analysis_settings.NumberOfSteps = 2
+analysis_settings.CurrentStepNumber = 1
+analysis_settings.AutomaticTimeStepping = AutomaticTimeStepping.On
+analysis_settings.DefineBy = TimeStepDefineByType.Time
+set_time_steps(initial="0.1 [s]", min="0.0001 [s]", max="1 [s]")
+analysis_settings.CurrentStepNumber = 2
+analysis_settings.Activate()
+analysis_settings.StepEndTime = Quantity("4 [s]")
+analysis_settings.AutomaticTimeStepping = AutomaticTimeStepping.On
+analysis_settings.DefineBy = TimeStepDefineByType.Time
+set_time_steps(initial="0.01 [s]", min="0.000001 [s]", max="0.02 [s]")
+analysis_settings.LargeDeflection = True
 
 # %%
 # Insert loading and boundary conditions
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Add a fixed support to the model
 fixed_support = static_structural_analysis.AddFixedSupport()
+# Set the fixed support location to the first horizontal edge
 fixed_support.Location = hor_edge1
 
+# Add a remote displacement to the model
 remote_displacement = static_structural_analysis.AddRemoteDisplacement()
+# Set the remote displacement location to the remote point
 remote_displacement.Location = remote_point
+# Add the values for the x-component and rotation about the z-axis
 remote_displacement.XComponent.Output.DiscreteValues = [Quantity("0[mm]")]
 remote_displacement.RotationZ.Output.DiscreteValues = [Quantity("0[deg]")]
 
+# Add a remote force to the model
 remote_force = static_structural_analysis.AddRemoteForce()
+# Set the remote force location to the remote point
 remote_force.Location = remote_point
+# Set the remote force values for the y-component
 remote_force.DefineBy = LoadDefineBy.Components
 remote_force.YComponent.Output.DiscreteValues = [Quantity("-150796320 [N]")]
 
-# Nonlinear Adaptivity does not support contact criterion yet hence command snippet used
-
+#  Nonlinear adaptivity does not support contact criterion yet so a command snippet is used instead
 nonlinear_adaptivity = """NLADAPTIVE,all,add,contact,wear,0.50
 NLADAPTIVE,all,on,all,all,1,,4
 NLADAPTIVE,all,list,all,all"""
+
+# Add the nonlinear adaptivity command snippet to the static structural analysis
 cmd2 = static_structural_analysis.AddCommandSnippet()
 cmd2.AppendText(nonlinear_adaptivity)
 cmd2.StepSelectionMode = SequenceSelectionType.All
 
+# Activate the static structural analysis and display the mesh image
 static_structural_analysis.Activate()
 set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh.png")
 
 # %%
-# Insert results
-# ~~~~~~~~~~~~~~
+# Add results to the solution
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
+def set_properties_for_result(
+    result,
+    display_time,
+    orientation_type=NormalOrientationType.YAxis,
+    display_option=ResultAveragingType.Unaveraged,
+):
+    """Set the properties for a given result."""
+    result.NormalOrientation = orientation_type
+    result.DisplayTime = Quantity(display_time)
+    result.DisplayOption = display_option
+
+
+# Add total deformation to the solution
 total_deformation = stat_struct_soln.AddTotalDeformation()
 
+# Add normal stress to the solution
 normal_stress1 = stat_struct_soln.AddNormalStress()
-normal_stress1.NormalOrientation = NormalOrientationType.YAxis
-normal_stress1.DisplayTime = Quantity("1 [s]")
-normal_stress1.DisplayOption = ResultAveragingType.Unaveraged
-
+set_properties_for_result(normal_stress1, display_time="1 [s]")
 normal_stress2 = stat_struct_soln.AddNormalStress()
-normal_stress2.NormalOrientation = NormalOrientationType.YAxis
-normal_stress2.DisplayTime = Quantity("4 [s]")
-normal_stress2.DisplayOption = ResultAveragingType.Unaveraged
+set_properties_for_result(normal_stress1, display_time="4 [s]")
 
+# Add a contact tool to the solution
 contact_tool = stat_struct_soln.AddContactTool()
 contact_tool.ScopingMethod = GeometryDefineByType.Geometry
+# Add selections for the contact tool
 selection1 = app.ExtAPI.SelectionManager.AddSelection(all_bodies_named_selection)
 selection2 = app.ExtAPI.SelectionManager.CurrentSelection
+# Set the contact tool location to the current selection
 contact_tool.Location = selection2
+# Clear the selection
 app.ExtAPI.SelectionManager.ClearSelection()
-contact_pressure1 = contact_tool.AddPressure()
-contact_pressure1.DisplayTime = Quantity("1 [s]")
 
-contact_pressure2 = contact_tool.AddPressure()
-contact_pressure2.DisplayTime = Quantity("4 [s]")
+
+def add_contact_pressure(contact_tool, display_time):
+    """Add a contact pressure to the contact tool."""
+    contact_pressure = contact_tool.AddPressure()
+    contact_pressure.DisplayTime = Quantity(display_time)
+
+
+# Add pressure to the contact tool
+add_contact_pressure(contact_tool, display_time="0 [s]")
+add_contact_pressure(contact_tool, display_time="4 [s]")
 
 # %%
-# Solve
-# ~~~~~
+# Solve the static structural analysis
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stat_struct_soln.Solve(True)
 # sphinx_gallery_start_ignore
@@ -398,27 +478,15 @@ assert (
 # %%
 # Postprocessing
 # ~~~~~~~~~~~~~~
-# Normal stress
 
+# Activate the first normal stress result and display the image
 app.Tree.Activate([normal_stress1])
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "normal_stress.png"
 )
 
 # %%
-# Total deformation animation
-
-animation_export_format = (
-    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
-)
-settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
-settings_720p.Width = 1280
-settings_720p.Height = 720
-
-total_deformation_gif = output_path / "total_deformation.gif"
-total_deformation.ExportAnimation(
-    str(total_deformation_gif), animation_export_format, settings_720p
-)
+# Display the total deformation animation
 
 
 def update_animation(frame: int) -> list[mpimg.AxesImage]:
@@ -441,6 +509,21 @@ def update_animation(frame: int) -> list[mpimg.AxesImage]:
     # Return the updated image
     return [image]
 
+
+# Set the animatione export format
+animation_export_format = (
+    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
+)
+# Set the animation export settings
+settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
+settings_720p.Width = 1280
+settings_720p.Height = 720
+
+# Export the animation
+total_deformation_gif = output_path / "total_deformation.gif"
+total_deformation.ExportAnimation(
+    str(total_deformation_gif), animation_export_format, settings_720p
+)
 
 # Open the GIF file and create an animation
 gif = Image.open(total_deformation_gif)
@@ -465,19 +548,21 @@ FuncAnimation(
 plt.show()
 
 # %%
-# Project tree
-# ~~~~~~~~~~~~
+# Print the project tree
+# ~~~~~~~~~~~~~~~~~~~~~~
 
 app.print_tree()
 
 # %%
-# Cleanup
-# ~~~~~~~
-# Save project
+# Clean up the project
+# ~~~~~~~~~~~~~~~~~~~~
 
+# Save the project file
 mechdat_file = output_path / "contact_wear.mechdat"
 app.save(str(mechdat_file))
+
+# Refresh the app
 app.new()
 
-# delete example file
+# Delete the downloaded files
 delete_downloads()
