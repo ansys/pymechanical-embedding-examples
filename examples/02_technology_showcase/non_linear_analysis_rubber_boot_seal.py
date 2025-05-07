@@ -121,10 +121,13 @@ def display_image(
 graphics = app.Graphics
 camera = graphics.Camera
 
+# Set the camera orientation to the isometric view
 camera.SetSpecificViewOrientation(
     Ansys.Mechanical.DataModel.Enums.ViewOrientationType.Iso
 )
 camera.SetFit()
+
+# Set the image export format and settings
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -134,8 +137,8 @@ settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
 # %%
-# Download geometry and materials files
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Download the geometry and material files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 geometry_path = download_file(
     "example_05_td26_Rubber_Boot_Seal.agdb", "pymechanical", "00_basic"
@@ -145,357 +148,482 @@ mat_path = download_file("example_05_Boot_Mat.xml", "pymechanical", "00_basic")
 # %%
 # Import geometry and material
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Import material
 
+# Define the model
 model = app.Model
 
+# Define the materials
 materials = model.Materials
+
+# Import the material
 materials.Import(mat_path)
-print("Material import done !")
 
 # %%
-# Import geometry
+# Import the geometry
 
+# Add a geometry import to the geometry import group for the model
 geometry_import = model.GeometryImportGroup.AddGeometryImport()
+
+# Set the geometry import format and preferences
 geometry_import_format = (
     Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
 )
 geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
 geometry_import_preferences.ProcessNamedSelections = True
 geometry_import_preferences.ProcessCoordinateSystems = True
+
+# Import the geometry with the specified format and preferences
 geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
+# Visualize the imported geometry in 3D
 app.plot()
 
 # %%
-# Setup the Analysis
-# ~~~~~~~~~~~~~~~~~~
-# Set up the unit system
+# Set up the analysis
+# ~~~~~~~~~~~~~~~~~~~
 
+# Set the active unit system and angle unit
 app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
 app.ExtAPI.Application.ActiveAngleUnit = AngleUnitType.Radian
 
 # %%
 # Store all main tree nodes as variables
 
+# Define the geometry for the model
 geometry = model.Geometry
+# Get the part and solid objects from the geometry
 part1 = [x for x in app.Tree.AllObjects if x.Name == "Part"][0]
 part2 = [x for x in app.Tree.AllObjects if x.Name == "Solid"][1]
+
+# Define the coordinate systems
 coordinate_systems = model.CoordinateSystems
-gcs = coordinate_systems.Children[0]
+geometry_coordinate_systems = coordinate_systems.Children[0]
 
 # %%
-# Add static structural analysis
+# Add a static structural analysis
 
+# Add a static structural analysis to the model
 model.AddStaticStructuralAnalysis()
+
+# Get the static structural analysis from the model
 static_structural_analysis = model.Analyses[0]
+
+# Get the analysis settings, solution, and solution information
 analysis_settings = static_structural_analysis.Children[0]
 stat_struct_soln = static_structural_analysis.Solution
 soln_info = stat_struct_soln.SolutionInformation
 
 # %%
-# Define named selection and coordinate system
+# Define named selections and coordinate systems
+
+
+def get_named_selection(
+    named_selections, name: str
+) -> Ansys.ACT.Automation.Mechanical.NamedSelection:
+    """Get a named selection by its name.
+
+    Parameters
+    ----------
+    named_selections : Ansys.ACT.Automation.Mechanical.NamedSelections
+        The named selections object to search in.
+    name : str
+        The name of the named selection to retrieve.
+
+    Returns
+    -------
+    Ansys.ACT.Automation.Mechanical.NamedSelection
+        The named selection object.
+    """
+    return [
+        child
+        for child in named_selections.GetChildren[
+            Ansys.ACT.Automation.Mechanical.NamedSelection
+        ](True)
+        if child.Name == name
+    ][0]
+
 
 named_selections = app.ExtAPI.DataModel.Project.Model.NamedSelections
-top_face = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Top_Face"
-][0]
-bottom_face = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Bottom_Face"
-][0]
-symm_faces30 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Symm_Faces30"
-][0]
-faces2 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Faces2"
-][0]
-cyl_faces2 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Cyl_Faces2"
-][0]
-rubber_bodies30 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Rubber_Bodies30"
-][0]
-inner_faces30 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Inner_Faces30"
-][0]
-outer_faces30 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Outer_Faces30"
-][0]
-shaft_face = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Shaft_Face"
-][0]
-symm_faces15 = [
-    i
-    for i in named_selections.GetChildren[
-        Ansys.ACT.Automation.Mechanical.NamedSelection
-    ](True)
-    if i.Name == "Symm_Faces15"
-][0]
+top_face = get_named_selection(named_selections, "Top_Face")
+bottom_face = get_named_selection(named_selections, "Bottom_Face")
+symm_faces30 = get_named_selection(named_selections, "Symm_Faces30")
+faces2 = get_named_selection(named_selections, "Faces2")
+cyl_faces2 = get_named_selection(named_selections, "Cyl_Faces2")
+rubber_bodies30 = get_named_selection(named_selections, "Rubber_Bodies30")
+inner_faces30 = get_named_selection(named_selections, "Inner_Faces30")
+outer_faces30 = get_named_selection(named_selections, "Outer_Faces30")
+shaft_face = get_named_selection(named_selections, "Shaft_Face")
+symm_faces15 = get_named_selection(named_selections, "Symm_Faces15")
 
+# Add a coordinate system and set its origin y-coordinate
 lcs1 = coordinate_systems.AddCoordinateSystem()
 lcs1.OriginY = Quantity("97[mm]")
 
 # %%
 # Assign material
 
+# Set the material for the rubber boot part
 part1.Material = "Boot"
+# Set the stiffness behavior for the rubber boot part
 part2.StiffnessBehavior = StiffnessBehavior.Rigid
 
 # %%
 # Define connections
 
+
+def add_contact_region_and_props(
+    body,
+    target_location,
+    src_location,
+    set_src_first: bool = True,
+    contact_type=ContactType.Frictional,
+    friction_coefficient=0.2,
+    behavior=ContactBehavior.Asymmetric,
+    small_sliding=ContactSmallSlidingType.Off,
+    detection_method=ContactDetectionPoint.OnGaussPoint,
+    update_stiffness=UpdateContactStiffness.EachIteration,
+):
+    """Add a contact region and set its properties.
+
+    Parameters
+    ----------
+    body : Ansys.ACT.Automation.Mechanical.Body
+        The body to which the contact region is added.
+    target_location : Ansys.ACT.Automation.Mechanical.NamedSelection
+        The target location for the contact region.
+    src_location : Ansys.ACT.Automation.Mechanical.NamedSelection
+        The source location for the contact region.
+    set_src_first : bool
+        Whether to set the source location first.
+    contact_type : ContactType
+        The type of contact (default is Frictional).
+    friction_coefficient : float
+        The friction coefficient for the contact region (default is 0.2).
+    behavior : ContactBehavior
+        The behavior of the contact region (default is Asymmetric).
+    small_sliding : ContactSmallSlidingType
+        The small sliding type for the contact region (default is Off).
+    detection_method : ContactDetectionPoint
+        The detection method for the contact region (default is OnGaussPoint).
+    update_stiffness : UpdateContactStiffness
+        The update stiffness method for the contact region (default is EachIteration).
+
+    Returns
+    -------
+    Ansys.ACT.Automation.Mechanical.ContactRegion
+        The created contact region.
+    """
+    # Add a contact region to the connection or child connection
+    contact_region = body.AddContactRegion()
+    # Set the source and target locations for the contact region
+    if set_src_first:
+        contact_region.SourceLocation = src_location
+        contact_region.TargetLocation = target_location
+    else:
+        contact_region.TargetLocation = target_location
+        contact_region.SourceLocation = src_location
+    # Set the contact type, friction coefficient, behavior, small sliding,
+    # detection method, and update stiffness for the contact region
+    contact_region.ContactType = contact_type
+    contact_region.FrictionCoefficient = friction_coefficient
+    contact_region.Behavior = behavior
+    contact_region.SmallSliding = small_sliding
+    contact_region.DetectionMethod = detection_method
+    contact_region.UpdateStiffness = update_stiffness
+
+    return contact_region
+
+
+# Add a contact region to the connections
 connections = model.Connections
-contact_region1 = connections.AddContactRegion()
-contact_region1.TargetLocation = shaft_face
-contact_region1.SourceLocation = inner_faces30
-contact_region1.ContactType = ContactType.Frictional
-contact_region1.FrictionCoefficient = 0.2
-contact_region1.Behavior = ContactBehavior.Asymmetric
-contact_region1.SmallSliding = ContactSmallSlidingType.Off
-contact_region1.DetectionMethod = ContactDetectionPoint.OnGaussPoint
-contact_region1.UpdateStiffness = UpdateContactStiffness.EachIteration
+contact_region1 = add_contact_region_and_props(
+    connections,
+    target_location=shaft_face,
+    src_location=inner_faces30,
+    set_src_first=False,
+)
+# Set interface treatment and target properties
 contact_region1.InterfaceTreatment = ContactInitialEffect.AddOffsetRampedEffects
 contact_region1.TargetGeometryCorrection = TargetCorrection.Smoothing
 contact_region1.TargetOrientation = TargetOrientation.Cylinder
-contact_region1.TargetStartingPoint = gcs
+contact_region1.TargetStartingPoint = geometry_coordinate_systems
 contact_region1.TargetEndingPoint = lcs1
 
+# Add a contact region to the child connections
 conts = connections.Children[0]
-contact_region2 = conts.AddContactRegion()
-contact_region2.SourceLocation = inner_faces30
-contact_region2.TargetLocation = inner_faces30
-contact_region2.ContactType = ContactType.Frictional
-contact_region2.FrictionCoefficient = 0.2
-contact_region2.Behavior = ContactBehavior.Asymmetric
-contact_region2.SmallSliding = ContactSmallSlidingType.Off
-contact_region2.DetectionMethod = ContactDetectionPoint.NodalProjectedNormalFromContact
-contact_region2.UpdateStiffness = UpdateContactStiffness.EachIteration
+contact_region2 = add_contact_region_and_props(
+    conts,
+    target_location=inner_faces30,
+    src_location=inner_faces30,
+    detection_method=ContactDetectionPoint.NodalProjectedNormalFromContact,
+)
+# Set the stiffness value type and factor
 contact_region2.NormalStiffnessValueType = ElementControlsNormalStiffnessType.Factor
 contact_region2.NormalStiffnessFactor = 1
 
-contact_region3 = conts.AddContactRegion()
-contact_region3.SourceLocation = outer_faces30
-contact_region3.TargetLocation = outer_faces30
-contact_region3.ContactType = ContactType.Frictional
-contact_region3.FrictionCoefficient = 0.2
-contact_region3.Behavior = ContactBehavior.Asymmetric
-contact_region3.SmallSliding = ContactSmallSlidingType.Off
-contact_region3.DetectionMethod = ContactDetectionPoint.NodalProjectedNormalFromContact
-contact_region3.UpdateStiffness = UpdateContactStiffness.EachIteration
+# Add a contact region to the child connections
+contact_region3 = add_contact_region_and_props(
+    conts,
+    target_location=outer_faces30,
+    src_location=outer_faces30,
+    detection_method=ContactDetectionPoint.NodalProjectedNormalFromContact,
+)
+# Set the stiffness value type and factor
 contact_region3.NormalStiffnessValueType = ElementControlsNormalStiffnessType.Factor
 contact_region3.NormalStiffnessFactor = 1
 
 # %%
-# Mesh
-# ~~~~
+# Add face meshing and sizing
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Define the mesh for the model
 mesh = model.Mesh
+
+# Add face meshing to the mesh
 face_mesh = mesh.AddFaceMeshing()
+# Set the location of the face mesh to the shaft face
+# and set the internal number of divisions to 1
 face_mesh.Location = shaft_face
 face_mesh.InternalNumberOfDivisions = 1
 
+# Add sizing to the mesh
 mesh_size = mesh.AddSizing()
+# Set the location of the mesh size to the symmetry faces
+# and set the element size to 2 mm
 mesh_size.Location = symm_faces15
 mesh_size.ElementSize = Quantity("2 [mm]")
-
 mesh.ElementOrder = ElementOrder.Linear
 mesh.Resolution = 2
 
+# Generate the mesh and display the image
 mesh.GenerateMesh()
 set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh.png")
 
 # %%
 # Define remote points
 # ~~~~~~~~~~~~~~~~~~~~
-# scope them to the top and bottom faces of rigid shaft
 
-remote_point01 = model.AddRemotePoint()
-remote_point01.Location = bottom_face
-remote_point01.Behavior = LoadBehavior.Rigid
 
-remote_point02 = model.AddRemotePoint()
-remote_point02.Location = top_face
-remote_point02.Behavior = LoadBehavior.Rigid
+def add_remote_point(
+    model,
+    location,
+    behavior=LoadBehavior.Rigid,
+):
+    """Add a remote point to the model.
+
+    Parameters
+    ----------
+    model : Ansys.ACT.Automation.Mechanical.Model
+        The model to which the remote point is added.
+    location : Ansys.ACT.Automation.Mechanical.NamedSelection
+        The location of the remote point.
+    behavior : LoadBehavior
+        The behavior of the remote point (default is Rigid).
+
+    Returns
+    -------
+    Ansys.ACT.Automation.Mechanical.RemotePoint
+        The created remote point.
+    """
+    remote_point = model.AddRemotePoint()
+    remote_point.Location = location
+    remote_point.Behavior = behavior
+
+    return remote_point
+
+
+remote_point01 = add_remote_point(model, bottom_face)
+remote_point02 = add_remote_point(model, top_face)
 
 # %%
-# Analysis settings
-# ~~~~~~~~~~~~~~~~~
+# Set the analysis settings
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
+def set_analysis_settings(
+    analysis_settings,
+    current_step_number: int,
+    initial_substeps: int,
+    minimum_substeps: int,
+    store_results_at_value: int,
+    automatic_time_stepping: bool = AutomaticTimeStepping.On,
+    define_by: TimeStepDefineByType = TimeStepDefineByType.Substeps,
+    maximum_substeps: int = 1000,
+    store_results_at: TimePointsOptions = TimePointsOptions.EquallySpacedPoints,
+):
+    analysis_settings.CurrentStepNumber = current_step_number
+    analysis_settings.AutomaticTimeStepping = automatic_time_stepping
+    analysis_settings.DefineBy = define_by
+    analysis_settings.InitialSubsteps = initial_substeps
+    analysis_settings.MinimumSubsteps = minimum_substeps
+    analysis_settings.MaximumSubsteps = maximum_substeps
+    analysis_settings.StoreResultsAt = store_results_at
+    analysis_settings.StoreResulsAtValue = store_results_at_value
+
+
+# Activate the analysis settings
 analysis_settings.Activate()
 analysis_settings.LargeDeflection = True
 analysis_settings.Stabilization = StabilizationType.Off
-
 analysis_settings.NumberOfSteps = 2
-analysis_settings.CurrentStepNumber = 1
-analysis_settings.AutomaticTimeStepping = AutomaticTimeStepping.On
-analysis_settings.DefineBy = TimeStepDefineByType.Substeps
-analysis_settings.InitialSubsteps = 5
-analysis_settings.MinimumSubsteps = 5
-analysis_settings.MaximumSubsteps = 1000
-analysis_settings.StoreResultsAt = TimePointsOptions.EquallySpacedPoints
-analysis_settings.StoreResulsAtValue = 5
 
-analysis_settings.CurrentStepNumber = 2
-analysis_settings.AutomaticTimeStepping = AutomaticTimeStepping.On
-analysis_settings.DefineBy = TimeStepDefineByType.Substeps
-analysis_settings.InitialSubsteps = 10
-analysis_settings.MinimumSubsteps = 10
-analysis_settings.MaximumSubsteps = 1000
-analysis_settings.StoreResultsAt = TimePointsOptions.EquallySpacedPoints
-analysis_settings.StoreResulsAtValue = 10
+set_analysis_settings(
+    analysis_settings,
+    current_step_number=1,
+    initial_substeps=5,
+    minimum_substeps=5,
+    store_results_at_value=5,
+)
 
-analysis_settings.CurrentStepNumber = 3
-analysis_settings.AutomaticTimeStepping = AutomaticTimeStepping.On
-analysis_settings.DefineBy = TimeStepDefineByType.Substeps
-analysis_settings.InitialSubsteps = 30
-analysis_settings.MinimumSubsteps = 30
-analysis_settings.MaximumSubsteps = 1000
-analysis_settings.StoreResultsAt = TimePointsOptions.EquallySpacedPoints
-analysis_settings.StoreResulsAtValue = 20
+set_analysis_settings(
+    analysis_settings,
+    current_step_number=2,
+    initial_substeps=10,
+    minimum_substeps=10,
+    store_results_at_value=10,
+)
+
+set_analysis_settings(
+    analysis_settings,
+    current_step_number=3,
+    initial_substeps=30,
+    minimum_substeps=30,
+    store_results_at_value=20,
+)
 
 soln_info.NewtonRaphsonResiduals = 4
 
 # %%
-# Loads and boundary conditions
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Set load and boundary conditions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+def set_input_output_values(
+    remote_displacement,
+    x_input_values,
+    x_output_values,
+    y_input_values,
+    y_output_values,
+    z_input_values,
+    z_output_values,
+    rotation_x_input_values,
+    rotation_x_output_values,
+    rotation_y_input_values,
+    rotation_y_output_values,
+    rotation_z_input_values,
+    rotation_z_output_values,
+):
+    remote_displacement.XComponent.Inputs[0].DiscreteValues = convert_to_quantity(
+        x_input_values
+    )
+    remote_displacement.XComponent.Output.DiscreteValues = convert_to_quantity(
+        x_output_values
+    )
+    remote_displacement.YComponent.Inputs[0].DiscreteValues = convert_to_quantity(
+        y_input_values
+    )
+    remote_displacement.YComponent.Output.DiscreteValues = convert_to_quantity(
+        y_output_values
+    )
+    remote_displacement.ZComponent.Inputs[0].DiscreteValues = convert_to_quantity(
+        z_input_values
+    )
+    remote_displacement.ZComponent.Output.DiscreteValues = convert_to_quantity(
+        z_output_values
+    )
+    remote_displacement.RotationX.Inputs[0].DiscreteValues = convert_to_quantity(
+        rotation_x_input_values
+    )
+    remote_displacement.RotationX.Output.DiscreteValues = convert_to_quantity(
+        rotation_x_output_values
+    )
+    remote_displacement.RotationY.Inputs[0].DiscreteValues = convert_to_quantity(
+        rotation_y_input_values
+    )
+    remote_displacement.RotationY.Output.DiscreteValues = convert_to_quantity(
+        rotation_y_output_values
+    )
+    remote_displacement.RotationZ.Inputs[0].DiscreteValues = convert_to_quantity(
+        rotation_z_input_values
+    )
+    remote_displacement.RotationZ.Output.DiscreteValues = convert_to_quantity(
+        rotation_z_output_values
+    )
+
+
+def convert_to_quantity(quantity_list):
+    values, unit = quantity_list
+    return [Quantity(f"{value} [{unit}]") for value in values]
+
 
 remote_displacement = static_structural_analysis.AddRemoteDisplacement()
 remote_displacement.Location = remote_point01
-remote_displacement.XComponent.Inputs[0].DiscreteValues = [
-    Quantity("0 [s]"),
-    Quantity("1 [s]"),
-    Quantity("2 [s]"),
-    Quantity("3 [s]"),
-]
-remote_displacement.XComponent.Output.DiscreteValues = [
-    Quantity("0 [mm]"),
-    Quantity("0 [mm]"),
-    Quantity("0 [mm]"),
-    Quantity("0 [mm]"),
-]
-remote_displacement.YComponent.Inputs[0].DiscreteValues = [
-    Quantity("0 [s]"),
-    Quantity("1 [s]"),
-    Quantity("2 [s]"),
-    Quantity("3 [s]"),
-]
-remote_displacement.YComponent.Output.DiscreteValues = [
-    Quantity("0 [mm]"),
-    Quantity("0 [mm]"),
-    Quantity("-10 [mm]"),
-    Quantity("-10 [mm]"),
-]
-remote_displacement.ZComponent.Inputs[0].DiscreteValues = [
-    Quantity("0 [s]"),
-    Quantity("1 [s]"),
-    Quantity("2 [s]"),
-    Quantity("3 [s]"),
-]
-remote_displacement.ZComponent.Output.DiscreteValues = [
-    Quantity("0 [mm]"),
-    Quantity("0 [mm]"),
-    Quantity("0 [mm]"),
-    Quantity("0 [mm]"),
-]
+set_input_output_values(
+    remote_displacement,
+    x_input_values=([0, 1, 2, 3], "s"),
+    x_output_values=([0, 0, 0, 0], "mm"),
+    y_input_values=([0, 1, 2, 3], "s"),
+    y_output_values=([0, 0, -10, -10], "mm"),
+    z_input_values=([0, 1, 2, 3], "s"),
+    z_output_values=([0, 0, 0, 0], "mm"),
+    rotation_x_input_values=([0, 1, 2, 3], "s"),
+    rotation_x_output_values=([0, 0, 0, 0], "rad"),
+    rotation_y_input_values=([0, 1, 2, 3], "s"),
+    rotation_y_output_values=([0, 0, 0, 0], "rad"),
+    rotation_z_input_values=([0, 1, 2, 3], "s"),
+    rotation_z_output_values=([0, 0, 0, 0.55], "rad"),
+)
 
-remote_displacement.RotationX.Inputs[0].DiscreteValues = [
-    Quantity("0 [s]"),
-    Quantity("1 [s]"),
-    Quantity("2 [s]"),
-    Quantity("3 [s]"),
-]
-remote_displacement.RotationX.Output.DiscreteValues = [
-    Quantity("0 [rad]"),
-    Quantity("0 [rad]"),
-    Quantity("0 [rad]"),
-    Quantity("0 [rad]"),
-]
-remote_displacement.RotationY.Inputs[0].DiscreteValues = [
-    Quantity("0 [s]"),
-    Quantity("1 [s]"),
-    Quantity("2 [s]"),
-    Quantity("3 [s]"),
-]
-remote_displacement.RotationY.Output.DiscreteValues = [
-    Quantity("0 [rad]"),
-    Quantity("0 [rad]"),
-    Quantity("0 [rad]"),
-    Quantity("0 [rad]"),
-]
-remote_displacement.RotationZ.Inputs[0].DiscreteValues = [
-    Quantity("0 [s]"),
-    Quantity("1 [s]"),
-    Quantity("2 [s]"),
-    Quantity("3 [s]"),
-]
-remote_displacement.RotationZ.Output.DiscreteValues = [
-    Quantity("0 [rad]"),
-    Quantity("0 [rad]"),
-    Quantity("0 [rad]"),
-    Quantity("0.55 [rad]"),
-]
 
-frictionless_support1 = static_structural_analysis.AddFrictionlessSupport()
-frictionless_support1.Location = symm_faces30
-frictionless_support1.Name = "Symmetry_BC"
-frictionless_support2 = static_structural_analysis.AddFrictionlessSupport()
-frictionless_support2.Location = faces2
-frictionless_support2.Name = "Boot_Bottom_BC"
-frictionless_support3 = static_structural_analysis.AddFrictionlessSupport()
-frictionless_support3.Location = cyl_faces2
-frictionless_support3.Name = "Boot_Radial_BC"
+def add_frictionless_support(
+    static_structural_analysis,
+    location,
+    name: str,
+):
+    """Add a frictionless support to the static structural analysis.
+
+    Parameters
+    ----------
+    static_structural_analysis : Ansys.ACT.Automation.Mechanical.StaticStructuralAnalysis
+        The static structural analysis object.
+    location : Ansys.ACT.Automation.Mechanical.NamedSelection
+        The location of the frictionless support.
+    name : str
+        The name of the frictionless support.
+
+    Returns
+    -------
+    Ansys.ACT.Automation.Mechanical.FrictionlessSupport
+        The created frictionless support.
+    """
+    frictionless_support = static_structural_analysis.AddFrictionlessSupport()
+    frictionless_support.Location = location
+    frictionless_support.Name = name
+
+    return frictionless_support
+
+
+add_frictionless_support(static_structural_analysis, symm_faces30, "Symmetry_BC")
+add_frictionless_support(static_structural_analysis, faces2, "Boot_Bottom_BC")
+add_frictionless_support(static_structural_analysis, cyl_faces2, "Boot_Radial_BC")
 
 # %%
 # Add results
 # ~~~~~~~~~~~
 
+# Add total deformation results to the solution
 total_deformation = static_structural_analysis.Solution.AddTotalDeformation()
 total_deformation.Location = rubber_bodies30
 
+# Add equivalent stress results to the solution
 equivalent_stress = static_structural_analysis.Solution.AddEquivalentStress()
 equivalent_stress.Location = rubber_bodies30
 
 # %%
-# Solve
-# ~~~~~
+# Solve the static structural analysis
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 static_structural_analysis.Solution.Solve(True)
 
@@ -508,9 +636,8 @@ assert (
 # %%
 # Postprocessing
 # ~~~~~~~~~~~~~~
-# Total deformation
 
-
+# Activate the total deformation result and display the image
 app.Tree.Activate([total_deformation])
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "total_deformation.png"
@@ -519,6 +646,7 @@ set_camera_and_display_image(
 # %%
 # Equivalent stress
 
+# Activate the equivalent stress result and display the image
 app.Tree.Activate([equivalent_stress])
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "equivalent_stress.png"
@@ -526,18 +654,6 @@ set_camera_and_display_image(
 
 # %%
 # Total deformation animation
-
-animation_export_format = (
-    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
-)
-settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
-settings_720p.Width = 1280
-settings_720p.Height = 720
-
-total_deformation_gif = output_path / "total_deformation.gif"
-total_deformation.ExportAnimation(
-    str(total_deformation_gif), animation_export_format, settings_720p
-)
 
 
 def update_animation(frame: int) -> list[mpimg.AxesImage]:
@@ -560,6 +676,20 @@ def update_animation(frame: int) -> list[mpimg.AxesImage]:
     # Return the updated image
     return [image]
 
+
+# Set the animation export format and settings
+animation_export_format = (
+    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
+)
+settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
+settings_720p.Width = 1280
+settings_720p.Height = 720
+
+# Export the total deformation animation as a GIF
+total_deformation_gif = output_path / "total_deformation.gif"
+total_deformation.ExportAnimation(
+    str(total_deformation_gif), animation_export_format, settings_720p
+)
 
 # Open the GIF file and create an animation
 gif = Image.open(total_deformation_gif)
@@ -584,13 +714,15 @@ FuncAnimation(
 plt.show()
 
 # %%
-# Cleanup
-# ~~~~~~~
-# Save project
+# Clean up the project
+# ~~~~~~~~~~~~~~~~~~~~
 
+# Save the mechdat file
 mechdat_file = output_path / "non_linear_rubber_boot_seal.mechdat"
 app.save(str(mechdat_file))
+
+# Refresh the app
 app.new()
 
-# delete example file
+# Delete the example files
 delete_downloads()
