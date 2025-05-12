@@ -142,32 +142,25 @@ def display_image(
 
 
 # %%
-# Download required files
-# ~~~~~~~~~~~~~~~~~~~~~~~
-# Download the geometry file
+# Download the required files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Download the geometry file
 geometry_path = download_file(
     "example_10_td_055_Rotor_Blade_Geom.pmdb", "pymechanical", "embedding"
 )
 
-# %%
 # Download the material file
-
 mat_path = download_file(
     "example_10_td_055_Rotor_Blade_Mat_File.xml", "pymechanical", "embedding"
 )
 
-# %%
 # Download the CFX pressure data
-
 cfx_data_path = download_file(
     "example_10_CFX_ExportResults_FT_10P_EO2.csv", "pymechanical", "embedding"
 )
 
-
-# %%
-# Download required Temperature file
-
+# Download the temperature data file
 temp_data_path = download_file(
     "example_10_Temperature_Data.txt", "pymechanical", "embedding"
 )
@@ -176,11 +169,15 @@ temp_data_path = download_file(
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Define the graphics and camera
 graphics = app.Graphics
 camera = graphics.Camera
 
+# Set the camera orientation to the isometric view and set the camera to fit the model
 camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
 camera.SetFit()
+
+# Set the image export format and settings
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = (
@@ -188,19 +185,21 @@ settings_720p.Resolution = (
 )
 settings_720p.Background = Ansys.Mechanical.DataModel.Enums.GraphicsBackgroundType.White
 settings_720p.Width = 1280
-# settings_720p.Capture = Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType.ImageOnly
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
 # %%
-# Import geometry
-# ~~~~~~~~~~~~~~~
-# Reads geometry file and display
+# Import the geometry
+# ~~~~~~~~~~~~~~~~~~~
 
+# Define the model
 model = app.Model
 
+# Add the geometry import to the geometry import group
 geometry_import_group = model.GeometryImportGroup
 geometry_import = geometry_import_group.AddGeometryImport()
+
+# Set the geometry import format and settings
 geometry_import_format = (
     Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
 )
@@ -209,10 +208,13 @@ geometry_import_preferences.ProcessNamedSelections = True
 geometry_import_preferences.NamedSelectionKey = ""
 geometry_import_preferences.ProcessMaterialProperties = True
 geometry_import_preferences.ProcessCoordinateSystems = True
+
+# Import the geometry with the specified settings
 geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
+# Visualize the model in 3D
 app.plot()
 
 # %%
@@ -220,10 +222,12 @@ app.plot()
 # ~~~~~~~~~~~~~~~~
 # Import material from xml file and assign it to bodies
 
+# Define and import the materials
 materials = model.Materials
 materials.Import(mat_path)
 
-part1 = [x for x in app.Tree.AllObjects if x.Name == "Component2\Rotor11"][0]
+# Assign the imported material to the components
+part1 = [x for x in app.Tree.AllObjects if x.Name == r"Component2\Rotor11"][0]
 part2 = [x for x in app.Tree.AllObjects if x.Name == "Component3"][0]
 part2_blade1 = part2.Children[0]
 part2_blade2 = part2.Children[1]
@@ -234,8 +238,9 @@ part2_blade2.Material = "MAT1 (Setup, File1)"
 part2_blade3.Material = "MAT1 (Setup, File1)"
 
 # %%
-# Define units system and store variables
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Define the units system and store variables
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 # Select MKS units
 app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
@@ -249,33 +254,59 @@ named_selections = model.NamedSelections
 # %%
 # Define named selection
 # ~~~~~~~~~~~~~~~~~~~~~~
+
+
+def get_named_selection(ns_list: list) -> dict:
+    """Get the named selection by name.
+
+    Parameters
+    ----------
+    ns_list : list
+        A list of named selection names to retrieve.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the named selection objects.
+    """
+    ns_dict = {}
+    for name in ns_list:
+        ns_dict[name] = [obj for obj in app.Tree.AllObjects if obj.Name == name][0]
+    return ns_dict
+
+
 # Create NS for named selection
 
-blade_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade"][0]
-blade_surface_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade_Surf"][0]
-fix_support_ns = [x for x in app.Tree.AllObjects if x.Name == "Fix_Support"][0]
-blade_hub_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade_Hub"][0]
-hub_contact_ns = [x for x in app.Tree.AllObjects if x.Name == "Hub_Contact"][0]
-blade_target_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade_Target"][0]
-hub_low_ns = [x for x in app.Tree.AllObjects if x.Name == "Hub_Low"][0]
-hub_high_ns = [x for x in app.Tree.AllObjects if x.Name == "Hub_High"][0]
-blade1_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade1"][0]
-blade1_source_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade1_Source"][0]
-blade1_target_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade1_Target"][0]
-blade2_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade2"][0]
-blade2_source_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade2_Source"][0]
-blade2_target_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade2_Target"][0]
-blade3_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade3"][0]
-blade3_source_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade3_Source"][0]
-blade3_target_ns = [x for x in app.Tree.AllObjects if x.Name == "Blade3_Target"][0]
+named_selections_names = [
+    "Blade",
+    "Blade_Surf",
+    "Fix_Support",
+    "Blade_Hub",
+    "Hub_Contact",
+    "Blade_Target",
+    "Hub_Low",
+    "Hub_High",
+    "Blade1",
+    "Blade1_Source",
+    "Blade1_Target",
+    "Blade2",
+    "Blade2_Source",
+    "Blade2_Target",
+    "Blade3",
+    "Blade3_Source",
+    "Blade3_Target",
+]
+ns_dict = get_named_selection(named_selections_names)
 
 # %%
-# Define coordinate system
-# ~~~~~~~~~~~~~~~~~~~~~~~~
-# Create cylindrical coordinate system
+# Define a coordinate system
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Define the coordinate systems
 coordinate_systems = model.CoordinateSystems
+# Add a coordinate system
 coord_system = coordinate_systems.AddCoordinateSystem()
+# Create cylindrical coordinate system
 coord_system.CoordinateSystemType = (
     Ansys.ACT.Interfaces.Analysis.CoordinateSystemTypeEnum.Cylindrical
 )
@@ -283,319 +314,333 @@ coord_system.OriginDefineBy = CoordinateSystemAlignmentType.Component
 coord_system.OriginDefineBy = CoordinateSystemAlignmentType.Fixed
 
 # %%
-# Define contacts
-# ~~~~~~~~~~~~~~~
+# Add contact regions
+# ~~~~~~~~~~~~~~~~~~~
 
 # Define connections
-
 connections = model.Connections
+# Add a contact region
 contact_region1 = connections.AddContactRegion()
+# Set the contact region's source and target locations
 contact_region1.SourceLocation = named_selections.Children[6]
 contact_region1.TargetLocation = named_selections.Children[5]
+# Set the contact region's behavior to auto asymmetric
 contact_region1.Behavior = ContactBehavior.AutoAsymmetric
+# Set the contact region's contact formulation to MPC
 contact_region1.ContactFormulation = ContactFormulation.MPC
 
 # %%
-# Define mesh settings and generate mesh
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Define the mesh settings and generate the mesh
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
+def add_automatic_method(
+    mesh,
+    location_index: int,
+    source_loc_index: int = None,
+    target_loc_index: int = None,
+    method=MethodType.Sweep,
+    source_target_selection=2,
+    sweep_number_divisions=5,
+    set_src_target_properties: bool = True,
+):
+    """Add an automatic method to the mesh."""
+    automatic_method = mesh.AddAutomaticMethod()
+    automatic_method.Location = named_selections.Children[location_index]
+    automatic_method.Method = method
+    if set_src_target_properties:
+        automatic_method.SourceTargetSelection = source_target_selection
+        if source_loc_index:
+            automatic_method.SourceLocation = named_selections.Children[
+                source_loc_index
+            ]
+        if target_loc_index:
+            automatic_method.TargetLocation = named_selections.Children[
+                target_loc_index
+            ]
+    automatic_method.SweepNumberDivisions = sweep_number_divisions
+
+
+# Define the mesh
 mesh = model.Mesh
+
+# Set the mesh settings
 mesh.ElementSize = Quantity(0.004, "m")
 mesh.UseAdaptiveSizing = False
 mesh.MaximumSize = Quantity(0.004, "m")
 mesh.ShapeChecking = 0
-automatic_method_Hub = mesh.AddAutomaticMethod()
-automatic_method_Hub.Location = named_selections.Children[0]
-automatic_method_Hub.Method = MethodType.Sweep
-automatic_method_Hub.SweepNumberDivisions = 6
 
-match_control_Hub = mesh.AddMatchControl()
-match_control_Hub.LowNamedSelection = named_selections.Children[7]
-match_control_Hub.HighNamedSelection = named_selections.Children[8]
-cyc_coordinate_system = coordinate_systems.Children[1]
-match_control_Hub.RotationAxis = cyc_coordinate_system
+# Add an automatic method for the hub
+add_automatic_method(
+    mesh, location_index=0, sweep_number_divisions=6, set_src_target_properties=False
+)
 
-sizing_Blade = mesh.AddSizing()
-selection = named_selections.Children[5]
-sizing_Blade.Location = selection
-# sizing_Blade.ElementSize = Quantity(1e-3, "m")
-sizing_Blade.ElementSize = Quantity(1e-2, "m")
-sizing_Blade.CaptureCurvature = True
-sizing_Blade.CurvatureNormalAngle = Quantity(0.31, "rad")
-# sizing_Blade.LocalMinimumSize = Quantity(0.00025, "m")
-sizing_Blade.LocalMinimumSize = Quantity(0.0005, "m")
+# Add match control to the mesh
+match_control_hub = mesh.AddMatchControl()
+# Set the low and high named selections to named selections' children at indices 7 and 8
+match_control_hub.LowNamedSelection = named_selections.Children[7]
+match_control_hub.HighNamedSelection = named_selections.Children[8]
+# Set the rotation axis to the second child of the coordinate systems
+match_control_hub.RotationAxis = coordinate_systems.Children[1]
 
-automatic_method_Blade1 = mesh.AddAutomaticMethod()
-selection = named_selections.Children[9]
-automatic_method_Blade1.Location = selection
-automatic_method_Blade1.Method = MethodType.Sweep
-automatic_method_Blade1.SourceTargetSelection = 2
-selection = named_selections.Children[10]
-automatic_method_Blade1.SourceLocation = selection
-selection = named_selections.Children[11]
-automatic_method_Blade1.TargetLocation = selection
-automatic_method_Blade1.SweepNumberDivisions = 5
+# Add sizing to the mesh
+sizing_blade = mesh.AddSizing()
+# Set properties for the sizing blade
+sizing_blade.Location = named_selections.Children[5]
+sizing_blade.ElementSize = Quantity(1e-2, "m")
+sizing_blade.CaptureCurvature = True
+sizing_blade.CurvatureNormalAngle = Quantity(0.31, "rad")
+sizing_blade.LocalMinimumSize = Quantity(0.0005, "m")
 
-automatic_method_Blade2 = mesh.AddAutomaticMethod()
-selection = named_selections.Children[12]
-automatic_method_Blade2.Location = selection
-automatic_method_Blade2.Method = MethodType.Sweep
-automatic_method_Blade2.SourceTargetSelection = 2
-selection = named_selections.Children[13]
-automatic_method_Blade2.SourceLocation = selection
-selection = named_selections.Children[14]
-automatic_method_Blade2.TargetLocation = selection
-automatic_method_Blade2.SweepNumberDivisions = 5
+# Add automatic methods for each blade
+add_automatic_method(mesh, 9, 10, 11)
+add_automatic_method(mesh, 12, 13, 14)
+add_automatic_method(mesh, 15, 16, 17)
 
-automatic_method_Blade3 = mesh.AddAutomaticMethod()
-selection = named_selections.Children[15]
-automatic_method_Blade3.Location = selection
-automatic_method_Blade3.Method = MethodType.Sweep
-automatic_method_Blade3.SourceTargetSelection = 2
-selection = named_selections.Children[16]
-automatic_method_Blade3.SourceLocation = selection
-selection = named_selections.Children[17]
-automatic_method_Blade3.TargetLocation = selection
-automatic_method_Blade3.SweepNumberDivisions = 5
-
+# Generate the mesh and display the image
 mesh.GenerateMesh()
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "blade_mesh.png"
 )
 
 # %%
-# Define analysis settings
-# ~~~~~~~~~~~~~~~~~~~~~~~~
-# Setup static structural settings with inverse solve
+# Define the analysis settings
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Add a static structural analysis to the model
 model.AddStaticStructuralAnalysis()
 static_structural_analysis = model.Analyses[0]
+
+# Set the analysis settings
 analysis_settings = app.ExtAPI.DataModel.Project.Model.Analyses[0].AnalysisSettings
 analysis_settings.AutomaticTimeStepping = AutomaticTimeStepping.On
 analysis_settings.NumberOfSubSteps = 10
 
+# Activate the analysis settings
 analysis_settings.Activate()
 
+# Add a command snippet to the static structural analysis with the archard wear model
 cmd1 = static_structural_analysis.AddCommandSnippet()
 # Add convergence criterion using command snippet.
 archard_wear_model = """CNVTOL,U,1.0,5e-5,1,,"""
 cmd1.AppendText(archard_wear_model)
 
+# Set the analysis settings for inverse solving
 analysis_settings.InverseOption = True
 analysis_settings.LargeDeflection = True
 
 # %%
-# Define boundary conditions
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Apply rotational velocity
+# Define the boundary conditions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Add rotational velocity to the static structural analysis
 rotational_velocity = static_structural_analysis.AddRotationalVelocity()
 rotational_velocity.DefineBy = LoadDefineBy.Components
+# Set z-component input values for the rotational velocity
 rotational_velocity.ZComponent.Inputs[0].DiscreteValues = [
     Quantity("0 [s]"),
     Quantity("1 [s]"),
     Quantity("2 [s]"),
 ]
+# Set z-component output values for the rotational velocity
 rotational_velocity.ZComponent.Output.DiscreteValues = [
     Quantity("0 [rad/s]"),
     Quantity("1680 [rad/s]"),
     Quantity("1680 [rad/s]"),
 ]
 
-# Apply Fixed Support Condition
-
+# Add a fixed support to the static structural analysis
 fixed_support = static_structural_analysis.AddFixedSupport()
-selection = named_selections.Children[3]
-fixed_support.Location = selection
+# Set the fixed support location to the named selection at index 3
+fixed_support.Location = named_selections.Children[3]
 
 
 # %%
-# Import CFX pressure
-# ~~~~~~~~~~~~~~~~~~~
-# Import CFX pressure data and apply it to structural blade surface
+# Import and apply temperature and CFX pressure to the structural blade & its surface
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-imported_load_group = static_structural_analysis.AddImportedLoadExternalData()
 
-external_data_files = Ansys.Mechanical.ExternalData.ExternalDataFileCollection()
-external_data_files.SaveFilesWithProject = False
-external_data_file_1 = Ansys.Mechanical.ExternalData.ExternalDataFile()
-external_data_files.Add(external_data_file_1)
-external_data_file_1.Identifier = "File1"
-external_data_file_1.Description = ""
-external_data_file_1.IsMainFile = False
-external_data_file_1.FilePath = cfx_data_path
-external_data_file_1.ImportSettings = (
-    Ansys.Mechanical.ExternalData.ImportSettingsFactory.GetSettingsForFormat(
+def process_external_data(
+    external_data_path: str,
+    skip_rows: int,
+    skip_footer: int,
+    data_type: str,
+    location_index: int,
+) -> None:
+    """Process the external data file and set its properties.
+
+    Parameters
+    ----------
+    external_data_path : str
+        The path to the external data file.
+    skip_rows : int
+        The number of rows to skip at the beginning of the file.
+    skip_footer : int
+        The number of rows to skip at the end of the file.
+    data_type : str
+        The type of data to process ('pressure' or 'temperature').
+    location_index : int
+        The index of the named selection to apply the data to.
+    """
+    # Add imported load external data to the static structural analysis
+    imported_load_group = static_structural_analysis.AddImportedLoadExternalData()
+
+    external_data_files = Ansys.Mechanical.ExternalData.ExternalDataFileCollection()
+    external_data_files.SaveFilesWithProject = False
+    file = Ansys.Mechanical.ExternalData.ExternalDataFile()
+    external_data_files.Add(file)
+
+    file.Identifier = "File1"
+    file.Description = ""
+    file.IsMainFile = False
+    file.FilePath = external_data_path
+    # Set the file format to delimited
+    file.ImportSettings = Ansys.Mechanical.ExternalData.ImportSettingsFactory.GetSettingsForFormat(
         Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.ImportFormat.Delimited
     )
-)
-import_settings = external_data_file_1.ImportSettings
-import_settings.SkipRows = 17
-import_settings.SkipFooter = 0
-import_settings.Delimiter = ","
-import_settings.AverageCornerNodesToMidsideNodes = False
-import_settings.UseColumn(
-    0,
-    Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.XCoordinate,
-    "m",
-    "X Coordinate@A",
-)
-import_settings.UseColumn(
-    1,
-    Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.YCoordinate,
-    "m",
-    "Y Coordinate@B",
-)
-import_settings.UseColumn(
-    2,
-    Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.ZCoordinate,
-    "m",
-    "Z Coordinate@C",
-)
-import_settings.UseColumn(
-    3,
-    Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.Pressure,
-    "Pa",
-    "Pressure@D",
-)
 
-imported_load_group.ImportExternalDataFiles(external_data_files)
-imported_pressure = imported_load_group.AddImportedPressure()
-selection = named_selections.Children[2]
-imported_pressure.Location = selection
-imported_pressure.AppliedBy = LoadAppliedBy.Direct
-imported_pressure.ImportLoad()
+    # Set up import settings for the external data file
+    import_settings = file.ImportSettings
+    import_settings.SkipRows = skip_rows
+    import_settings.SkipFooter = skip_footer
+    import_settings.Delimiter = ","
+    import_settings.AverageCornerNodesToMidsideNodes = False
+    import_settings.UseColumn(
+        0,
+        Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.XCoordinate,
+        "m",
+        "X Coordinate@A",
+    )
+    import_settings.UseColumn(
+        1,
+        Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.YCoordinate,
+        "m",
+        "Y Coordinate@B",
+    )
+    import_settings.UseColumn(
+        2,
+        Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.ZCoordinate,
+        "m",
+        "Z Coordinate@C",
+    )
+    if data_type == "pressure":
+        import_settings.UseColumn(
+            3,
+            Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.Pressure,
+            "Pa",
+            "Pressure@D",
+        )
+    elif data_type == "temperature":
+        import_settings.UseColumn(
+            3,
+            Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.Temperature,
+            "C",
+            "Temperature@D",
+        )
+    # Import external data files to the imported load group
+    imported_load_group.ImportExternalDataFiles(external_data_files)
+    if data_type == "pressure":
+        # Add imported pressure to the imported load group
+        added_obj = imported_load_group.AddImportedPressure()
+    elif data_type == "temperature":
+        # Add imported body temperature to the imported load group
+        added_obj = imported_load_group.AddImportedBodyTemperature()
+    # Set properties for the imported pressure
+    added_obj.Location = named_selections.Children[location_index]
+    if data_type == "pressure":
+        added_obj.AppliedBy = LoadAppliedBy.Direct
+    added_obj.ImportLoad()
 
-app.Tree.Activate([imported_pressure])
-set_camera_and_display_image(
-    camera, graphics, settings_720p, output_path, "imported_pressure.png"
+    # Activate the imported pressure or temperature and display the image
+    app.Tree.Activate([added_obj])
+    set_camera_and_display_image(
+        camera, graphics, settings_720p, output_path, f"imported_{data_type}.png"
+    )
+
+
+# Import and apply CFX pressure to the structural blade surface
+process_external_data(
+    cfx_data_path, skip_rows=17, skip_footer=0, data_type="pressure", location_index=2
 )
-
-###################################################################################
-# Import Temperature
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Import temperature data and apply it to structural blade
-
-imported_load_group = static_structural_analysis.AddImportedLoadExternalData()
-
-external_data_files = Ansys.Mechanical.ExternalData.ExternalDataFileCollection()
-external_data_files.SaveFilesWithProject = False
-external_data_file_1 = Ansys.Mechanical.ExternalData.ExternalDataFile()
-external_data_files.Add(external_data_file_1)
-external_data_file_1.Identifier = "File1"
-external_data_file_1.Description = ""
-external_data_file_1.IsMainFile = False
-external_data_file_1.FilePath = temp_data_path
-
-external_data_file_1.ImportSettings = (
-    Ansys.Mechanical.ExternalData.ImportSettingsFactory.GetSettingsForFormat(
-        Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.ImportFormat.Delimited
-    )
-)
-import_settings = external_data_file_1.ImportSettings
-import_settings.SkipRows = 0
-import_settings.SkipFooter = 0
-import_settings.Delimiter = ","
-import_settings.AverageCornerNodesToMidsideNodes = False
-import_settings.UseColumn(
-    0,
-    Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.XCoordinate,
-    "m",
-    "X Coordinate@A",
-)
-import_settings.UseColumn(
-    1,
-    Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.YCoordinate,
-    "m",
-    "Y Coordinate@B",
-)
-import_settings.UseColumn(
-    2,
-    Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.ZCoordinate,
-    "m",
-    "Z Coordinate@C",
-)
-import_settings.UseColumn(
-    3,
-    Ansys.Mechanical.DataModel.MechanicalEnums.ExternalData.VariableType.Temperature,
-    "C",
-    "Temperature@D",
-)
-
-imported_load_group.ImportExternalDataFiles(external_data_files)
-imported_body_temperature = imported_load_group.AddImportedBodyTemperature()
-
-selection = named_selections.Children[1]
-imported_body_temperature.Location = selection
-imported_body_temperature.ImportLoad()
-
-app.Tree.Activate([imported_body_temperature])
-set_camera_and_display_image(
-    camera, graphics, settings_720p, output_path, "imported_temperature.png"
+process_external_data(
+    temp_data_path,
+    skip_rows=0,
+    skip_footer=0,
+    data_type="temperature",
+    location_index=1,
 )
 
 # %%
-# Postprocessing
-# ~~~~~~~~~~~~~~
-# Insert results
+# Add results to the solution
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Define the static structural analysis solution
 solution = static_structural_analysis.Solution
 
+# Add total deformation results to the solution
 total_deformation1 = solution.AddTotalDeformation()
 total_deformation1.DisplayTime = Quantity("1 [s]")
 
+# Add equivalent stress results to the solution
 equivalent_stress1 = solution.AddEquivalentStress()
 equivalent_stress1.DisplayTime = Quantity("1 [s]")
 
+# Add equivalent total strain results to the solution
 equivalent_total_strain1 = solution.AddEquivalentTotalStrain()
 equivalent_total_strain1.DisplayTime = Quantity("1 [s]")
 
+# Add thermal strain results to the solution
 thermal_strain1 = solution.AddThermalStrain()
 thermal_strain1.DisplayTime = Quantity("1 [s]")
 
-
 # %%
-# Run Solution
-# ~~~~~~~~~~~~
-# Solve inverse analysis on blade model
+# Solve the solution
+# ~~~~~~~~~~~~~~~~~~
 
+# Solve the inverse analysis on the blade model
 solution.Solve(True)
 soln_status = solution.Status
 
 # %%
 # Postprocessing
 # ~~~~~~~~~~~~~~
-# Evaluate results and export screenshots
+# Evaluate the results and export screenshots
 
 # %%
 # Total deformation
 
+# Activate the total deformation results
 app.Tree.Activate([total_deformation1])
+# Set the extra model display to no wireframe
 graphics.ViewOptions.ResultPreference.ExtraModelDisplay = (
     Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.ExtraModelDisplay.NoWireframe
 )
+# Set the camera to fit the model and export the image
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "total_deformation.png"
 )
 
 # %%
-# Equivalent stress
+# Thermal strain
 
+# Activate the thermal strain results
 app.Tree.Activate([thermal_strain1])
+# Set the camera to fit the model and export the image
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "thermal_strain.png"
 )
 
 # %%
-# Cleanup
-# ~~~~~~~
-# Save project
+# Clean up
+# ~~~~~~~~
 
+# Save the project
 mechdat_file = output_path / "blade_inverse.mechdat"
 app.save(str(mechdat_file))
+
+# Refresh the app
 app.new()
 
-# %%
-# Delete example file
-
+# Delete the example file
 delete_downloads()
