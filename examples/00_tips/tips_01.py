@@ -3,34 +3,35 @@
 3D visualization
 ----------------
 
-Visualize 3D imported geometry
+The following example demonstrates how to visualize imported geometry in 3D.
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
 
 # %%
 # Create an instance of the Mechanical embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
 
 # %%
-# Download and import geometry file
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Download and import the geometry file
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# %%
 # Download the geometry file
 geometry_path = download_file("Valve.pmdb", "pymechanical", "embedding")
 
-# Define the model
+# %%
+# Define the model and import the geometry file
 model = app.Model
 
-# Import the geometry file
 geometry_import = model.GeometryImportGroup.AddGeometryImport()
 geometry_import.Import(geometry_path)
 

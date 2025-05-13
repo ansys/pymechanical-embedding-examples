@@ -10,8 +10,8 @@ double cantilever beam.
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -28,9 +28,9 @@ if TYPE_CHECKING:
 
 # %%
 # Create an instance of the Mechanical embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-app = App()  # globals=globals()
-app.update_globals(globals())
+app = App(globals=globals())
 print(app)
 
 # %%
@@ -52,8 +52,8 @@ graphics_image_export_settings.Width = 1280
 graphics_image_export_settings.Height = 720
 
 # %%
-# Set the image output path and create functions to fit the camera and display images
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create functions to set camera and display images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Set the path for the output files (images, gifs, mechdat)
 output_path = Path.cwd() / "out"
@@ -127,8 +127,8 @@ def display_image(
 
 
 # %%
-# Import the geometry
-# ~~~~~~~~~~~~~~~~~~~
+# Download and import the geometry file
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Set the model
 model = app.Model
@@ -161,8 +161,8 @@ geometry_import.Import(
 app.plot()
 
 # %%
-# Material import, named selections, and connections
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Download and import the material files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Download the material files from the ansys/example-data repository
 mat1_path = download_file(
@@ -178,8 +178,8 @@ model_materials.Import(mat1_path)
 model_materials.Import(mat2_path)
 
 # %%
-# Add automatic connections to the model
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add connections to the model
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Add connections to the model
 add_connections = model.AddConnections()
@@ -191,8 +191,8 @@ connections = model.Connections
 connections.CreateAutomaticConnections()
 
 # %%
-# Define the static structural analysis and settings
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add a static structural analysis to the model
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Add a static structural analysis to the model
 model.AddStaticStructuralAnalysis()
@@ -203,8 +203,8 @@ static_structural_analysis_solution = static_structural_analysis.Solution
 app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
 
 # %%
-# Define the geometry, activate it, and set the 2D behavior
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Activate the geometry and set the 2D behavior
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Define the geometry for the model
 geometry = model.Geometry
@@ -214,6 +214,7 @@ geometry.Activate()
 geometry.Model2DBehavior = Model2DBehavior.PlaneStrain
 
 
+# %%
 # Create a function to get the child object by name
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -226,8 +227,8 @@ def get_child_object(body, child_type, name: str):
 
 
 # %%
-# Get the Part 2 object from the tree, activate it, and set the material
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Activate the part 2 object and set its material
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Get the Part 2 object from the tree
 part2_object = [
@@ -245,6 +246,9 @@ part2_object.Material = get_child_object(
 # %% Define the contact and contact regions
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# %%
+# Activate the contact region
+
 # Get the contact from the connection group
 contact = get_child_object(
     connections, Ansys.ACT.Automation.Mechanical.Connections.ConnectionGroup, "Contacts"
@@ -256,6 +260,9 @@ contact_region = get_child_object(
 )
 # Activate the contact region
 contact_region.Activate()
+
+# %%
+# Set properties for the contact region
 
 # Define the model named selections
 named_selections = model.NamedSelections
@@ -273,8 +280,8 @@ contact_region.ContactType = ContactType.Bonded
 contact_region.ContactFormulation = ContactFormulation.PurePenalty
 
 # %%
-# Define the mesh controls and generate mesh
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Generate the mesh
+# ~~~~~~~~~~~~~~~~~
 
 # Define the mesh for the model
 mesh = model.Mesh
@@ -288,6 +295,10 @@ mesh.ElementOrder = ElementOrder.Quadratic
 mesh.UseAdaptiveSizing = False
 # Set the mesh element size to 0.75 mm
 mesh.ElementSize = Quantity("0.75 [mm]")
+
+
+# %%
+# Create a function to add sizing to the mesh
 
 
 def add_sizing(
@@ -317,10 +328,12 @@ def add_sizing(
     sizing.Behavior = behavior
 
 
+# %%
 # Add sizing to the mesh for the short and long edges
 add_sizing(mesh, "Short_Edges", Quantity("0.75 [mm]"), SizingBehavior.Hard)
 add_sizing(mesh, "Long_Edges", Quantity("0.5 [mm]"), SizingBehavior.Hard)
 
+# %%
 # Add sizing to the mesh for both faces
 sizing_mesh_both_faces = mesh.AddFaceMeshing()
 sizing_mesh_both_faces.Location = get_child_object(
@@ -339,8 +352,8 @@ set_camera_and_display_image(
 )
 
 # %%
-# Add contact debonding object
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add a contact debonding object
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Activate the model
 model.Activate()
@@ -394,6 +407,9 @@ fixed_support.Location = get_child_object(
 # Add displacements to the static structural analysis
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# %%
+# Create a function to add displacement to the static structural analysis
+
 
 def add_displacement(
     static_structural_analysis: Ansys.ACT.Automation.Mechanical.Analysis,
@@ -430,19 +446,21 @@ def add_displacement(
     return displacement
 
 
-# Add displacement to the static structural analysis
+# %%
+# Add displacements to the static structural analysis
+
 displacement1_vertex = add_displacement(
     static_structural_analysis, named_selections, "Disp1_Vertex", Quantity("10 [mm]")
 )
-# Add another displacement to the static structural analysis
 displacement2_vertex = add_displacement(
     static_structural_analysis, named_selections, "Disp2_Vertex", Quantity("-10 [mm]")
 )
 
-# Activate the static structural analysis
+# %%
+# Set the camera to fit the model and display the image of the boundary conditions
+
 static_structural_analysis.Activate()
 
-# Set the camera to fit the model and display the image of the boundary conditions
 set_camera_and_display_image(
     camera,
     graphics,
@@ -484,8 +502,8 @@ assert (
 # sphinx_gallery_end_ignore
 
 # %%
-# Messages
-# ~~~~~~~~
+# Print messages from the solve
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 messages = app.ExtAPI.Application.Messages
 if messages:
@@ -495,12 +513,13 @@ else:
     print("No [Info]/[Warning]/[Error] Messages")
 
 # %%
-# Activate the directional deformation and force reactions and display their images
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Activate the reactions and display the images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Activate the directional deformation
+# %%
+# Directional deformation
+
 directional_deformation.Activate()
-# Set the camera to fit the model and display the image of the directional deformation
 set_camera_and_display_image(
     camera,
     graphics,
@@ -509,30 +528,20 @@ set_camera_and_display_image(
     "directional_deformation.png",
 )
 
-# Activate the force reaction
+# %%
+# Force reaction
+
 force_reaction.Activate()
-# Set the camera to fit the model and display the image of the force reaction
 set_camera_and_display_image(
     camera, graphics, graphics_image_export_settings, output_path, "force_reaction.png"
 )
 
 # %%
-# Export animation
-# ~~~~~~~~~~~~~~~~
+# Export the animation
+# ~~~~~~~~~~~~~~~~~~~~
 
-# Set the animation export format and settings
-animation_export_format = GraphicsAnimationExportFormat.GIF
-animation_export_settings = Ansys.Mechanical.Graphics.AnimationExportSettings()
-animation_export_settings.Width = 1280
-animation_export_settings.Height = 720
-
-# Set the path for the contact status GIF
-force_reaction_gif_path = output_path / "force_reaction.gif"
-
-# Export the force reaction animation to a GIF file
-force_reaction.ExportAnimation(
-    str(force_reaction_gif_path), animation_export_format, animation_export_settings
-)
+# %%
+# Create a function to update the animation frame
 
 
 def update_animation(frame: int) -> list[mpimg.AxesImage]:
@@ -555,6 +564,23 @@ def update_animation(frame: int) -> list[mpimg.AxesImage]:
     # Return the updated image
     return [image]
 
+
+# %%
+# Display the animation of the force reaction
+
+# Set the animation export format and settings
+animation_export_format = GraphicsAnimationExportFormat.GIF
+animation_export_settings = Ansys.Mechanical.Graphics.AnimationExportSettings()
+animation_export_settings.Width = 1280
+animation_export_settings.Height = 720
+
+# Set the path for the contact status GIF
+force_reaction_gif_path = output_path / "force_reaction.gif"
+
+# Export the force reaction animation to a GIF file
+force_reaction.ExportAnimation(
+    str(force_reaction_gif_path), animation_export_format, animation_export_settings
+)
 
 # Open the GIF file and create an animation
 gif = Image.open(force_reaction_gif_path)
@@ -579,8 +605,8 @@ FuncAnimation(
 plt.show()
 
 # %%
-# Display output file from the solve
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Display the output file from the solve
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Get the working directory for the static structural analysis
 solve_path = Path(static_structural_analysis.WorkingDir)

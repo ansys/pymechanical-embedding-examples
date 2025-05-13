@@ -1,21 +1,21 @@
 """.. _ref_tips_03:
 
 Project tree
---------------------
+------------
 
-Display the heirarchial Mechanical project structure.
+The following example demonstrates how to print the heirarchial Mechanical project structure.
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
 
 # %%
 # Create an instance of the Mechanical embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)

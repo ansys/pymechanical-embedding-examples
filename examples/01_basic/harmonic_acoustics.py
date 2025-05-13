@@ -32,8 +32,8 @@ that vary sinusoidally with time.
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -50,14 +50,15 @@ if TYPE_CHECKING:
 
 # %%
 # Create an instance of the Mechanical embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App()
 app.update_globals(globals())
 print(app)
 
 # %%
-# Set the image output path and create functions to fit the camera and display images
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create functions to set camera and display images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Set the path for the output files (images, gifs, mechdat)
 output_path = Path.cwd() / "out"
@@ -244,6 +245,9 @@ mesh.GenerateMesh()
 # Create named selections
 # ~~~~~~~~~~~~~~~~~~~~~~~
 
+# %%
+# Create functions to set up named selections and add generation criteria
+
 
 def setup_named_selection(scoping_method, name):
     """Create a named selection with the specified scoping method and name.
@@ -305,7 +309,9 @@ def add_generation_criteria(
     generation_criteria.Add(criteria)
 
 
+# %%
 # Add a named selection for the surface velocity and define its generation criteria
+
 sf_velo = setup_named_selection(GeometryDefineByType.Worksheet, "sf_velo")
 add_generation_criteria(sf_velo, Quantity("3e6 [mm^2]"))
 add_generation_criteria(
@@ -318,7 +324,9 @@ add_generation_criteria(
 sf_velo.Activate()
 sf_velo.Generate()
 
+# %%
 # Add named selections for the absorption faces and define its generation criteria
+
 abs_face = setup_named_selection(GeometryDefineByType.Worksheet, "abs_face")
 add_generation_criteria(abs_face, Quantity("1.5e6 [mm^2]"))
 add_generation_criteria(
@@ -331,7 +339,9 @@ add_generation_criteria(
 abs_face.Activate()
 abs_face.Generate()
 
+# %%
 # Add named selections for the pressure faces and define its generation criteria
+
 pres_face = setup_named_selection(GeometryDefineByType.Worksheet, "pres_face")
 add_generation_criteria(pres_face, Quantity("1.5e6 [mm^2]"))
 add_generation_criteria(
@@ -344,7 +354,9 @@ add_generation_criteria(
 pres_face.Activate()
 pres_face.Generate()
 
+# %%
 # Add named selections for the acoustic region and define its generation criteria
+
 acoustic_region = setup_named_selection(
     GeometryDefineByType.Worksheet, "acoustic_region"
 )
@@ -491,7 +503,7 @@ pe_response.Location = abs_face
 pe_display = pe_response.TimeHistoryDisplay
 
 # %%
-# Add the acoustic total and directional velocity results
+# Create a function to set the properties of the acoustic velocity result
 
 
 def set_properties(
@@ -511,13 +523,12 @@ def set_properties(
     return element
 
 
-# Add the acoustic total velocity result and set its frequency to 30 Hz
-# and its location to the pressure face named selection
+# %%
+# Add the acoustic total and directional velocity results
+
 acoustic_total_velocity_2 = solution.AddAcousticTotalVelocityResult()
 set_properties(acoustic_total_velocity_2, Quantity("30 [Hz]"), pres_face)
 
-# Add the acoustic directional velocity result and set its frequency to 10 Hz,
-# its location to the pressure face named selection, and its orientation to the Z-axis
 acoustic_directional_velocity_3 = solution.AddAcousticDirectionalVelocityResult()
 set_properties(
     acoustic_directional_velocity_3,
@@ -526,13 +537,12 @@ set_properties(
     normal_orientation=NormalOrientationType.ZAxis,
 )
 
-# Add the acoustic velocity frequency response and set its frequency
-# to 68 Hz and its location to the absorption face named selection
+# %%
+# Add the acoustic kinetic and potential energy results
+
 acoustic_ke = solution.AddAcousticKineticEnergy()
 set_properties(acoustic_ke, Quantity("68 [Hz]"), abs_face)
 
-# Add the acoustic potential energy frequency response and set its frequency
-# to 10 Hz and its location to the absorption face named selection
 acoustic_pe = solution.AddAcousticPotentialEnergy()
 set_properties(acoustic_pe, Quantity("10 [Hz]"), abs_face)
 
@@ -564,7 +574,6 @@ else:
 
 # %%
 # Display the total acoustic pressure result
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 app.Tree.Activate([acoustic_pressure_result_1])
 set_camera_and_display_image(
@@ -573,7 +582,6 @@ set_camera_and_display_image(
 
 # %%
 # Display the total acoustic velocity
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 app.Tree.Activate([acoustic_pressure_result_1])
 set_camera_and_display_image(
@@ -582,7 +590,6 @@ set_camera_and_display_image(
 
 # %%
 # Display the acoustic sound pressure level
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 app.Tree.Activate([acoustic_spl])
 set_camera_and_display_image(
@@ -591,7 +598,6 @@ set_camera_and_display_image(
 
 # %%
 # Display the acoustic directional velocity
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 app.Tree.Activate([acoustic_directional_velocity_3])
 set_camera_and_display_image(
@@ -600,7 +606,6 @@ set_camera_and_display_image(
 
 # %%
 # Display the acoustic kinetic energy
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 app.Tree.Activate([acoustic_ke])
 set_camera_and_display_image(
@@ -608,8 +613,32 @@ set_camera_and_display_image(
 )
 
 # %%
+# Create a function to update the animation frames
+
+
+def update_animation(frame: int) -> list[mpimg.AxesImage]:
+    """Update the animation frame for the GIF.
+
+    Parameters
+    ----------
+    frame : int
+        The frame number to update the animation.
+
+    Returns
+    -------
+    list[mpimg.AxesImage]
+        A list containing the updated image for the animation.
+    """
+    # Seeks to the given frame in this sequence file
+    gif.seek(frame)
+    # Set the image array to the current frame of the GIF
+    image.set_data(gif.convert("RGBA"))
+    # Return the updated image
+    return [image]
+
+
+# %%
 # Display the total acoustic pressure animation
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 # Set the animation export format to GIF
 animation_export_format = (
@@ -635,28 +664,6 @@ axes.axis("off")
 # Change the color of the image
 image = axes.imshow(gif.convert("RGBA"))
 
-
-def update_animation(frame: int) -> list[mpimg.AxesImage]:
-    """Update the animation frame for the GIF.
-
-    Parameters
-    ----------
-    frame : int
-        The frame number to update the animation.
-
-    Returns
-    -------
-    list[mpimg.AxesImage]
-        A list containing the updated image for the animation.
-    """
-    # Seeks to the given frame in this sequence file
-    gif.seek(frame)
-    # Set the image array to the current frame of the GIF
-    image.set_data(gif.convert("RGBA"))
-    # Return the updated image
-    return [image]
-
-
 # Create the animation using the figure, update_animation function, and the GIF frames
 # Set the interval between frames to 200 milliseconds and repeat the animation
 ani = FuncAnimation(
@@ -675,20 +682,15 @@ plt.show()
 # Display the output file from solve
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-def write_file_contents_to_console(path):
-    """Write file contents to console."""
-    with open(path, "rt") as file:
-        for line in file:
-            print(line, end="")
-
-
 # Get the working directory of the solve
 solve_path = harmonic_acoustics.WorkingDir
 solve_out_path = Path(solve_path) / "solve.out"
+
 # Check if the solve output file exists and write its contents to the console
 if solve_out_path:
-    write_file_contents_to_console(solve_out_path)
+    with solve_out_path.open("rt") as file:
+        for line in file:
+            print(line, end="")
 
 # %%
 # Print the project tree

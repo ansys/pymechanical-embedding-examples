@@ -12,8 +12,8 @@ or component, in this example, a long bar model.
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -30,13 +30,14 @@ if TYPE_CHECKING:
 
 # %%
 # Create an instance of the Mechanical embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
 
 # %%
-# Set the image output path and create functions to fit the camera and display images
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create functions to set camera and display images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Set the path for the output files (images, gifs, mechdat)
 output_path = Path.cwd() / "out"
@@ -189,6 +190,9 @@ lcs2.PrimaryAxisDefineBy = CoordinateSystemAlignmentType.GlobalY
 # Create named selections and construction geometry
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# %%
+# Create a function to add a named selection
+
 
 def setup_named_selection(name, scoping_method=GeometryDefineByType.Worksheet):
     """Create a named selection with the specified scoping method and name.
@@ -209,6 +213,10 @@ def setup_named_selection(name, scoping_method=GeometryDefineByType.Worksheet):
     ns.ScopingMethod = scoping_method
     ns.Name = name
     return ns
+
+
+# %%
+# Create a function to add generation criteria to the named selection
 
 
 def add_generation_criteria(
@@ -258,6 +266,10 @@ def add_generation_criteria(
         generation_criteria.Add(criteria)
 
 
+# %%
+# Create a function to set the properties of the generation criteria
+
+
 def set_criteria_properties(
     criteria,
     value,
@@ -297,7 +309,9 @@ def set_criteria_properties(
     return criteria
 
 
-# Add a named selection to the model
+# %%
+# Add named selections to the model
+
 face1 = setup_named_selection("Face1")
 add_generation_criteria(
     face1, Quantity("20 [m]"), criterion=SelectionCriterionType.LocationZ
@@ -382,6 +396,9 @@ construction_geometry.UpdateAllSolids()
 # Define the boundary condition and add results
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# %%
+# Create a function to set the location and output for the temperature boundary condition
+
 
 def set_loc_and_output(temp, location, values):
     """Add a temperature set output to the boundary condition.
@@ -397,6 +414,10 @@ def set_loc_and_output(temp, location, values):
     """
     temp.Location = location
     temp.Magnitude.Output.DiscreteValues = [Quantity(value) for value in values]
+
+
+# %%
+# Create a function to set the inputs and outputs for the temperature boundary condition
 
 
 def set_inputs_and_outputs(
@@ -424,18 +445,15 @@ def set_inputs_and_outputs(
     prop.Output.DiscreteValues = [Quantity(value) for value in output_quantities]
 
 
+# %%
 # Add temperature boundary conditions to the steady state thermal analysis
+
 temp = stat_therm.AddTemperature()
 set_loc_and_output(temp, face1, ["22[C]", "30[C]"])
-
-# Add temperature boundary conditions to the steady state thermal analysis
 temp2 = stat_therm.AddTemperature()
 set_loc_and_output(temp2, face2, ["22[C]", "60[C]"])
 
-# Set the temperature inputs and outputs for temp
 set_inputs_and_outputs(temp)
-
-# Set the temperature inputs and outputs for temp2
 set_inputs_and_outputs(temp2, output_quantities=["22[C]", "50[C]", "80[C]"])
 
 # %%
@@ -450,7 +468,6 @@ radiation.Correlation = RadiationType.SurfaceToSurface
 # %%
 # Set up the analysis settings
 
-# Set the analysis settings for the steady state thermal analysis
 analysis_settings = stat_therm.AnalysisSettings
 analysis_settings.NumberOfSteps = 2
 analysis_settings.CalculateVolumeEnergy = True
@@ -464,7 +481,9 @@ set_camera_and_display_image(
 # %%
 # Add results
 # ~~~~~~~~~~~
-# Temperature
+
+# %%
+# Add temperature results to the solution
 
 # Get the solution object for the steady state thermal analysis
 stat_therm_soln = model.Analyses[0].Solution
@@ -551,10 +570,9 @@ radiation_probe.BoundaryConditionSelection = radiation
 # Display all results for the radiation probe
 radiation_probe.ResultSelection = ProbeDisplayFilter.All
 
-
 # %%
-# Solve
-# ~~~~~
+# Solve the solution
+# ~~~~~~~~~~~~~~~~~~
 
 # Solve the steady state thermal analysis solution
 stat_therm_soln.Solve(True)
@@ -616,24 +634,9 @@ set_camera_and_display_image(
 # Export the directional heat flux animation
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Activate the directional heat flux
-app.Tree.Activate([directional_heat_flux])
 
-# Set the animation export format and settings
-animation_export_format = (
-    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
-)
-settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
-settings_720p.Width = 1280
-settings_720p.Height = 720
-
-# Export the directional heat flux animation as a GIF
-directional_heat_flux_gif = output_path / "directional_heat_flux.gif"
-directional_heat_flux.ExportAnimation(
-    str(directional_heat_flux_gif), animation_export_format, settings_720p
-)
-
-
+# %%
+# Create a function to update the animation frames
 def update_animation(frame: int) -> list[mpimg.AxesImage]:
     """Update the animation frame for the GIF.
 
@@ -654,6 +657,26 @@ def update_animation(frame: int) -> list[mpimg.AxesImage]:
     # Return the updated image
     return [image]
 
+
+# %%
+# Show the directional heat flux animation
+
+# Activate the directional heat flux
+app.Tree.Activate([directional_heat_flux])
+
+# Set the animation export format and settings
+animation_export_format = (
+    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
+)
+settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
+settings_720p.Width = 1280
+settings_720p.Height = 720
+
+# Export the directional heat flux animation as a GIF
+directional_heat_flux_gif = output_path / "directional_heat_flux.gif"
+directional_heat_flux.ExportAnimation(
+    str(directional_heat_flux_gif), animation_export_format, settings_720p
+)
 
 # Open the GIF file and create an animation
 gif = Image.open(directional_heat_flux_gif)

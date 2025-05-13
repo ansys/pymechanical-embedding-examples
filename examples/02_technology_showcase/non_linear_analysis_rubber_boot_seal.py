@@ -15,8 +15,8 @@ This example demonstrates a nonlinear 3D analysis of a rubber boot seal to:
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -33,13 +33,14 @@ if TYPE_CHECKING:
 
 # %%
 # Create an instance of the Mechanical embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
 
 # %%
-# Set the image output path and create functions to fit the camera and display images
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create functions to set camera and display images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Set the path for the output files (images, gifs, mechdat)
 output_path = Path.cwd() / "out"
@@ -216,7 +217,7 @@ stat_struct_soln = static_structural_analysis.Solution
 soln_info = stat_struct_soln.SolutionInformation
 
 # %%
-# Define named selections and coordinate systems
+# Create a function to get named selections
 
 
 def get_named_selection(
@@ -245,6 +246,9 @@ def get_named_selection(
     ][0]
 
 
+# %%
+# Define named selections and coordinate systems
+
 named_selections = app.ExtAPI.DataModel.Project.Model.NamedSelections
 top_face = get_named_selection(named_selections, "Top_Face")
 bottom_face = get_named_selection(named_selections, "Bottom_Face")
@@ -270,7 +274,7 @@ part1.Material = "Boot"
 part2.StiffnessBehavior = StiffnessBehavior.Rigid
 
 # %%
-# Define connections
+# Create a function to add a contact region and set its properties
 
 
 def add_contact_region_and_props(
@@ -335,6 +339,9 @@ def add_contact_region_and_props(
 
     return contact_region
 
+
+# %%
+# Add contact regions
 
 # Add a contact region to the connections
 connections = model.Connections
@@ -402,8 +409,8 @@ mesh.GenerateMesh()
 set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh.png")
 
 # %%
-# Define remote points
-# ~~~~~~~~~~~~~~~~~~~~
+# Add remote points
+# ~~~~~~~~~~~~~~~~~
 
 
 def add_remote_point(
@@ -438,8 +445,11 @@ remote_point01 = add_remote_point(model, bottom_face)
 remote_point02 = add_remote_point(model, top_face)
 
 # %%
-# Set the analysis settings
-# ~~~~~~~~~~~~~~~~~~~~~~~~~
+# Configure the analysis settings
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# %%
+# Define a function to set the analysis settings
 
 
 def set_analysis_settings(
@@ -463,7 +473,9 @@ def set_analysis_settings(
     analysis_settings.StoreResulsAtValue = store_results_at_value
 
 
-# Activate the analysis settings
+# %%
+# Configure the analysis settings
+
 analysis_settings.Activate()
 analysis_settings.LargeDeflection = True
 analysis_settings.Stabilization = StabilizationType.Off
@@ -499,82 +511,79 @@ soln_info.NewtonRaphsonResiduals = 4
 # Set load and boundary conditions
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+remote_displacement = static_structural_analysis.AddRemoteDisplacement()
+remote_displacement.Location = remote_point01
 
-def set_input_output_values(
-    remote_displacement,
-    x_input_values,
-    x_output_values,
-    y_input_values,
-    y_output_values,
-    z_input_values,
-    z_output_values,
-    rotation_x_input_values,
-    rotation_x_output_values,
-    rotation_y_input_values,
-    rotation_y_output_values,
-    rotation_z_input_values,
-    rotation_z_output_values,
-):
-    remote_displacement.XComponent.Inputs[0].DiscreteValues = convert_to_quantity(
-        x_input_values
-    )
-    remote_displacement.XComponent.Output.DiscreteValues = convert_to_quantity(
-        x_output_values
-    )
-    remote_displacement.YComponent.Inputs[0].DiscreteValues = convert_to_quantity(
-        y_input_values
-    )
-    remote_displacement.YComponent.Output.DiscreteValues = convert_to_quantity(
-        y_output_values
-    )
-    remote_displacement.ZComponent.Inputs[0].DiscreteValues = convert_to_quantity(
-        z_input_values
-    )
-    remote_displacement.ZComponent.Output.DiscreteValues = convert_to_quantity(
-        z_output_values
-    )
-    remote_displacement.RotationX.Inputs[0].DiscreteValues = convert_to_quantity(
-        rotation_x_input_values
-    )
-    remote_displacement.RotationX.Output.DiscreteValues = convert_to_quantity(
-        rotation_x_output_values
-    )
-    remote_displacement.RotationY.Inputs[0].DiscreteValues = convert_to_quantity(
-        rotation_y_input_values
-    )
-    remote_displacement.RotationY.Output.DiscreteValues = convert_to_quantity(
-        rotation_y_output_values
-    )
-    remote_displacement.RotationZ.Inputs[0].DiscreteValues = convert_to_quantity(
-        rotation_z_input_values
-    )
-    remote_displacement.RotationZ.Output.DiscreteValues = convert_to_quantity(
-        rotation_z_output_values
-    )
+# %%
+# Define a function to convert a list of values to quantities
 
 
-def convert_to_quantity(quantity_list):
+def convert_to_quantity(quantity_list: tuple) -> list:
+    """Convert a list of values to quantities.
+
+    Parameters
+    ----------
+    quantity_list : tuple
+        A tuple containing a list of values and the unit.
+
+    Returns
+    -------
+    list
+        A list of quantities with the specified unit.
+    """
     values, unit = quantity_list
     return [Quantity(f"{value} [{unit}]") for value in values]
 
 
-remote_displacement = static_structural_analysis.AddRemoteDisplacement()
-remote_displacement.Location = remote_point01
-set_input_output_values(
-    remote_displacement,
-    x_input_values=([0, 1, 2, 3], "s"),
-    x_output_values=([0, 0, 0, 0], "mm"),
-    y_input_values=([0, 1, 2, 3], "s"),
-    y_output_values=([0, 0, -10, -10], "mm"),
-    z_input_values=([0, 1, 2, 3], "s"),
-    z_output_values=([0, 0, 0, 0], "mm"),
-    rotation_x_input_values=([0, 1, 2, 3], "s"),
-    rotation_x_output_values=([0, 0, 0, 0], "rad"),
-    rotation_y_input_values=([0, 1, 2, 3], "s"),
-    rotation_y_output_values=([0, 0, 0, 0], "rad"),
-    rotation_z_input_values=([0, 1, 2, 3], "s"),
-    rotation_z_output_values=([0, 0, 0, 0.55], "rad"),
-)
+# %%
+# Set the input values for all remote displacement components
+
+input_values = convert_to_quantity(([0, 1, 2, 3], "s"))
+
+# %%
+# Set the X component input and output values
+
+x_component = remote_displacement.XComponent
+x_component.Inputs[0].DiscreteValues = input_values
+x_component.Output.DiscreteValues = convert_to_quantity(([0, 0, 0, 0], "mm"))
+
+# %%
+# Set the Y component input and output values
+
+y_component = remote_displacement.YComponent
+y_component.Inputs[0].DiscreteValues = input_values
+y_component.Output.DiscreteValues = convert_to_quantity(([0, 0, -10, -10], "mm"))
+
+# %%
+# Set the Z component input and output values
+
+z_component = remote_displacement.ZComponent
+z_component.Inputs[0].DiscreteValues = input_values
+z_component.Output.DiscreteValues = convert_to_quantity(([0, 0, 0, 0], "mm"))
+
+# %%
+# Set the rotation X component input and output values
+
+rotation_x = remote_displacement.RotationX
+rotation_x.Inputs[0].DiscreteValues = input_values
+rotation_x.Output.DiscreteValues = convert_to_quantity(([0, 0, 0, 0], "rad"))
+
+# %%
+# Set the rotation X component input and output values
+
+rotation_y = remote_displacement.RotationY
+rotation_y.Inputs[0].DiscreteValues = input_values
+rotation_y.Output.DiscreteValues = convert_to_quantity(([0, 0, 0, 0], "rad"))
+
+# %%
+# Set the rotation Z component input and output values
+
+rotation_z = remote_displacement.RotationZ
+rotation_z.Inputs[0].DiscreteValues = input_values
+rotation_z.Output.DiscreteValues = convert_to_quantity(([0, 0, 0, 0.55], "rad"))
+
+# %%
+# Add frictionless support to the static structural analysis
 
 
 def add_frictionless_support(
@@ -582,7 +591,7 @@ def add_frictionless_support(
     location,
     name: str,
 ):
-    """Add a frictionless support to the static structural analysis.
+    """Add frictionless support to the static structural analysis.
 
     Parameters
     ----------
@@ -653,7 +662,7 @@ set_camera_and_display_image(
 )
 
 # %%
-# Total deformation animation
+# Create a function to set the animation for the GIF
 
 
 def update_animation(frame: int) -> list[mpimg.AxesImage]:
@@ -676,6 +685,9 @@ def update_animation(frame: int) -> list[mpimg.AxesImage]:
     # Return the updated image
     return [image]
 
+
+# %%
+# Show the total deformation animation
 
 # Set the animation export format and settings
 animation_export_format = (

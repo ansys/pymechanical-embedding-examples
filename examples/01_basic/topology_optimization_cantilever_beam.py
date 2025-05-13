@@ -9,8 +9,8 @@ load, which is then transferred to the topology optimization.
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -25,13 +25,14 @@ if TYPE_CHECKING:
 
 # %%
 # Create an instance of the Mechanical embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
 
 # %%
-# Set the image output path and create functions to fit the camera and display images
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create functions to set camera and display images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Set the path for the output files (images, gifs, mechdat)
 output_path = Path.cwd() / "out"
@@ -217,8 +218,8 @@ set_camera_and_display_image(
 )
 
 # %%
-# Solve
-# ~~~~~
+# Solve the solution
+# ~~~~~~~~~~~~~~~~~~
 
 # Get the topology optimization analysis solution
 top_opt_sln = topology_optimization.Solution

@@ -3,12 +3,13 @@
 Export image
 ------------
 
-Export image and display
+The following example demonstrates how to export an image of the imported geometry
+and display it using matplotlib.
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from pathlib import Path
 
@@ -17,6 +18,7 @@ from ansys.mechanical.core.examples import delete_downloads, download_file
 
 # %%
 # Create an instance of the Mechanical embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Create an instance of the App class
 app = App()
@@ -31,6 +33,7 @@ print(app)
 # Download and import the geometry file
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# %%
 # Download the geometry file
 geometry_path = download_file("Valve.pmdb", "pymechanical", "embedding")
 

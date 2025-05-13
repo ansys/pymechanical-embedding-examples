@@ -7,8 +7,8 @@ This example demonstrates a basic implementation of a valve in Python.
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -25,13 +25,14 @@ if TYPE_CHECKING:
 
 # %%
 # Create an instance of the Mechanical embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
 
 # %%
-# Set the image output path and create functions to fit the camera and display images
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create functions to set camera and display images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Set the path for the output files (images, gifs, mechdat)
 output_path = Path.cwd() / "out"
@@ -158,7 +159,7 @@ app.plot()
 
 # %%
 # Assign materials and mesh the geometry
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Add the material assignment to the model materials
 material_assignment = model.Materials.AddMaterialAssignment()
@@ -282,22 +283,9 @@ set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "stress_valve.png"
 )
 
+
 # %%
-# Export the stress animation
-
-# Set the animation export format and settings
-animation_export_format = (
-    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
-)
-settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
-settings_720p.Width = 1280
-settings_720p.Height = 720
-
-# Export the animation of the equivalent stress result
-valve_gif = output_path / "valve.gif"
-stress.ExportAnimation(str(valve_gif), animation_export_format, settings_720p)
-
-
+# Create a function to update the animation frames
 def update_animation(frame: int) -> list[mpimg.AxesImage]:
     """Update the animation frame for the GIF.
 
@@ -318,6 +306,21 @@ def update_animation(frame: int) -> list[mpimg.AxesImage]:
     # Return the updated image
     return [image]
 
+
+# %%
+# Export the stress animation
+
+# Set the animation export format and settings
+animation_export_format = (
+    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
+)
+settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
+settings_720p.Width = 1280
+settings_720p.Height = 720
+
+# Export the animation of the equivalent stress result
+valve_gif = output_path / "valve.gif"
+stress.ExportAnimation(str(valve_gif), animation_export_format, settings_720p)
 
 # Open the GIF file and create an animation
 gif = Image.open(valve_gif)

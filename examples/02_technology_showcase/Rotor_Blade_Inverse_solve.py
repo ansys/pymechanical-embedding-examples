@@ -47,6 +47,10 @@ Inverse-Solving Analysis: A nonlinear static analysis using inverse solving
 
 """
 
+# %%
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -60,13 +64,14 @@ if TYPE_CHECKING:
 
 # %%
 # Create an instance of the Mechanical embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
 
 # %%
-# Set the image output path and create functions to fit the camera and display images
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create functions to set camera and display images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Set the path for the output files (images, gifs, mechdat)
 output_path = Path.cwd() / "out"
@@ -220,7 +225,9 @@ app.plot()
 # %%
 # Assign materials
 # ~~~~~~~~~~~~~~~~
-# Import material from xml file and assign it to bodies
+
+# %%
+# Import material from the xml file and assign it to bodies
 
 # Define and import the materials
 materials = model.Materials
@@ -255,6 +262,9 @@ named_selections = model.NamedSelections
 # Define named selection
 # ~~~~~~~~~~~~~~~~~~~~~~
 
+# %%
+# Create a function to get named selections by name
+
 
 def get_named_selection(ns_list: list) -> dict:
     """Get the named selection by name.
@@ -275,7 +285,8 @@ def get_named_selection(ns_list: list) -> dict:
     return ns_dict
 
 
-# Create NS for named selection
+# %%
+# Create a dictionary of named selections
 
 named_selections_names = [
     "Blade",
@@ -299,12 +310,10 @@ named_selections_names = [
 ns_dict = get_named_selection(named_selections_names)
 
 # %%
-# Define a coordinate system
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# Define the coordinate systems
-coordinate_systems = model.CoordinateSystems
 # Add a coordinate system
+# ~~~~~~~~~~~~~~~~~~~~~~~
+
+coordinate_systems = model.CoordinateSystems
 coord_system = coordinate_systems.AddCoordinateSystem()
 # Create cylindrical coordinate system
 coord_system.CoordinateSystemType = (
@@ -317,21 +326,30 @@ coord_system.OriginDefineBy = CoordinateSystemAlignmentType.Fixed
 # Add contact regions
 # ~~~~~~~~~~~~~~~~~~~
 
-# Define connections
 connections = model.Connections
-# Add a contact region
 contact_region1 = connections.AddContactRegion()
-# Set the contact region's source and target locations
 contact_region1.SourceLocation = named_selections.Children[6]
 contact_region1.TargetLocation = named_selections.Children[5]
-# Set the contact region's behavior to auto asymmetric
 contact_region1.Behavior = ContactBehavior.AutoAsymmetric
-# Set the contact region's contact formulation to MPC
 contact_region1.ContactFormulation = ContactFormulation.MPC
 
 # %%
 # Define the mesh settings and generate the mesh
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# %%
+# Set the mesh settings
+
+mesh = model.Mesh
+
+# Set the mesh settings
+mesh.ElementSize = Quantity(0.004, "m")
+mesh.UseAdaptiveSizing = False
+mesh.MaximumSize = Quantity(0.004, "m")
+mesh.ShapeChecking = 0
+
+# %%
+# Create a function to add an automatic method to the mesh
 
 
 def add_automatic_method(
@@ -361,19 +379,13 @@ def add_automatic_method(
     automatic_method.SweepNumberDivisions = sweep_number_divisions
 
 
-# Define the mesh
-mesh = model.Mesh
-
-# Set the mesh settings
-mesh.ElementSize = Quantity(0.004, "m")
-mesh.UseAdaptiveSizing = False
-mesh.MaximumSize = Quantity(0.004, "m")
-mesh.ShapeChecking = 0
-
 # Add an automatic method for the hub
 add_automatic_method(
     mesh, location_index=0, sweep_number_divisions=6, set_src_target_properties=False
 )
+
+# %%
+# Add match control and sizing to the mesh
 
 # Add match control to the mesh
 match_control_hub = mesh.AddMatchControl()
@@ -392,12 +404,16 @@ sizing_blade.CaptureCurvature = True
 sizing_blade.CurvatureNormalAngle = Quantity(0.31, "rad")
 sizing_blade.LocalMinimumSize = Quantity(0.0005, "m")
 
-# Add automatic methods for each blade
+# %%
+# Add automatic methods for each blad
+
 add_automatic_method(mesh, 9, 10, 11)
 add_automatic_method(mesh, 12, 13, 14)
 add_automatic_method(mesh, 15, 16, 17)
 
+# %%
 # Generate the mesh and display the image
+
 mesh.GenerateMesh()
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "blade_mesh.png"
@@ -458,6 +474,9 @@ fixed_support.Location = named_selections.Children[3]
 # %%
 # Import and apply temperature and CFX pressure to the structural blade & its surface
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# %%
+# Create a function to process the CFX pressure and temperature data files
 
 
 def process_external_data(
@@ -605,7 +624,6 @@ soln_status = solution.Status
 # %%
 # Postprocessing
 # ~~~~~~~~~~~~~~
-# Evaluate the results and export screenshots
 
 # %%
 # Total deformation
@@ -632,8 +650,8 @@ set_camera_and_display_image(
 )
 
 # %%
-# Clean up
-# ~~~~~~~~
+# Clean up the project and downloaded files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Save the project
 mechdat_file = output_path / "blade_inverse.mechdat"

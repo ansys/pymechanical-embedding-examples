@@ -22,8 +22,8 @@ contact pressure prior to wear is evaluated.
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -40,13 +40,14 @@ if TYPE_CHECKING:
 
 # %%
 # Create an instance of the Mechanical embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
 
 # %%
-# Set the image output path and create functions to fit the camera and display images
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create functions to set camera and display images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Set the path for the output files (images, gifs, mechdat)
 output_path = Path.cwd() / "out"
@@ -235,7 +236,7 @@ hor_edge2 = get_named_selection("h2")
 all_bodies_named_selection = get_named_selection("all_bodies")
 
 # %%
-# Assign material to the bodies and change the behavior to axi-symmetric
+# Assign material to the bodies
 
 # Set the model's 2D behavior to axi-symmetric
 geometry.Model2DBehavior = Model2DBehavior.AxiSymmetric
@@ -346,7 +347,7 @@ set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-def set_time_steps(initial, min, max):
+def set_time_steps(initial: str, min: str, max: str) -> None:
     """Set the time step properties for the analysis settings.
 
     Parameters
@@ -453,6 +454,9 @@ contact_tool.Location = selection2
 # Clear the selection
 app.ExtAPI.SelectionManager.ClearSelection()
 
+# %%
+# Add contact pressure to the contact tool
+
 
 def add_contact_pressure(contact_tool, display_time):
     """Add a contact pressure to the contact tool."""
@@ -465,8 +469,8 @@ add_contact_pressure(contact_tool, display_time="0 [s]")
 add_contact_pressure(contact_tool, display_time="4 [s]")
 
 # %%
-# Solve the static structural analysis
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Solve the solution
+# ~~~~~~~~~~~~~~~~~~
 
 stat_struct_soln.Solve(True)
 # sphinx_gallery_start_ignore
@@ -486,7 +490,7 @@ set_camera_and_display_image(
 )
 
 # %%
-# Display the total deformation animation
+# Create a function to update the animation frame
 
 
 def update_animation(frame: int) -> list[mpimg.AxesImage]:
@@ -510,7 +514,10 @@ def update_animation(frame: int) -> list[mpimg.AxesImage]:
     return [image]
 
 
-# Set the animatione export format
+# %%
+# Display the total deformation animation
+
+# Set the animation export format
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
 )

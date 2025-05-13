@@ -27,6 +27,7 @@ from matplotlib.animation import FuncAnimation
 
 # %%
 # Create an instance of the Mechanical embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App()
 print(app)
@@ -103,9 +104,10 @@ assert geometry_import.ObjectState == ObjectState.Solved, "Geometry Import unsuc
 app.plot()
 
 # %%
-# Download and import material
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Download and import the materials
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# %%
 # Download the material files from the ansys/example-data repository
 copper_material_file_path = download_file(
     "example_06_Mat_Copper.xml", "pymechanical", "00_basic"
@@ -114,6 +116,7 @@ steel_material_file_path = download_file(
     "example_06_Mat_Steel.xml", "pymechanical", "00_basic"
 )
 
+# %%
 # Add materials to the model and import the material files
 model_materials = model.Materials
 model_materials.Import(copper_material_file_path)
@@ -130,13 +133,15 @@ assert (
 # Define analysis and unit system
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# %%
 # Add static structural analysis to the model
 model.AddStaticStructuralAnalysis()
 static_structural = model.Analyses[0]
 static_structural_solution = static_structural.Solution
 static_structural_analysis_setting = static_structural.Children[0]
 
-# Store named selections
+# %%
+# Store the named selections
 named_selections_dictionary = {}
 named_selections_list = [
     "block3_block2_cont",
@@ -153,6 +158,7 @@ named_selections_list = [
     "block2_block1_targ",
 ]
 
+# %%
 # Get tree objects for each named selection
 for named_selection in named_selections_list:
     named_selections_dictionary[named_selection] = [
@@ -161,6 +167,7 @@ for named_selection in named_selections_list:
         if tree_obj.Name == str(named_selection)
     ][0]
 
+# %%
 # Create dictionary with material assignment for each model.Geometry.Children index
 children_materials = {
     0: "Steel",
@@ -171,6 +178,7 @@ children_materials = {
     5: "Steel",
 }
 
+# %%
 # Assign surface materials to the model.Geometry bodies
 geometry = model.Geometry
 for children_index, material_name in children_materials.items():
@@ -181,11 +189,13 @@ for children_index, material_name in children_materials.items():
 # Add and define a coordinate system
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Add coordinate systems to the model
+# %%
+# Add a coordinate system to the model
 coordinate_systems = model.CoordinateSystems
 coordinate_system = coordinate_systems.AddCoordinateSystem()
 
-# Define the coordinate system
+# %%
+# Define the coordinate system and set its axis properties
 coordinate_system.OriginDefineBy = CoordinateSystemAlignmentType.Fixed
 coordinate_system.OriginX = Quantity(-195, "mm")
 coordinate_system.OriginY = Quantity(100, "mm")
@@ -193,10 +203,13 @@ coordinate_system.OriginZ = Quantity(50, "mm")
 coordinate_system.PrimaryAxis = CoordinateSystemAxisType.PositiveZAxis
 
 # %%
-# Add and define contact regions
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create functions to set contact regions' locations, types, and other advanced contact settings
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+# %%
+# Add a contact region to the body with the specified source location, target location,
+# and contact type
 def set_contact_region_locations_and_types(
     body: typing.Union[
         Ansys.ACT.Automation.Mechanical.Connections,
@@ -233,6 +246,8 @@ def set_contact_region_locations_and_types(
     return contact_region
 
 
+# %%
+# Set the friction coefficient, small sliding, and update stiffness settings for the contact region
 def advanced_contact_settings(
     contact_region: Ansys.ACT.Automation.Mechanical.Connections.ContactRegion,
     friction_coefficient: int,
@@ -258,6 +273,8 @@ def advanced_contact_settings(
     contact_region.UpdateStiffness = update_stiffness
 
 
+# %%
+# Add a command snippet to the contact region with the specified Archard Wear Model
 def add_command_snippet(
     contact_region: Ansys.ACT.Automation.Mechanical.Connections.ContactRegion,
     archard_wear_model: str,
@@ -275,11 +292,19 @@ def add_command_snippet(
     contact_region_cmd.AppendText(archard_wear_model)
 
 
+# %%
+# Add and define contact regions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# %%
 # Set up the model connections and delete the existing connections for ConnectionGroups
 connections = model.Connections
 for connection in connections.Children:
     if connection.DataModelObjectCategory == DataModelObjectCategory.ConnectionGroup:
         connection.Delete()
+
+# %%
+# Set the archard wear model and get the named selections from the model
 
 # Set the archard wear model
 archard_wear_model = """keyopt,cid,9,5
@@ -289,6 +314,7 @@ rmodif,cid,23,0.001"""
 # Get named selections from the model for contact regions
 named_selections = model.NamedSelections
 
+# %%
 # Add a contact region for the model's named selections Children 0 and 1 with the specified
 # contact type
 contact_region = set_contact_region_locations_and_types(
@@ -307,9 +333,11 @@ advanced_contact_settings(
 # Add a command snippet to the contact region with the specified Archard Wear Model
 add_command_snippet(contact_region, archard_wear_model)
 
+# %%
 # Set the connection group for the contact regions
 connection_group = connections.Children[0]
 
+# %%
 # Add a contact region for the model's named selections Children 2 and 3 with the specified
 # contact type
 contact_region_2 = set_contact_region_locations_and_types(
@@ -320,6 +348,7 @@ contact_region_2 = set_contact_region_locations_and_types(
 )
 contact_region_2.ContactFormulation = ContactFormulation.MPC
 
+# %%
 # Add a contact region for the model's named selections Children 4 and 5 with the specified
 # contact type
 contact_region_3 = set_contact_region_locations_and_types(
@@ -338,6 +367,7 @@ advanced_contact_settings(
 # Add a command snippet to the contact region with the specified Archard Wear Model
 add_command_snippet(contact_region_3, archard_wear_model)
 
+# %%
 # Add a contact region for the model's named selections Children 6 and 7 with the specified
 # contact type
 contact_region_4 = set_contact_region_locations_and_types(
@@ -348,6 +378,7 @@ contact_region_4 = set_contact_region_locations_and_types(
 )
 contact_region_4.ContactFormulation = ContactFormulation.MPC
 
+# %%
 # Add a contact region for the model's named selections Children 8 and 9 with the specified
 # contact type
 contact_region_5 = set_contact_region_locations_and_types(
@@ -358,6 +389,7 @@ contact_region_5 = set_contact_region_locations_and_types(
 )
 contact_region_5.ContactFormulation = ContactFormulation.MPC
 
+# %%
 # Add a contact region for the model's named selections Children 10 and 11 with the specified
 # contact type
 contact_region_6 = set_contact_region_locations_and_types(
@@ -377,12 +409,25 @@ advanced_contact_settings(
 add_command_snippet(contact_region_6, archard_wear_model)
 
 # %%
-# Add mesh methods, sizing, and face meshing
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create functions to set the method location, mesh sizing, and element size
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-def set_method_location(method, object_name: str, location_type: str = ""):
-    """Set the location of the method based on the specified name and location type."""
+# %%
+# Set the method location for the specified method and object name
+def set_method_location(method, object_name: str, location_type: str = "") -> None:
+    """Set the location of the method based on the specified name and location type.
+
+    Parameters
+    ----------
+    method : Ansys.ACT.Automation.Mechanical.MeshMethod
+        The method to set the location for.
+    object_name : str
+        The name of the object to set the location for.
+    location_type : str, optional
+        The type of location to set for the method. Can be "source", "target", or empty string.
+        Default is an empty string.
+    """
     # Get the tree object for the specified name
     tree_obj_list = [
         tree_obj
@@ -399,8 +444,20 @@ def set_method_location(method, object_name: str, location_type: str = ""):
         method.Location = tree_obj_list
 
 
-def add_mesh_sizing(mesh, object_name: str, element_size: Quantity):
-    """Add a mesh sizing to the mesh with the specified name, quantity value, and measurement."""
+# %%
+# Add a mesh sizing to the mesh with the specified name, quantity value, and measurement
+def add_mesh_sizing(mesh, object_name: str, element_size: Quantity) -> None:
+    """Add a mesh sizing to the mesh with the specified name, quantity value, and measurement.
+
+    Parameters
+    ----------
+    mesh : Ansys.ACT.Automation.Mechanical.Mesh
+        The mesh to add the sizing to.
+    object_name : str
+        The name of the object to set the sizing for.
+    element_size : Quantity
+        The element size for the mesh sizing.
+    """
     # Add sizing to the mesh
     body_sizing = mesh.AddSizing()
     # Get the tree object for the specified name
@@ -413,24 +470,34 @@ def add_mesh_sizing(mesh, object_name: str, element_size: Quantity):
     body_sizing.ElementSize = element_size
 
 
+# %%
+# Add mesh methods, sizing, and face meshing
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# %%
+# Add the mesh sizing to the bodies_5 and shank objects
+
 # Get the mesh for the model
 mesh = model.Mesh
 # Add the mesh sizing to the bodies_5 and shank objects
 add_mesh_sizing(mesh=mesh, object_name="bodies_5", element_size=Quantity(15, "mm"))
 add_mesh_sizing(mesh=mesh, object_name="shank", element_size=Quantity(7, "mm"))
 
+# %%
 # Add an automatic method to the mesh and set the method type
 hex_method = mesh.AddAutomaticMethod()
 hex_method.Method = MethodType.Automatic
 # Set the method location for the all_bodies object
 set_method_location(method=hex_method, object_name="all_bodies")
 
+# %%
 # Add face meshing to the mesh and set the MappedMesh property to False
 face_meshing = mesh.AddFaceMeshing()
 face_meshing.MappedMesh = False
 # Set the method location for the face meshing
 set_method_location(method=face_meshing, object_name="shank_face")
 
+# %%
 # Add an automatic method to the mesh, set the method type, and set the source target selection
 sweep_method = mesh.AddAutomaticMethod()
 sweep_method.Method = MethodType.Sweep
@@ -444,6 +511,7 @@ set_method_location(
     method=sweep_method, object_name="shank_face2", location_type="target"
 )
 
+# %%
 # Activate and generate the mesh
 mesh.Activate()
 mesh.GenerateMesh()
@@ -460,6 +528,8 @@ graphics.ExportImage(
 )
 
 
+# %%
+# Create a function to display the image using matplotlib
 def display_image(
     image_path: str,
     pyplot_figsize_coordinates: tuple = (16, 9),
@@ -484,6 +554,7 @@ def display_image(
     plt.show()
 
 
+# %%
 # Display the mesh image
 display_image(mesh_image_path)
 
@@ -656,27 +727,84 @@ else:
 # Display the results
 # ~~~~~~~~~~~~~~~~~~~
 
-# Create a list with the total deformation, equivalent stress 1, and equivalent stress 2 objects
-tree_obj_list = [total_deformation, equivalent_stress_1, equivalent_stress_2]
+# %%
+# Total deformation
 
-# Activate each of the objects in the list and export and display the images
-for tree_obj in tree_obj_list:
-    # Activate the object
-    app.Tree.Activate([tree_obj])
-    # Set the camera to fit the model
-    camera.SetFit()
-    # Set the image name and path for the object
-    image_path = str(output_path / f"{tree_obj}.png")
-    # Export the image of the object
-    app.Graphics.ExportImage(
-        image_path, image_export_format, graphics_image_export_settings
-    )
-    # Display the image of the object
-    display_image(image_path)
+# Activate the object
+app.Tree.Activate([total_deformation])
+# Set the camera to fit the model
+camera.SetFit()
+# Set the image name and path for the object
+image_path = str(output_path / f"total_deformation.png")
+# Export the image of the object
+app.Graphics.ExportImage(
+    image_path, image_export_format, graphics_image_export_settings
+)
+# Display the image of the object
+display_image(image_path)
+
+# %%
+# Equivalent stress on all bodies
+
+# Activate the object
+app.Tree.Activate([equivalent_stress_1])
+# Set the camera to fit the model
+camera.SetFit()
+# Set the image name and path for the object
+image_path = str(output_path / f"equivalent_stress_all_bodies.png")
+# Export the image of the object
+app.Graphics.ExportImage(
+    image_path, image_export_format, graphics_image_export_settings
+)
+# Display the image of the object
+display_image(image_path)
+
+# %%
+# Equivalent stress on the shank
+
+# Activate the object
+app.Tree.Activate([equivalent_stress_2])
+# Set the camera to fit the model
+camera.SetFit()
+# Set the image name and path for the object
+image_path = str(output_path / f"equivalent_stress_shank.png")
+# Export the image of the object
+app.Graphics.ExportImage(
+    image_path, image_export_format, graphics_image_export_settings
+)
+# Display the image of the object
+display_image(image_path)
 
 # %%
 # Export and display the contact status animation
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+# %%
+# Create a function to update the animation frames
+def update_animation(frame: int) -> list[mpimg.AxesImage]:
+    """Update the animation frame for the GIF.
+
+    Parameters
+    ----------
+    frame : int
+        The frame number to update the animation.
+
+    Returns
+    -------
+    list[mpimg.AxesImage]
+        A list containing the updated image for the animation.
+    """
+    # Seeks to the given frame in this sequence file
+    gif.seek(frame)
+    # Set the image array to the current frame of the GIF
+    image.set_data(gif.convert("RGBA"))
+    # Return the updated image
+    return [image]
+
+
+# %%
+# Export and display the contact status animation
 
 # Get the post contact tool status
 post_contact_tool_status = post_contact_tool.Children[0]
@@ -700,28 +828,6 @@ contact_status_gif_path = str(output_path / "contact_status.gif")
 post_contact_tool_status.ExportAnimation(
     contact_status_gif_path, animation_export_format, animation_export_settings
 )
-
-
-def update_animation(frame: int) -> list[mpimg.AxesImage]:
-    """Update the animation frame for the GIF.
-
-    Parameters
-    ----------
-    frame : int
-        The frame number to update the animation.
-
-    Returns
-    -------
-    list[mpimg.AxesImage]
-        A list containing the updated image for the animation.
-    """
-    # Seeks to the given frame in this sequence file
-    gif.seek(frame)
-    # Set the image array to the current frame of the GIF
-    image.set_data(gif.convert("RGBA"))
-    # Return the updated image
-    return [image]
-
 
 # Open the GIF file and create an animation
 gif = Image.open(contact_status_gif_path)

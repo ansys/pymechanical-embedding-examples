@@ -16,8 +16,8 @@ the fluid only and ignores any fluid-structure interaction.
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -34,13 +34,14 @@ if TYPE_CHECKING:
 
 # %%
 # Create an instance of the Mechanical embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
 
 # %%
-# Set the image output path and create functions to fit the camera and display images
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create functions to set camera and display images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Set the path for the output files (images, gifs, mechdat)
 output_path = Path.cwd() / "out"
@@ -149,8 +150,8 @@ geometry_path = download_file("sloshing_geometry.agdb", "pymechanical", "embeddi
 mat_path = download_file("Water_material_explicit.xml", "pymechanical", "embedding")
 
 # %%
-# Import the geometry
-# ~~~~~~~~~~~~~~~~~~~
+# Import and display the geometry
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Define the model
 model = app.Model
@@ -226,8 +227,11 @@ for i in range(1, 5):
 
 
 # %%
-# Add mesh methods, sizings, and generate the mesh
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add mesh methods and sizings
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# %%
+# Create a function to get the named selection by name
 
 
 def get_named_selection(name: str) -> Ansys.ACT.Automation.Mechanical.NamedSelection:
@@ -250,6 +254,10 @@ def get_named_selection(name: str) -> Ansys.ACT.Automation.Mechanical.NamedSelec
         ](True)
         if child.Name == name
     ][0]
+
+
+# %%
+# Create a function to set the mesh properties
 
 
 def set_mesh_properties(
@@ -283,10 +291,11 @@ def set_mesh_properties(
         mesh_element.Behavior = behavior
 
 
-# Set the mesh element order to quadratic
+# %%
+# Add automatic mesh methods
+
 mesh.ElementOrder = ElementOrder.Quadratic
 
-# Add an automatic mesh method
 method1 = mesh.AddAutomaticMethod()
 acst_bodies = get_named_selection("Acoustic_bodies")
 # Set the automatic method location to the acoustic bodies and the method type to AllTriAllTet
@@ -298,7 +307,9 @@ top_bodies = get_named_selection("top_bodies")
 # Set the automatic method location to the top bodies and the method type to Automatic
 set_mesh_properties(method2, top_bodies, MethodType.Automatic)
 
+# %%
 # Add mesh sizing
+
 sizing1 = mesh.AddSizing()
 # Set the mesh sizing location to the top bodies, the element size to 0.2m, and
 # the sizing behavior to hard
@@ -306,13 +317,15 @@ set_mesh_properties(
     sizing1, top_bodies, element_size=Quantity("0.2 [m]"), behavior=SizingBehavior.Hard
 )
 
-# Add mesh sizing
 sizing2 = mesh.AddSizing()
 # Set the mesh sizing location to the acoustic bodies, the element size to 0.2m, and
 # the sizing behavior to hard
 set_mesh_properties(
     sizing2, acst_bodies, element_size=Quantity("0.2 [m]"), behavior=SizingBehavior.Hard
 )
+
+# %%
+# Add a mesh method for the container bodies
 
 # Add an automatic mesh method
 method3 = mesh.AddAutomaticMethod()
@@ -322,7 +335,9 @@ set_mesh_properties(method3, container_bodies, MethodType.Sweep)
 # Set the source target selection to 4
 method3.SourceTargetSelection = 4
 
+# %%
 # Generate the mesh and display the image
+
 mesh.GenerateMesh()
 set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh.png")
 
@@ -516,7 +531,7 @@ for mode in range(1, 11):
 acoustic_pressure_result = solution.AddAcousticPressureResult()
 
 # %%
-# Scope the force reaction to the fixed Support
+# Scope the force reaction to the fixed support
 
 # Add a force reaction to the solution
 force_reaction_1 = solution.AddForceReaction()
@@ -592,25 +607,7 @@ print("Force reaction x-axis : ", force_reaction_1_x)
 print("Force reaction z-axis : ", force_reaction_1_z)
 
 # %%
-# Play the total deformation animation for mode 10
-
-# Set the animation export format to GIF
-animation_export_format = (
-    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
-)
-
-# Set the export settings for the animation
-settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
-settings_720p.Width = 1280
-settings_720p.Height = 720
-
-# Export the total deformation animation for the last result
-deformation_gif = (
-    output_path / f"total_deformation_{len(total_deformation_results)}.gif"
-)
-total_deformation_results[-1].ExportAnimation(
-    str(deformation_gif), animation_export_format, settings_720p
-)
+# Create a function to update the animation frames
 
 
 def update_animation(frame: int) -> list[mpimg.AxesImage]:
@@ -633,6 +630,27 @@ def update_animation(frame: int) -> list[mpimg.AxesImage]:
     # Return the updated image
     return [image]
 
+
+# %%
+# Play the total deformation animation for mode 10
+
+# Set the animation export format to GIF
+animation_export_format = (
+    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
+)
+
+# Set the export settings for the animation
+settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
+settings_720p.Width = 1280
+settings_720p.Height = 720
+
+# Export the total deformation animation for the last result
+deformation_gif = (
+    output_path / f"total_deformation_{len(total_deformation_results)}.gif"
+)
+total_deformation_results[-1].ExportAnimation(
+    str(deformation_gif), animation_export_format, settings_720p
+)
 
 # Open the GIF file and create an animation
 gif = Image.open(deformation_gif)
