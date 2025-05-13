@@ -32,8 +32,8 @@ if TYPE_CHECKING:
     import Ansys
 
 # %%
-# Create an instance of the Mechanical embedded application
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Initialize the embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
@@ -147,16 +147,14 @@ geometry_path = download_file(
 mat_path = download_file("example_05_Boot_Mat.xml", "pymechanical", "00_basic")
 
 # %%
-# Import geometry and material
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import the geometry and material
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Define the model
-model = app.Model
-
-# Define the materials
-materials = model.Materials
-
+# %%
 # Import the material
+
+model = app.Model
+materials = model.Materials
 materials.Import(mat_path)
 
 # %%

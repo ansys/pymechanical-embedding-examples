@@ -49,8 +49,8 @@ if TYPE_CHECKING:
     import Ansys
 
 # %%
-# Create an instance of the Mechanical embedded application
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Initialize the embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App()
 app.update_globals(globals())
@@ -215,20 +215,18 @@ model.AddHarmonicAcousticAnalysis()
 app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
 # %%
-# Import and assign materials
+# Import and assign the materials
 
-# Import the material file
 mat.Import(mat_path)
 
-# Assign the material to geometry.Children bodies that are not suppressed
+# Assign the material to the ``geometry.Children`` bodies that are not suppressed
 for child in range(geometry.Children.Count):
     if child not in suppressed_indices:
         geometry.Children[child].Material = "Air"
 
 # %%
-# Create coordinate system
+# Create a coordinate system
 
-# Add a coordinate system and set its properties
 lcs1 = coordinate_systems.AddCoordinateSystem()
 lcs1.OriginX = Quantity("0 [mm]")
 lcs1.OriginY = Quantity("0 [mm]")
@@ -246,7 +244,7 @@ mesh.GenerateMesh()
 # ~~~~~~~~~~~~~~~~~~~~~~~
 
 # %%
-# Create functions to set up named selections and add generation criteria
+# Create a function to set up named selections
 
 
 def setup_named_selection(scoping_method, name):
@@ -268,6 +266,10 @@ def setup_named_selection(scoping_method, name):
     ns.ScopingMethod = scoping_method
     ns.Name = name
     return ns
+
+
+# %%
+# Create a function to add generation criteria to the named selection
 
 
 def add_generation_criteria(
@@ -382,45 +384,37 @@ analysis_settings.CalculateEnergy = True
 analysis_settings.CalculateVolumeEnergy = True
 
 # %%
-# Boundary conditions and load
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Set the boundary conditions and load
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Get the harmonic acoustics analysis
 harmonic_acoustics = model.Analyses[0]
 
 # %%
-# Acoustic region
+# Set the location for the acoustics region from the harmonic acoustics analysis
 
-# Get the acoustics region from the harmonic acoustics analysis
-# and set its location to the acoustic region named selection
 acoustics_region = [
     child for child in harmonic_acoustics.Children if child.Name == "Acoustics Region"
 ][0]
 acoustics_region.Location = acoustic_region
 
 # %%
-# Surface velocity
-
 # Add a surface velocity boundary condition to the harmonic acoustics analysis
-# and set its location to the sf_velo named selection
+
 surface_velocity = harmonic_acoustics.AddAcousticSurfaceVelocity()
 surface_velocity.Location = sf_velo
 surface_velocity.Magnitude.Output.DiscreteValues = [Quantity("5000 [mm s-1]")]
 
 # %%
-# Acoustic pressure
-
 # Add an acoustic pressure boundary condition to the harmonic acoustics analysis
-# and set its location to the pres_face named selection
+
 acoustic_pressure = harmonic_acoustics.AddAcousticPressure()
 acoustic_pressure.Location = pres_face
 acoustic_pressure.Magnitude = Quantity("1.5e-7 [MPa]")
 
 # %%
-# Acoustic absoption surface
-
 # Add an acoustic absorption surface to the harmonic acoustics analysis
-# and set its location to the abs_face named selection
+
 absorption_surface = harmonic_acoustics.AddAcousticAbsorptionSurface()
 absorption_surface.Location = abs_face
 absorption_surface.AbsorptionCoefficient.Output.DiscreteValues = [Quantity("0.02")]
@@ -679,8 +673,8 @@ ani = FuncAnimation(
 plt.show()
 
 # %%
-# Display the output file from solve
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Display the output file from the solve
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Get the working directory of the solve
 solve_path = harmonic_acoustics.WorkingDir

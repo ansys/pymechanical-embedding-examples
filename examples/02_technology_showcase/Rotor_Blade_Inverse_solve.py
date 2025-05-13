@@ -63,8 +63,8 @@ if TYPE_CHECKING:
     import Ansys
 
 # %%
-# Create an instance of the Mechanical embedded application
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Initialize the embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
@@ -245,8 +245,8 @@ part2_blade2.Material = "MAT1 (Setup, File1)"
 part2_blade3.Material = "MAT1 (Setup, File1)"
 
 # %%
-# Define the units system and store variables
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Define the unit system and store variables
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Select MKS units
 app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
@@ -259,8 +259,8 @@ coordinate_systems = model.CoordinateSystems
 named_selections = model.NamedSelections
 
 # %%
-# Define named selection
-# ~~~~~~~~~~~~~~~~~~~~~~
+# Define the named selections
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # %%
 # Create a function to get named selections by name
@@ -485,22 +485,8 @@ def process_external_data(
     skip_footer: int,
     data_type: str,
     location_index: int,
-) -> None:
-    """Process the external data file and set its properties.
-
-    Parameters
-    ----------
-    external_data_path : str
-        The path to the external data file.
-    skip_rows : int
-        The number of rows to skip at the beginning of the file.
-    skip_footer : int
-        The number of rows to skip at the end of the file.
-    data_type : str
-        The type of data to process ('pressure' or 'temperature').
-    location_index : int
-        The index of the named selection to apply the data to.
-    """
+):
+    """Process the external data file and set its properties."""
     # Add imported load external data to the static structural analysis
     imported_load_group = static_structural_analysis.AddImportedLoadExternalData()
 
@@ -570,25 +556,39 @@ def process_external_data(
         added_obj.AppliedBy = LoadAppliedBy.Direct
     added_obj.ImportLoad()
 
-    # Activate the imported pressure or temperature and display the image
-    app.Tree.Activate([added_obj])
-    set_camera_and_display_image(
-        camera, graphics, settings_720p, output_path, f"imported_{data_type}.png"
-    )
+    return added_obj
 
 
+# %%
 # Import and apply CFX pressure to the structural blade surface
-process_external_data(
+
+pressure = process_external_data(
     cfx_data_path, skip_rows=17, skip_footer=0, data_type="pressure", location_index=2
 )
-# Import temperature data and apply it to structural blade
-process_external_data(
+
+# Activate the imported pressure or temperature and display the image
+app.Tree.Activate([pressure])
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, f"imported_pressure.png"
+)
+
+# %%
+# Import and apply temperature to the structural blade
+
+temperature = process_external_data(
     temp_data_path,
     skip_rows=0,
     skip_footer=0,
     data_type="temperature",
     location_index=1,
 )
+
+# Activate the imported temperature and display the image
+app.Tree.Activate([temperature])
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, f"imported_temperature.png"
+)
+
 
 # %%
 # Add results to the solution
@@ -626,7 +626,7 @@ soln_status = solution.Status
 # ~~~~~~~~~~~~~~
 
 # %%
-# Total deformation
+# Display the total deformation image
 
 # Activate the total deformation results
 app.Tree.Activate([total_deformation1])
@@ -640,7 +640,7 @@ set_camera_and_display_image(
 )
 
 # %%
-# Thermal strain
+# Display the thermal strain image
 
 # Activate the thermal strain results
 app.Tree.Activate([thermal_strain1])
@@ -650,8 +650,8 @@ set_camera_and_display_image(
 )
 
 # %%
-# Clean up the project and downloaded files
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Clean up the project
+# ~~~~~~~~~~~~~~~~~~~~
 
 # Save the project
 mechdat_file = output_path / "blade_inverse.mechdat"

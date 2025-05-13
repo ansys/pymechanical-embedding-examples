@@ -1,6 +1,6 @@
 """.. _ref_contact:
 
-Fracture Analysis - Contact debonding
+Fracture analysis - contact debonding
 -------------------------------------
 
 The following example demonstrates the use of the Contact Debonding
@@ -27,8 +27,8 @@ if TYPE_CHECKING:
     import Ansys
 
 # %%
-# Create an instance of the Mechanical embedded application
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Initialize the embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
@@ -227,24 +227,25 @@ def get_child_object(body, child_type, name: str):
 
 
 # %%
-# Activate the part 2 object and set its material
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Activate the ``Part 2`` object and set its material
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Get the Part 2 object from the tree
+# Get the ``Part 2`` object from the tree
 part2_object = [
     tree_obj for tree_obj in app.Tree.AllObjects if tree_obj.Name == "Part 2"
 ][0]
 
-# Activate the Part 2 object
+# Activate the ``Part 2`` object
 part2_object.Activate()
 
-# Set the material for the Part 2 object
+# Set the material for the ``Part 2`` object
 part2_object.Material = get_child_object(
     model_materials, Ansys.ACT.Automation.Mechanical.Material, "Interface Body Material"
 ).Name
 
-# %% Define the contact and contact regions
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# %%
+# Define the contact and contact regions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # %%
 # Activate the contact region
@@ -470,27 +471,30 @@ set_camera_and_display_image(
 )
 
 # %%
-# Add directional deformation and force reaction results to the solution
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add results to the solution
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Activate the static structural analysis solution
 static_structural_analysis_solution.Activate()
 
+# %%
 # Add directional deformation to the static structural analysis solution
+
 directional_deformation = (
     static_structural_analysis_solution.AddDirectionalDeformation()
 )
 # Set the orientation of the directional deformation to Y-axis
 directional_deformation.NormalOrientation = NormalOrientationType.YAxis
 
+# %%
 # Add the force reaction to the static structural analysis solution
 force_reaction = static_structural_analysis_solution.AddForceReaction()
 # Set the boundary condition selection to the vertex named selection
 force_reaction.BoundaryConditionSelection = displacement1_vertex
 
 # %%
-# Activate the static structural analysis and solve the solution
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Solve the solution
+# ~~~~~~~~~~~~~~~~~~
 
 static_structural_analysis.Activate()
 static_structural_analysis_solution.Solve(True)

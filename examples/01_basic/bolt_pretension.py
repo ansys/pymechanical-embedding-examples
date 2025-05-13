@@ -1,18 +1,18 @@
 """.. _ref_bolt_pretension:
 
-Bolt Pretension
+Bolt pretension
 ---------------
 
 This example demonstrates how to insert a Static Structural analysis
 into a new Mechanical session and execute a sequence of Python scripting
 commands that define and solve a bolt-pretension analysis.
 Scripts then evaluate the following results: deformation,
-equivalent stresses, contact, and bolt
+equivalent stresses, contact, and bolt.
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from pathlib import Path
 import typing
@@ -26,8 +26,8 @@ from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 # %%
-# Create an instance of the Mechanical embedded application
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Initialize the embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App()
 print(app)
@@ -179,7 +179,7 @@ children_materials = {
 }
 
 # %%
-# Assign surface materials to the model.Geometry bodies
+# Assign surface materials to the ``model.Geometry`` bodies
 geometry = model.Geometry
 for children_index, material_name in children_materials.items():
     surface = geometry.Children[children_index].Children[0]
@@ -203,8 +203,8 @@ coordinate_system.OriginZ = Quantity(50, "mm")
 coordinate_system.PrimaryAxis = CoordinateSystemAxisType.PositiveZAxis
 
 # %%
-# Create functions to set contact regions' locations, types, and other advanced contact settings
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create functions for contact region set up
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 # %%
@@ -409,8 +409,8 @@ advanced_contact_settings(
 add_command_snippet(contact_region_6, archard_wear_model)
 
 # %%
-# Create functions to set the method location, mesh sizing, and element size
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create functions to set up the mesh
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 # %%
@@ -475,11 +475,9 @@ def add_mesh_sizing(mesh, object_name: str, element_size: Quantity) -> None:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # %%
-# Add the mesh sizing to the bodies_5 and shank objects
+# Add the mesh sizing to the ``bodies_5`` and ``shank`` objects
 
-# Get the mesh for the model
 mesh = model.Mesh
-# Add the mesh sizing to the bodies_5 and shank objects
 add_mesh_sizing(mesh=mesh, object_name="bodies_5", element_size=Quantity(15, "mm"))
 add_mesh_sizing(mesh=mesh, object_name="shank", element_size=Quantity(7, "mm"))
 

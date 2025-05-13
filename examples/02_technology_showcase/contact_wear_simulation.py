@@ -39,8 +39,8 @@ if TYPE_CHECKING:
     import Ansys
 
 # %%
-# Create an instance of the Mechanical embedded application
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Initialize the embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
@@ -219,7 +219,7 @@ stat_struct_soln = static_structural_analysis.Solution
 analysis_settings = static_structural_analysis.Children[0]
 
 # %%
-# Store named selection
+# Store the named selections as variables
 
 
 def get_named_selection(name: str):
@@ -256,7 +256,7 @@ set_material_and_dimension(0, "Steel")
 set_material_and_dimension(1, "Copper")
 
 # %%
-# Change contact settings
+# Configure settings for the contact region
 
 # Add a contact region between the hemispherical ring and the flat ring
 contact_region = connections.AddContactRegion()
@@ -307,6 +307,9 @@ remote_point.Behavior = LoadBehavior.Rigid
 mesh.ElementOrder = ElementOrder.Linear
 mesh.ElementSize = Quantity("1 [mm]")
 
+# %%
+# Create a function to add edge sizing and properties
+
 
 def add_edge_sizing_and_properties(
     mesh, location, divisions, sizing_type=SizingType.NumberOfDivisions
@@ -330,7 +333,9 @@ def add_edge_sizing_and_properties(
     edge_sizing.NumberOfDivisions = divisions
 
 
+# %%
 # Add edge sizing and properties to the mesh for each named selection
+
 add_edge_sizing_and_properties(mesh, hor_edge1, 70)
 add_edge_sizing_and_properties(mesh, hor_edge2, 70)
 add_edge_sizing_and_properties(mesh, ver_edge1, 35)
@@ -338,13 +343,18 @@ add_edge_sizing_and_properties(mesh, ver_edge2, 35)
 add_edge_sizing_and_properties(mesh, dia_named_selection, 40)
 add_edge_sizing_and_properties(mesh, curve_named_selection, 60)
 
+# %%
 # Generate the mesh and display the image
+
 mesh.GenerateMesh()
 set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh.png")
 
 # %%
 # Set the analysis settings
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# %%
+# Create a function to set time steps for the analysis settings
 
 
 def set_time_steps(initial: str, min: str, max: str) -> None:
@@ -364,7 +374,9 @@ def set_time_steps(initial: str, min: str, max: str) -> None:
     analysis_settings.MaximumTimeStep = Quantity(max)
 
 
+# %%
 # Set the analysis settings for the static structural analysis
+
 analysis_settings.NumberOfSteps = 2
 analysis_settings.CurrentStepNumber = 1
 analysis_settings.AutomaticTimeStepping = AutomaticTimeStepping.On
@@ -483,7 +495,9 @@ assert (
 # Postprocessing
 # ~~~~~~~~~~~~~~
 
+# %%
 # Activate the first normal stress result and display the image
+
 app.Tree.Activate([normal_stress1])
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "normal_stress.png"

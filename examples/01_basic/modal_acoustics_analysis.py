@@ -33,8 +33,8 @@ if TYPE_CHECKING:
     import Ansys
 
 # %%
-# Create an instance of the Mechanical embedded application
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Initialize the embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
@@ -345,6 +345,9 @@ set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh
 # Set up the contact regions in the connection group
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# %%
+# Create a function to set the contact region properties
+
 
 def set_contact_region_properties(
     contact_region,
@@ -389,6 +392,9 @@ def set_contact_region_properties(
     contact_region.PinballRegion = pinball_region
     contact_region.PinballRadius = pinball_radius
 
+
+# %%
+# Add contact regions and set their properties
 
 # Add a connection group to the model
 connection_group = connections.AddConnectionGroup()
@@ -632,7 +638,7 @@ def update_animation(frame: int) -> list[mpimg.AxesImage]:
 
 
 # %%
-# Play the total deformation animation for mode 10
+# Play the total deformation animation
 
 # Set the animation export format to GIF
 animation_export_format = (
@@ -681,8 +687,8 @@ plt.show()
 app.print_tree()
 
 # %%
-# Clean up the app and downloaded files
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Clean up the project
+# ~~~~~~~~~~~~~~~~~~~~
 
 # Save the project file
 mechdat_file = output_path / "modal_acoustics.mechdat"

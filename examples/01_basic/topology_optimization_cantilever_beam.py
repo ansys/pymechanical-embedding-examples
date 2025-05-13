@@ -24,8 +24,8 @@ if TYPE_CHECKING:
     import Ansys
 
 # %%
-# Create an instance of the Mechanical embedded application
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Initialize the embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
@@ -159,13 +159,17 @@ assert struct_sln.Status == SolutionStatusType.Done, "Solution status is not 'Do
 # Display the structural analysis results
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# %%
 # Activate the total deformation result and display the image
+
 struct_sln.Children[1].Activate()
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "total_deformation.png"
 )
 
+# %%
 # Activate the equivalent stress result and display the image
+
 struct_sln.Children[2].Activate()
 set_camera_and_display_image(
     camera, graphics, settings_720p, output_path, "equivalent_stress.png"
@@ -283,9 +287,7 @@ topology_density.ExportAnimation(
     str(topology_optimized_gif), animation_export_format, settings_720p
 )
 
-# Use saved GIF file to display the animation since matplotlib.FuncAnimation
-# does not work for this animation in Sphinx
-
+# %%
 # .. image:: /_static/basic/Topo_opitimized.gif
 
 # %%
@@ -310,8 +312,8 @@ print("Percent Mass of Original: ", topology_density.PercentMassOfOriginal)
 app.print_tree()
 
 # %%
-# Clean up the app and downloaded files
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Clean up the project
+# ~~~~~~~~~~~~~~~~~~~~
 
 # Save the project file
 mechdat_file = output_path / "cantilever_beam_topology_optimization.mechdat"

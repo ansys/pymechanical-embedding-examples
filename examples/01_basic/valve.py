@@ -1,6 +1,6 @@
 """.. _ref_basic_valve:
 
-Basic Valve Implementation
+Basic valve implementation
 --------------------------
 
 This example demonstrates a basic implementation of a valve in Python.
@@ -24,8 +24,8 @@ if TYPE_CHECKING:
     import Ansys
 
 # %%
-# Create an instance of the Mechanical embedded application
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Initialize the embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App(globals=globals())
 print(app)
@@ -158,8 +158,8 @@ geometry_import.Import(
 app.plot()
 
 # %%
-# Assign materials and mesh the geometry
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Assign the materials and mesh the geometry
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Add the material assignment to the model materials
 material_assignment = model.Materials.AddMaterialAssignment()
@@ -198,8 +198,8 @@ app.Tree.Activate([mesh])
 set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh.png")
 
 # %%
-# Define the static structural analysis and boundary conditions
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add a static structural analysis and apply boundary conditions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Add a static structural analysis to the model
 analysis = model.AddStaticStructuralAnalysis()
@@ -243,6 +243,7 @@ stress = solution.AddEquivalentStress()
 
 # %%
 # Solve the solution
+# ~~~~~~~~~~~~~~~~~~
 
 solution.Solve(True)
 
@@ -262,11 +263,11 @@ else:
     print("No [Info]/[Warning]/[Error] messages")
 
 # %%
-# Results
-# ~~~~~~~
+# Display the results
+# ~~~~~~~~~~~~~~~~~~~
 
 # %%
-# Show the total deformation
+# Show the total deformation image
 
 # Activate the total deformation result and display the image
 app.Tree.Activate([deformation])
@@ -275,7 +276,7 @@ set_camera_and_display_image(
 )
 
 # %%
-# Show the equivalent stress
+# Show the equivalent stress image
 
 # Activate the equivalent stress result and display the image
 app.Tree.Activate([stress])
