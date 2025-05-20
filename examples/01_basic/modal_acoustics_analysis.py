@@ -578,16 +578,11 @@ assert solution.Status == SolutionStatusType.Done, "Solution status is not 'Done
 
 
 # %%
-# Print messages
-# ~~~~~~~~~~~~~~
+# Show messages
+# ~~~~~~~~~~~~~
 
-messages = app.ExtAPI.Application.Messages
-if messages:
-    for message in messages:
-        print(f"[{message.Severity}] {message.DisplayString}")
-else:
-    print("No [Info]/[Warning]/[Error] messages")
-
+# Print all messages from Mechanical
+app.messages.show()
 
 # %%
 # Display the results
@@ -616,9 +611,9 @@ print("Modal Acoustic Results")
 print("----------------------")
 
 # Print the frequency values for each mode
-for result in total_deformation_results:
+for index, result in enumerate(total_deformation_results, start=1):
     frequency_value = result.ReportedFrequency.Value
-    print(f"Frequency for mode {i}: ", frequency_value)
+    print(f"Frequency for mode {index}: ", frequency_value)
 
 # Get the maximum and minimum values of the acoustic pressure result
 pressure_result_max = acoustic_pressure_result.Maximum.Value
@@ -716,8 +711,8 @@ app.print_tree()
 mechdat_file = output_path / "modal_acoustics.mechdat"
 app.save(str(mechdat_file))
 
-# Refresh the app
-app.new()
+# Close the app
+app.close()
 
 # Delete the example files
 delete_downloads()

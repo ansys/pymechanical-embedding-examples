@@ -256,8 +256,8 @@ materials = model.Materials
 materials.Import(mat_path)
 
 # Assign the imported material to the components
-part1 = [x for x in app.Tree.AllObjects if x.Name == r"Component2\Rotor11"][0]
-part2 = [x for x in app.Tree.AllObjects if x.Name == "Component3"][0]
+part1 = app.DataModel.GetObjectsByName(r"Component2\Rotor11")[0]
+part2 = app.DataModel.GetObjectsByName("Component3")[0]
 part2_blade1 = part2.Children[0]
 part2_blade2 = part2.Children[1]
 part2_blade3 = part2.Children[2]
@@ -303,7 +303,7 @@ def get_named_selection(ns_list: list) -> dict:
     """
     ns_dict = {}
     for name in ns_list:
-        ns_dict[name] = [obj for obj in app.Tree.AllObjects if obj.Name == name][0]
+        ns_dict[name] = app.DataModel.GetObjectsByName(name)[0]
     return ns_dict
 
 
@@ -679,8 +679,8 @@ set_camera_and_display_image(
 mechdat_file = output_path / "blade_inverse.mechdat"
 app.save(str(mechdat_file))
 
-# Refresh the app
-app.new()
+# Close the app
+app.close()
 
 # Delete the example file
 delete_downloads()

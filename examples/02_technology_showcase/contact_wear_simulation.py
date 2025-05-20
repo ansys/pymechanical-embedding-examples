@@ -246,7 +246,7 @@ analysis_settings = static_structural_analysis.Children[0]
 
 def get_named_selection(name: str):
     """Get the named selection by name."""
-    return [obj for obj in app.Tree.AllObjects if obj.Name == name][0]
+    return app.DataModel.GetObjectsByName(name)[0]
 
 
 curve_named_selection = get_named_selection("curve")
@@ -604,8 +604,8 @@ app.print_tree()
 mechdat_file = output_path / "contact_wear.mechdat"
 app.save(str(mechdat_file))
 
-# Refresh the app
-app.new()
+# Close the app
+app.close()
 
 # Delete the downloaded files
 delete_downloads()

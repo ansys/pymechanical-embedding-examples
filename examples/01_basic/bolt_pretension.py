@@ -42,7 +42,6 @@ import typing
 from PIL import Image
 from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
-import clr
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -57,13 +56,8 @@ print(app)
 # Import the enums and global variables instead of using app.update_globals(globals())
 # or App(globals=globals())
 from ansys.mechanical.core.embedding.enum_importer import *
+from ansys.mechanical.core.embedding.global_importer import Quantity
 from ansys.mechanical.core.embedding.transaction import Transaction
-
-clr.AddReference("System.Collections")
-clr.AddReference("Ansys.ACT.WB1")
-clr.AddReference("Ansys.Mechanical.DataModel")
-import Ansys
-from Ansys.Core.Units import Quantity
 
 # %%
 # Configure graphics for image export
@@ -181,30 +175,28 @@ named_selections_list = [
 ]
 
 # %%
-# Get tree objects for each named selection
-for named_selection in named_selections_list:
-    named_selections_dictionary[named_selection] = [
-        tree_obj
-        for tree_obj in app.Tree.AllObjects
-        if tree_obj.Name == str(named_selection)
-    ][0]
+# Set the unit system to Standard NMM
+
+app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
 
 # %%
-# Create dictionary with material assignment for each model.Geometry.Children index
-children_materials = {
-    0: "Steel",
-    1: "Copper",
-    2: "Copper",
-    3: "Steel",
-    4: "Steel",
-    5: "Steel",
-}
+# Get tree objects for each named selection
+for named_selection in named_selections_list:
+    named_selections_dictionary[named_selection] = app.DataModel.GetObjectsByName(
+        named_selection
+    )[0]
+
+# %%
+# Create a list with material assignment for each ``model.Geometry.Children`` index
+children_materials = ["Steel", "Copper", "Copper", "Steel", "Steel", "Steel"]
 
 # %%
 # Assign surface materials to the ``model.Geometry`` bodies
 geometry = model.Geometry
-for children_index, material_name in children_materials.items():
+for children_index, material_name in enumerate(children_materials):
+    # Get the surface of the body
     surface = geometry.Children[children_index].Children[0]
+    # Assign the material to the surface
     surface.Material = material_name
 
 # %%
@@ -323,7 +315,7 @@ def add_command_snippet(
 connections = model.Connections
 for connection in connections.Children:
     if connection.DataModelObjectCategory == DataModelObjectCategory.ConnectionGroup:
-        connection.Delete()
+        app.DataModel.Remove(connection)
 
 # %%
 # Set the archard wear model and get the named selections from the model
@@ -436,8 +428,8 @@ add_command_snippet(contact_region_6, archard_wear_model)
 
 
 # %%
-# Set the method location for the specified method and object name
-def set_method_location(method, object_name: str, location_type: str = "") -> None:
+# Set the mesh method location for the specified method and object name
+def set_mesh_method_location(method, object_name: str, location_type: str = "") -> None:
     """Set the location of the method based on the specified name and location type.
 
     Parameters
@@ -451,19 +443,15 @@ def set_method_location(method, object_name: str, location_type: str = "") -> No
         Default is an empty string.
     """
     # Get the tree object for the specified name
-    tree_obj_list = [
-        tree_obj
-        for tree_obj in app.Tree.AllObjects
-        if tree_obj.Name == str(object_name)
-    ][0]
+    tree_obj = app.DataModel.GetObjectsByName(object_name)[0]
 
     # Set the method location based on the specified location type
     if location_type == "source":
-        method.SourceLocation = tree_obj_list
+        method.SourceLocation = tree_obj
     elif location_type == "target":
-        method.TargetLocation = tree_obj_list
+        method.TargetLocation = tree_obj
     else:
-        method.Location = tree_obj_list
+        method.Location = tree_obj
 
 
 # %%
@@ -483,11 +471,8 @@ def add_mesh_sizing(mesh, object_name: str, element_size: Quantity) -> None:
     # Add sizing to the mesh
     body_sizing = mesh.AddSizing()
     # Get the tree object for the specified name
-    body_sizing.Location = [
-        tree_obj
-        for tree_obj in app.Tree.AllObjects
-        if tree_obj.Name == str(object_name)
-    ][0]
+    body_sizing.Location = app.DataModel.GetObjectsByName(object_name)[0]
+
     # Set the element size to the mesh
     body_sizing.ElementSize = element_size
 
@@ -508,14 +493,14 @@ add_mesh_sizing(mesh=mesh, object_name="shank", element_size=Quantity(7, "mm"))
 hex_method = mesh.AddAutomaticMethod()
 hex_method.Method = MethodType.Automatic
 # Set the method location for the all_bodies object
-set_method_location(method=hex_method, object_name="all_bodies")
+set_mesh_method_location(method=hex_method, object_name="all_bodies")
 
 # %%
 # Add face meshing to the mesh and set the MappedMesh property to False
 face_meshing = mesh.AddFaceMeshing()
 face_meshing.MappedMesh = False
 # Set the method location for the face meshing
-set_method_location(method=face_meshing, object_name="shank_face")
+set_mesh_method_location(method=face_meshing, object_name="shank_face")
 
 # %%
 # Add an automatic method to the mesh, set the method type, and set the source target selection
@@ -523,11 +508,11 @@ sweep_method = mesh.AddAutomaticMethod()
 sweep_method.Method = MethodType.Sweep
 sweep_method.SourceTargetSelection = 2
 # Set the method locations for the shank, shank_face, and shank_face2 objects
-set_method_location(method=sweep_method, object_name="shank")
-set_method_location(
+set_mesh_method_location(method=sweep_method, object_name="shank")
+set_mesh_method_location(
     method=sweep_method, object_name="shank_face", location_type="source"
 )
-set_method_location(
+set_mesh_method_location(
     method=sweep_method, object_name="shank_face2", location_type="target"
 )
 
@@ -596,9 +581,6 @@ with Transaction():
             step_index, AutomaticTimeStepping.Off
         )
 
-# Activate the static structural analysis settings
-static_structural_analysis_setting.Activate()
-
 # Set the number of substeps for the static structural analysis
 # based on the step index
 with Transaction():
@@ -619,47 +601,47 @@ static_structural_analysis_setting.SolverPivotChecking = SolverPivotChecking.Off
 # Add fixed support to the static structural analysis
 fixed_support = static_structural.AddFixedSupport()
 # Set the fixed support location for the block2_surface object
-set_method_location(method=fixed_support, object_name="block2_surface")
+set_mesh_method_location(method=fixed_support, object_name="block2_surface")
 
 # Create a new force on the static structural analysis
 tabular_force = static_structural.AddForce()
 # Set the force location for the bottom_surface object
-set_method_location(method=tabular_force, object_name="bottom_surface")
+set_mesh_method_location(method=tabular_force, object_name="bottom_surface")
 
 # Define the tabular force input and output components
 tabular_force.DefineBy = LoadDefineBy.Components
 tabular_force.XComponent.Inputs[0].DiscreteValues = [
-    Quantity("0[s]"),
-    Quantity("1[s]"),
-    Quantity("2[s]"),
-    Quantity("3[s]"),
-    Quantity("4[s]"),
+    Quantity(0, "s"),
+    Quantity(1, "s"),
+    Quantity(2, "s"),
+    Quantity(3, "s"),
+    Quantity(4, "s"),
 ]
 tabular_force.XComponent.Output.DiscreteValues = [
-    Quantity("0[N]"),
-    Quantity("0[N]"),
-    Quantity("5.e+005[N]"),
-    Quantity("0[N]"),
-    Quantity("-5.e+005[N]"),
+    Quantity(0, "N"),
+    Quantity(0, "N"),
+    Quantity(5.0e005, "N"),
+    Quantity(0, "N"),
+    Quantity(-5.0e005, "N"),
 ]
 
 # Add a bolt presentation to the static structural analysis
 bolt_presentation = static_structural.AddBoltPretension()
 # Set the bolt presentation location for the shank_surface object
-set_method_location(bolt_presentation, "shank_surface")
+set_mesh_method_location(bolt_presentation, "shank_surface")
 
 # Define the bolt presentation input and output components
 bolt_presentation.Preload.Inputs[0].DiscreteValues = [
-    Quantity("1[s]"),
-    Quantity("2[s]"),
-    Quantity("3[s]"),
-    Quantity("4[s]"),
+    Quantity(1, "s"),
+    Quantity(2, "s"),
+    Quantity(3, "s"),
+    Quantity(4, "s"),
 ]
 bolt_presentation.Preload.Output.DiscreteValues = [
-    Quantity("6.1363e+005[N]"),
-    Quantity("0[N]"),
-    Quantity("0[N]"),
-    Quantity("0[N]"),
+    Quantity(6.1363e005, "N"),
+    Quantity(0, "N"),
+    Quantity(0, "N"),
+    Quantity(0, "N"),
 ]
 bolt_presentation.SetDefineBy(2, BoltLoadDefineBy.Lock)
 bolt_presentation.SetDefineBy(3, BoltLoadDefineBy.Lock)
@@ -702,7 +684,7 @@ equivalent_stress_1 = static_structural_solution.AddEquivalentStress()
 
 # Add equivalent stress to the static structural solution and set the location for the shank object
 equivalent_stress_2 = static_structural_solution.AddEquivalentStress()
-set_method_location(method=equivalent_stress_2, object_name="shank")
+set_mesh_method_location(method=equivalent_stress_2, object_name="shank")
 
 # Add a force reaction to the static structural solution and set the boundary condition selection
 # to the fixed support
@@ -729,19 +711,11 @@ assert (
 # sphinx_gallery_end_ignore
 
 # %%
-# Print messages
-# ~~~~~~~~~~~~~~
+# Show messages
+# ~~~~~~~~~~~~~
 
-# Get messages from the application
-messages = app.ExtAPI.Application.Messages
-
-# Print messages with severity levels [Info], [Warning], and [Error]
-if messages:
-    for message in messages:
-        print(f"[{message.Severity}] {message.DisplayString}")
-else:
-    print("No [Info]/[Warning]/[Error] messages")
-
+# Print all messages from Mechanical
+app.messages.show()
 
 # %%
 # Display the results
@@ -885,8 +859,8 @@ app.print_tree()
 bolt_presentation_mechdat_path = str(output_path / "bolt_pretension.mechdat")
 app.save(bolt_presentation_mechdat_path)
 
-# Clear the project
-app.new()
+# Close the app
+app.close()
 
 # Delete the example files
 delete_downloads()

@@ -224,7 +224,7 @@ assert topology_optimization.ObjectState == ObjectState.NotSolved
 
 # Delete the mass response constraint from the topology optimization
 mass_constraint = topology_optimization.Children[3]
-mass_constraint.Delete()
+app.DataModel.Remove(mass_constraint)
 
 # Add a volume response constraint to the topology optimization
 volume_constraint = topology_optimization.AddVolumeConstraint()
@@ -257,19 +257,15 @@ assert top_opt_sln.Status == SolutionStatusType.Done, "Solution status is not 'D
 # sphinx_gallery_end_ignore
 
 # %%
-# Print messages
-# ~~~~~~~~~~~~~~
+# Show messages
+# ~~~~~~~~~~~~~
 
-messages = app.ExtAPI.Application.Messages
-if messages:
-    for message in messages:
-        print(f"[{message.Severity}] {message.DisplayString}")
-else:
-    print("No [Info]/[Warning]/[Error] messages")
+# Print all messages from Mechanical
+app.messages.show()
 
 # %%
-# Display results
-# ~~~~~~~~~~~~~~~
+# Display the results
+# ~~~~~~~~~~~~~~~~~~~
 
 # Get the topology density result and activate it
 top_opt_sln.Children[1].Activate()
@@ -341,8 +337,8 @@ app.print_tree()
 mechdat_file = output_path / "cantilever_beam_topology_optimization.mechdat"
 app.save(str(mechdat_file))
 
-# Refresh the app
-app.new()
+# Close the app
+app.close()
 
 # Delete the example files
 delete_downloads()

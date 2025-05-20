@@ -189,9 +189,9 @@ geometry = model.Geometry
 
 # Suppress the bodies at the specified geometry.Children indices
 suppressed_indices = [0, 1, 2, 3, 4, 6, 9, 10]
-for child in range(geometry.Children.Count):
-    if child in suppressed_indices:
-        geometry.Children[child].Suppressed = True
+for index, child in enumerate(geometry.Children):
+    if index in suppressed_indices:
+        child.Suppressed = True
 
 # Visualize the model in 3D
 app.plot()
@@ -551,16 +551,11 @@ assert solution.Status == SolutionStatusType.Done, "Solution status is not 'Done
 # sphinx_gallery_end_ignore
 
 # %%
-# Print messages
-# ~~~~~~~~~~~~~~
+# Show messages
+# ~~~~~~~~~~~~~
 
-messages = app.ExtAPI.Application.Messages
-if messages:
-    for message in messages:
-        print(f"[{message.Severity}] {message.DisplayString}")
-else:
-    print("No [Info]/[Warning]/[Error] Messages")
-
+# Print all messages from Mechanical
+app.messages.show()
 
 # %%
 # Postprocessing
@@ -700,8 +695,8 @@ app.print_tree()
 mechdat_file = output_path / "harmonic_acoustics.mechdat"
 app.save(str(mechdat_file))
 
-# Refresh the app
-app.new()
+# Close the app
+app.close()
 
 # Delete the example file
 delete_downloads()

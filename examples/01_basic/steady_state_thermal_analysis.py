@@ -606,18 +606,15 @@ assert (
 # sphinx_gallery_end_ignore
 
 # %%
-# Print messages
-# ~~~~~~~~~~~~~~
+# Show messages
+# ~~~~~~~~~~~~~
 
-messages = app.ExtAPI.Application.Messages
-if messages:
-    for message in messages:
-        print(f"[{message.Severity}] {message.DisplayString}")
-else:
-    print("No [Info]/[Warning]/[Error] messages")
+# Print all messages from Mechanical
+app.messages.show()
 
-# Display results
-# ~~~~~~~~~~~~~~~
+# %%
+# Display the results
+# ~~~~~~~~~~~~~~~~~~~
 
 # Activate the total body temperature and display the image
 app.Tree.Activate([temp_rst])
@@ -750,8 +747,8 @@ app.print_tree()
 mechdat_path = output_path / "steady_state_thermal.mechdat"
 app.save(str(mechdat_path))
 
-# Refresh the app
-app.new()
+# Close the app
+app.close()
 
 # Delete the example files
 delete_downloads()

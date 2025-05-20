@@ -253,9 +253,7 @@ def get_child_object(body, child_type, name: str):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Get the ``Part 2`` object from the tree
-part2_object = [
-    tree_obj for tree_obj in app.Tree.AllObjects if tree_obj.Name == "Part 2"
-][0]
+part2_object = app.DataModel.GetObjectsByName("Part 2")[0]
 
 # Activate the ``Part 2`` object
 part2_object.Activate()
@@ -308,9 +306,6 @@ contact_region.ContactFormulation = ContactFormulation.PurePenalty
 
 # Define the mesh for the model
 mesh = model.Mesh
-
-# Activate the mesh
-mesh.Activate()
 
 # Set the mesh element order to quadratic
 mesh.ElementOrder = ElementOrder.Quadratic
@@ -416,9 +411,6 @@ analysis_settings.LargeDeflection = True
 # Define boundary conditions
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Activate the static structural analysis
-static_structural_analysis.Activate()
-
 # Add fixed support to the static structural analysis
 fixed_support = static_structural_analysis.AddFixedSupport()
 # Set the fixed support location to the fixed edges named selection
@@ -453,8 +445,6 @@ def add_displacement(
     y_component_value : str
         The value of the Y component for the displacement.
     """
-    # Activate the static structural analysis
-    static_structural_analysis.Activate()
     # Add a displacement to the static structural analysis
     displacement = static_structural_analysis.AddDisplacement()
     # Set the location for the displacement to the named selection with the given name
@@ -518,7 +508,6 @@ force_reaction.BoundaryConditionSelection = displacement1_vertex
 # Solve the solution
 # ~~~~~~~~~~~~~~~~~~
 
-static_structural_analysis.Activate()
 static_structural_analysis_solution.Solve(True)
 
 # sphinx_gallery_start_ignore
@@ -528,15 +517,11 @@ assert (
 # sphinx_gallery_end_ignore
 
 # %%
-# Print messages from the solve
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Show messages
+# ~~~~~~~~~~~~~
 
-messages = app.ExtAPI.Application.Messages
-if messages:
-    for message in messages:
-        print(f"[{message.Severity}] {message.DisplayString}")
-else:
-    print("No [Info]/[Warning]/[Error] Messages")
+# Print all messages from Mechanical
+app.messages.show()
 
 # %%
 # Activate the reactions and display the images
@@ -659,8 +644,8 @@ app.print_tree()
 mechdat_path = output_path / "contact_debonding.mechdat"
 app.save(str(mechdat_path))
 
-# Clear the project
-app.new()
+# Close the app
+app.close()
 
 # Delete the example files
 delete_downloads()

@@ -74,5 +74,5 @@ app.print_tree(first_analysis)
 # Delete the downloaded files
 delete_downloads()
 
-# Refresh the app
-app.new()
+# Close the app
+app.close()

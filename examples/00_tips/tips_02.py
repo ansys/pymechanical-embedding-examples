@@ -138,5 +138,5 @@ display_image(geometry_image.name)
 # Delete the downloaded files
 delete_downloads()
 
-# Refresh the app
-app.new()
+# Close the app
+app.close()

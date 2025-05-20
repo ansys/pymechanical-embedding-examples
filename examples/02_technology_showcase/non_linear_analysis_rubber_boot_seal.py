@@ -215,8 +215,8 @@ app.ExtAPI.Application.ActiveAngleUnit = AngleUnitType.Radian
 # Define the geometry for the model
 geometry = model.Geometry
 # Get the part and solid objects from the geometry
-part1 = [x for x in app.Tree.AllObjects if x.Name == "Part"][0]
-part2 = [x for x in app.Tree.AllObjects if x.Name == "Solid"][1]
+part1 = app.DataModel.GetObjectsByName("Part")[0]
+part2 = app.DataModel.GetObjectsByName("Solid")[1]
 
 # Define the coordinate systems
 coordinate_systems = model.CoordinateSystems
@@ -753,8 +753,8 @@ plt.show()
 mechdat_file = output_path / "non_linear_rubber_boot_seal.mechdat"
 app.save(str(mechdat_file))
 
-# Refresh the app
-app.new()
+# Close the app
+app.close()
 
 # Delete the example files
 delete_downloads()
