@@ -22,21 +22,22 @@
 
 """.. _ref_bolt_pretension:
 
-Bolt Pretension
+Bolt pretension
 ---------------
 
 This example demonstrates how to insert a Static Structural analysis
 into a new Mechanical session and execute a sequence of Python scripting
 commands that define and solve a bolt-pretension analysis.
 Scripts then evaluate the following results: deformation,
-equivalent stresses, contact, and bolt
+equivalent stresses, contact, and bolt.
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-import os
+from pathlib import Path
+import typing
 
 from PIL import Image
 from ansys.mechanical.core import App
@@ -46,179 +47,169 @@ from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 # %%
-# Embed mechanical and set global variables
+# Initialize the embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app = App()
-app.update_globals(globals())
 print(app)
 
-cwd = os.path.join(os.getcwd(), "out")
-
-
-def display_image(image_name):
-    plt.figure(figsize=(16, 9))
-    plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
-    plt.xticks([])
-    plt.yticks([])
-    plt.axis("off")
-    plt.show()
-
+# Import the enums and global variables instead of using app.update_globals(globals())
+# or App(globals=globals())
+from ansys.mechanical.core.embedding.enum_importer import *
+from ansys.mechanical.core.embedding.global_importer import Quantity
+from ansys.mechanical.core.embedding.transaction import Transaction
 
 # %%
 # Configure graphics for image export
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
-Graphics.Camera.SetFit()
-image_export_format = GraphicsImageExportFormat.PNG
-settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
-settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
-settings_720p.Background = GraphicsBackgroundType.White
-settings_720p.Width = 1280
-settings_720p.Height = 720
-settings_720p.CurrentGraphicsDisplay = False
-Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
+# Set camera orientation
+graphics = app.Graphics
+camera = graphics.Camera
+camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+camera.SetFit()
+camera.Rotate(180, CameraAxisType.ScreenY)
+
+# Set camera settings for 720p resolution
+graphics_image_export_settings = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
+graphics_image_export_settings.Resolution = GraphicsResolutionType.EnhancedResolution
+graphics_image_export_settings.Background = GraphicsBackgroundType.White
+graphics_image_export_settings.CurrentGraphicsDisplay = False
+graphics_image_export_settings.Width = 1280
+graphics_image_export_settings.Height = 720
 
 # %%
-# Download and import geometry
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Download the geometry file
+# Set the geometry import group for the model
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Set the model
+model = app.Model
+
+# Create a geometry import group for the model
+geometry_import_group = model.GeometryImportGroup
+# Add the geometry import to the group
+geometry_import = geometry_import_group.AddGeometryImport()
+# Set the geometry import format
+geometry_import_format = (
+    Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
+)
+# Set the geometry import preferences
+geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
+geometry_import_preferences.ProcessNamedSelections = True
+
+# %%
+# Download and import the geometry
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Download the geometry file from the ansys/example-data repository
 geometry_path = download_file(
     "example_06_bolt_pret_geom.agdb", "pymechanical", "00_basic"
 )
 
-# %%
-# Import geometry
-
-geometry_import_group = Model.GeometryImportGroup
-geometry_import = geometry_import_group.AddGeometryImport()
-geometry_import_format = (
-    Ansys.Mechanical.DataModel.Enums.GeometryImportPreference.Format.Automatic
-)
-geometry_import_preferences = Ansys.ACT.Mechanical.Utilities.GeometryImportPreferences()
-geometry_import_preferences.ProcessNamedSelections = True
+# Import/reload the geometry from the CAD (.agdb) file using the provided preferences
 geometry_import.Import(
     geometry_path, geometry_import_format, geometry_import_preferences
 )
 
 # sphinx_gallery_start_ignore
-assert str(geometry_import.ObjectState) == "Solved", "Geometry Import unsuccessful"
+# Assert the geometry import was successful
+assert geometry_import.ObjectState == ObjectState.Solved, "Geometry Import unsuccessful"
 # sphinx_gallery_end_ignore
 
+# Visualize the model in 3D
 app.plot()
 
+# %%
+# Download and import the materials
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # %%
-# Download and import material
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Download materials
-
-mat_Copper_file_path = download_file(
+# Download the material files from the ansys/example-data repository
+copper_material_file_path = download_file(
     "example_06_Mat_Copper.xml", "pymechanical", "00_basic"
 )
-mat_Steel_file_path = download_file(
+steel_material_file_path = download_file(
     "example_06_Mat_Steel.xml", "pymechanical", "00_basic"
 )
 
 # %%
-# Import materials
-
-MAT = Model.Materials
-MAT.Import(mat_Copper_file_path)
-MAT.Import(mat_Steel_file_path)
+# Add materials to the model and import the material files
+model_materials = model.Materials
+model_materials.Import(copper_material_file_path)
+model_materials.Import(steel_material_file_path)
 
 # sphinx_gallery_start_ignore
-assert str(MAT.ObjectState) == "FullyDefined", "Materials are not defined"
+# Assert the materials are defined
+assert (
+    model_materials.ObjectState == ObjectState.FullyDefined
+), "Materials are not defined"
 # sphinx_gallery_end_ignore
 
 # %%
-# Define Analysis and unit system
+# Define analysis and unit system
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Add Structural analysis
-
-Model.AddStaticStructuralAnalysis()
-STAT_STRUC = Model.Analyses[0]
-STAT_STRUC_SOLN = STAT_STRUC.Solution
-STAT_STRUC_ANA_SETTING = STAT_STRUC.Children[0]
 
 # %%
-# Set up the unit system.
-
-ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
-
-# %%
-# Store all main tree nodes as variables
-
-MODEL = Model
-GEOM = Model.Geometry
-CONN_GRP = Model.Connections
-CS_GRP = Model.CoordinateSystems
-MSH = Model.Mesh
-NS_GRP = Model.NamedSelections
+# Add static structural analysis to the model
+model.AddStaticStructuralAnalysis()
+static_structural = model.Analyses[0]
+static_structural_solution = static_structural.Solution
+static_structural_analysis_setting = static_structural.Children[0]
 
 # %%
-# Store named selections
-
-block3_block2_cont_NS = [x for x in Tree.AllObjects if x.Name == "block3_block2_cont"][
-    0
+# Store the named selections
+named_selections_dictionary = {}
+named_selections_list = [
+    "block3_block2_cont",
+    "block3_block2_targ",
+    "shank_block3_cont",
+    "shank_block3_targ",
+    "block1_washer_cont",
+    "block1_washer_targ",
+    "washer_bolt_cont",
+    "washer_bolt_targ",
+    "shank_bolt_targ",
+    "shank_bolt_cont",
+    "block2_block1_cont",
+    "block2_block1_targ",
 ]
-block3_block2_targ_NS = [x for x in Tree.AllObjects if x.Name == "block3_block2_targ"][
-    0
-]
-shank_block3_targ_NS = [x for x in Tree.AllObjects if x.Name == "shank_block3_targ"][0]
-shank_block3_cont_NS = [x for x in Tree.AllObjects if x.Name == "shank_block3_cont"][0]
-block1_washer_cont_NS = [x for x in Tree.AllObjects if x.Name == "block1_washer_cont"][
-    0
-]
-block1_washer_targ_NS = [x for x in Tree.AllObjects if x.Name == "block1_washer_targ"][
-    0
-]
-washer_bolt_cont_NS = [x for x in Tree.AllObjects if x.Name == "washer_bolt_cont"][0]
-washer_bolt_targ_NS = [x for x in Tree.AllObjects if x.Name == "washer_bolt_targ"][0]
-shank_bolt_targ_NS = [x for x in Tree.AllObjects if x.Name == "shank_bolt_targ"][0]
-shank_bolt_cont_NS = [x for x in Tree.AllObjects if x.Name == "shank_bolt_cont"][0]
-block2_block1_cont_NS = [x for x in Tree.AllObjects if x.Name == "block2_block1_cont"][
-    0
-]
-block2_block1_targ_NS = [x for x in Tree.AllObjects if x.Name == "block2_block1_targ"][
-    0
-]
-all_bodies = [x for x in Tree.AllObjects if x.Name == "all_bodies"][0]
-bodies_5 = [x for x in Tree.AllObjects if x.Name == "bodies_5"][0]
-shank = [x for x in Tree.AllObjects if x.Name == "shank"][0]
-shank_face = [x for x in Tree.AllObjects if x.Name == "shank_face"][0]
-shank_face2 = [x for x in Tree.AllObjects if x.Name == "shank_face2"][0]
-bottom_surface = [x for x in Tree.AllObjects if x.Name == "bottom_surface"][0]
-block2_surface = [x for x in Tree.AllObjects if x.Name == "block2_surface"][0]
-shank_surface = [x for x in Tree.AllObjects if x.Name == "shank_surface"][0]
 
 # %%
-# Assign material to bodies
+# Set the unit system to Standard NMM
 
-SURFACE1 = GEOM.Children[0].Children[0]
-SURFACE1.Material = "Steel"
-
-SURFACE2 = GEOM.Children[1].Children[0]
-SURFACE2.Material = "Copper"
-
-SURFACE3 = GEOM.Children[2].Children[0]
-SURFACE3.Material = "Copper"
-
-SURFACE4 = GEOM.Children[3].Children[0]
-SURFACE4.Material = "Steel"
-
-SURFACE5 = GEOM.Children[4].Children[0]
-SURFACE5.Material = "Steel"
-
-SURFACE6 = GEOM.Children[5].Children[0]
-SURFACE6.Material = "Steel"
+app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
 
 # %%
-# Define coordinate system
-# ~~~~~~~~~~~~~~~~~~~~~~~~~
+# Get tree objects for each named selection
+for named_selection in named_selections_list:
+    named_selections_dictionary[named_selection] = app.DataModel.GetObjectsByName(
+        named_selection
+    )[0]
 
-coordinate_system = CS_GRP.AddCoordinateSystem()
+# %%
+# Create a list with material assignment for each ``model.Geometry.Children`` index
+children_materials = ["Steel", "Copper", "Copper", "Steel", "Steel", "Steel"]
+
+# %%
+# Assign surface materials to the ``model.Geometry`` bodies
+geometry = model.Geometry
+for children_index, material_name in enumerate(children_materials):
+    # Get the surface of the body
+    surface = geometry.Children[children_index].Children[0]
+    # Assign the material to the surface
+    surface.Material = material_name
+
+# %%
+# Add and define a coordinate system
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# %%
+# Add a coordinate system to the model
+coordinate_systems = model.CoordinateSystems
+coordinate_system = coordinate_systems.AddCoordinateSystem()
+
+# %%
+# Define the coordinate system and set its axis properties
 coordinate_system.OriginDefineBy = CoordinateSystemAlignmentType.Fixed
 coordinate_system.OriginX = Quantity(-195, "mm")
 coordinate_system.OriginY = Quantity(100, "mm")
@@ -226,312 +217,650 @@ coordinate_system.OriginZ = Quantity(50, "mm")
 coordinate_system.PrimaryAxis = CoordinateSystemAxisType.PositiveZAxis
 
 # %%
-# Define Contacts
-# ~~~~~~~~~~~~~~~
-# Change contact settings
+# Create functions for contact region set up
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 # %%
-# Delete existing contacts
+# Add a contact region to the body with the specified source location, target location,
+# and contact type
+def set_contact_region_locations_and_types(
+    body: typing.Union[
+        Ansys.ACT.Automation.Mechanical.Connections,
+        Ansys.ACT.Automation.Mechanical.Connections.ConnectionGroup,
+    ],
+    source_location: Ansys.ACT.Automation.Mechanical.NamedSelection,
+    target_location: Ansys.ACT.Automation.Mechanical.NamedSelection,
+    contact_type: ContactType,
+) -> Ansys.ACT.Automation.Mechanical.Connections.ContactRegion:
+    """Add a contact region to the body with the specified source location, target location,
+    and contact type.
 
-for connection in CONN_GRP.Children:
+    Parameters
+    ----------
+    body : Ansys.ACT.Automation.Mechanical.Connections or
+    Ansys.ACT.Automation.Mechanical.Connections.ConnectionGroup
+        The body to which the contact region will be added.
+    source_location : Ansys.ACT.Automation.Mechanical.NamedSelection
+        The source location for the contact region.
+    target_location : Ansys.ACT.Automation.Mechanical.NamedSelection
+        The target location for the contact region.
+    contact_type : ContactType
+        The type of contact for the contact region.
+
+    Returns
+    -------
+    Ansys.ACT.Automation.Mechanical.Connections.ContactRegion
+        The created contact region.
+    """
+    contact_region = body.AddContactRegion()
+    contact_region.SourceLocation = source_location
+    contact_region.TargetLocation = target_location
+    contact_region.ContactType = contact_type
+    return contact_region
+
+
+# %%
+# Set the friction coefficient, small sliding, and update stiffness settings for the contact region
+def advanced_contact_settings(
+    contact_region: Ansys.ACT.Automation.Mechanical.Connections.ContactRegion,
+    friction_coefficient: int,
+    small_sliding: ContactSmallSlidingType,
+    update_stiffness: UpdateContactStiffness,
+) -> None:
+    """Set the friction coefficient, small sliding, and update stiffness settings for the
+    contact region.
+
+    Parameters
+    ----------
+    contact_region : Ansys.ACT.Automation.Mechanical.Connections.ContactRegion
+        The contact region to set the settings for.
+    friction_coefficient : int
+        The friction coefficient for the contact region.
+    small_sliding : ContactSmallSlidingType
+        The small sliding setting for the contact region.
+    update_stiffness : UpdateContactStiffness
+        The update stiffness setting for the contact region.
+    """
+    contact_region.FrictionCoefficient = friction_coefficient
+    contact_region.SmallSliding = small_sliding
+    contact_region.UpdateStiffness = update_stiffness
+
+
+# %%
+# Add a command snippet to the contact region with the specified Archard Wear Model
+def add_command_snippet(
+    contact_region: Ansys.ACT.Automation.Mechanical.Connections.ContactRegion,
+    archard_wear_model: str,
+) -> None:
+    """Add a command snippet to the contact region with the specified Archard Wear Model.
+
+    Parameters
+    ----------
+    contact_region : Ansys.ACT.Automation.Mechanical.Connections.ContactRegion
+        The contact region to add the command snippet to.
+    archard_wear_model : str
+        The Archard Wear Model command snippet to add to the contact region.
+    """
+    contact_region_cmd = contact_region.AddCommandSnippet()
+    contact_region_cmd.AppendText(archard_wear_model)
+
+
+# %%
+# Add and define contact regions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# %%
+# Set up the model connections and delete the existing connections for ConnectionGroups
+connections = model.Connections
+for connection in connections.Children:
     if connection.DataModelObjectCategory == DataModelObjectCategory.ConnectionGroup:
-        connection.Delete()
-
-CONT_REG1 = CONN_GRP.AddContactRegion()
-CONT_REG1.SourceLocation = NS_GRP.Children[0]
-CONT_REG1.TargetLocation = NS_GRP.Children[1]
-CONT_REG1.ContactType = ContactType.Frictional
-CONT_REG1.FrictionCoefficient = 0.2
-CONT_REG1.SmallSliding = ContactSmallSlidingType.Off
-CONT_REG1.UpdateStiffness = UpdateContactStiffness.Never
-CMD1 = CONT_REG1.AddCommandSnippet()
+        app.DataModel.Remove(connection)
 
 # %%
-# Add missing contact keyopt and Archard Wear Model using a command snippet
+# Set the archard wear model and get the named selections from the model
 
-AWM = """keyopt,cid,9,5
+# Set the archard wear model
+archard_wear_model = """keyopt,cid,9,5
 rmodif,cid,10,0.00
 rmodif,cid,23,0.001"""
-CMD1.AppendText(AWM)
 
-CONTS = CONN_GRP.Children[0]
-CONT_REG2 = CONTS.AddContactRegion()
-CONT_REG2.SourceLocation = NS_GRP.Children[3]
-CONT_REG2.TargetLocation = NS_GRP.Children[2]
-CONT_REG2.ContactType = ContactType.Bonded
-CONT_REG2.ContactFormulation = ContactFormulation.MPC
-
-CONT_REG3 = CONTS.AddContactRegion()
-CONT_REG3.SourceLocation = NS_GRP.Children[4]
-CONT_REG3.TargetLocation = NS_GRP.Children[5]
-CONT_REG3.ContactType = ContactType.Frictional
-CONT_REG3.FrictionCoefficient = 0.2
-CONT_REG3.SmallSliding = ContactSmallSlidingType.Off
-CONT_REG3.UpdateStiffness = UpdateContactStiffness.Never
-CMD3 = CONT_REG3.AddCommandSnippet()
-
-# Add missing contact keyopt and Archard Wear Model using a command snippet
-
-AWM3 = """keyopt,cid,9,5
-rmodif,cid,10,0.00
-rmodif,cid,23,0.001"""
-CMD3.AppendText(AWM3)
-
-CONT_REG4 = CONTS.AddContactRegion()
-CONT_REG4.SourceLocation = NS_GRP.Children[6]
-CONT_REG4.TargetLocation = NS_GRP.Children[7]
-CONT_REG4.ContactType = ContactType.Bonded
-CONT_REG4.ContactFormulation = ContactFormulation.MPC
-
-CONT_REG5 = CONTS.AddContactRegion()
-CONT_REG5.SourceLocation = NS_GRP.Children[9]
-CONT_REG5.TargetLocation = NS_GRP.Children[8]
-CONT_REG5.ContactType = ContactType.Bonded
-CONT_REG5.ContactFormulation = ContactFormulation.MPC
-
-CONT_REG6 = CONTS.AddContactRegion()
-CONT_REG6.SourceLocation = NS_GRP.Children[10]
-CONT_REG6.TargetLocation = NS_GRP.Children[11]
-CONT_REG6.ContactType = ContactType.Frictional
-CONT_REG6.FrictionCoefficient = 0.2
-CONT_REG6.SmallSliding = ContactSmallSlidingType.Off
-CONT_REG6.UpdateStiffness = UpdateContactStiffness.Never
-CMD6 = CONT_REG6.AddCommandSnippet()
-
-# Add missing contact keyopt and Archard Wear Model using a command snippet
-
-AWM6 = """keyopt,cid,9,5
-rmodif,cid,10,0.00
-rmodif,cid,23,0.001"""
-CMD6.AppendText(AWM6)
+# Get named selections from the model for contact regions
+named_selections = model.NamedSelections
 
 # %%
-# Mesh
-# ~~~~
+# Add a contact region for the model's named selections Children 0 and 1 with the specified
+# contact type
+contact_region = set_contact_region_locations_and_types(
+    body=connections,
+    source_location=named_selections.Children[0],
+    target_location=named_selections.Children[1],
+    contact_type=ContactType.Frictional,
+)
+# Set the friction coefficient, small sliding, and update stiffness settings for the contact region
+advanced_contact_settings(
+    contact_region=contact_region,
+    friction_coefficient=0.2,
+    small_sliding=ContactSmallSlidingType.Off,
+    update_stiffness=UpdateContactStiffness.Never,
+)
+# Add a command snippet to the contact region with the specified Archard Wear Model
+add_command_snippet(contact_region, archard_wear_model)
 
-Hex_Method = MSH.AddAutomaticMethod()
-Hex_Method.Location = all_bodies
-Hex_Method.Method = MethodType.Automatic
+# %%
+# Set the connection group for the contact regions
+connection_group = connections.Children[0]
 
-BODY_SIZING1 = MSH.AddSizing()
-BODY_SIZING1.Location = bodies_5
-BODY_SIZING1.ElementSize = Quantity(15, "mm")
+# %%
+# Add a contact region for the model's named selections Children 2 and 3 with the specified
+# contact type
+contact_region_2 = set_contact_region_locations_and_types(
+    body=connection_group,
+    source_location=named_selections.Children[3],
+    target_location=named_selections.Children[2],
+    contact_type=ContactType.Bonded,
+)
+contact_region_2.ContactFormulation = ContactFormulation.MPC
 
-BODY_SIZING2 = MSH.AddSizing()
-BODY_SIZING2.Location = shank
-BODY_SIZING2.ElementSize = Quantity(7, "mm")
+# %%
+# Add a contact region for the model's named selections Children 4 and 5 with the specified
+# contact type
+contact_region_3 = set_contact_region_locations_and_types(
+    body=connection_group,
+    source_location=named_selections.Children[4],
+    target_location=named_selections.Children[5],
+    contact_type=ContactType.Frictional,
+)
+# Set the friction coefficient, small sliding, and update stiffness settings for the contact region
+advanced_contact_settings(
+    contact_region=contact_region_3,
+    friction_coefficient=0.2,
+    small_sliding=ContactSmallSlidingType.Off,
+    update_stiffness=UpdateContactStiffness.Never,
+)
+# Add a command snippet to the contact region with the specified Archard Wear Model
+add_command_snippet(contact_region_3, archard_wear_model)
 
-Face_Meshing = MSH.AddFaceMeshing()
-Face_Meshing.Location = shank_face
-Face_Meshing.MappedMesh = False
+# %%
+# Add a contact region for the model's named selections Children 6 and 7 with the specified
+# contact type
+contact_region_4 = set_contact_region_locations_and_types(
+    body=connection_group,
+    source_location=named_selections.Children[6],
+    target_location=named_selections.Children[7],
+    contact_type=ContactType.Bonded,
+)
+contact_region_4.ContactFormulation = ContactFormulation.MPC
 
-Sweep_Method = MSH.AddAutomaticMethod()
-Sweep_Method.Location = shank
-Sweep_Method.Method = MethodType.Sweep
-Sweep_Method.SourceTargetSelection = 2
-Sweep_Method.SourceLocation = shank_face
-Sweep_Method.TargetLocation = shank_face2
+# %%
+# Add a contact region for the model's named selections Children 8 and 9 with the specified
+# contact type
+contact_region_5 = set_contact_region_locations_and_types(
+    body=connection_group,
+    source_location=named_selections.Children[9],
+    target_location=named_selections.Children[8],
+    contact_type=ContactType.Bonded,
+)
+contact_region_5.ContactFormulation = ContactFormulation.MPC
 
-MSH.Activate()
-MSH.GenerateMesh()
+# %%
+# Add a contact region for the model's named selections Children 10 and 11 with the specified
+# contact type
+contact_region_6 = set_contact_region_locations_and_types(
+    body=connection_group,
+    source_location=named_selections.Children[10],
+    target_location=named_selections.Children[11],
+    contact_type=ContactType.Frictional,
+)
+# Set the friction coefficient, small sliding, and update stiffness settings for the contact region
+advanced_contact_settings(
+    contact_region=contact_region_6,
+    friction_coefficient=0.2,
+    small_sliding=ContactSmallSlidingType.Off,
+    update_stiffness=UpdateContactStiffness.Never,
+)
+# Add a command snippet to the contact region with the specified Archard Wear Model
+add_command_snippet(contact_region_6, archard_wear_model)
 
-Graphics.Camera.SetFit()
-Graphics.ExportImage(os.path.join(cwd, "mesh.png"), image_export_format, settings_720p)
-display_image("mesh.png")
+# %%
+# Create functions to set up the mesh
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+# %%
+# Set the mesh method location for the specified method and object name
+def set_mesh_method_location(method, object_name: str, location_type: str = "") -> None:
+    """Set the location of the method based on the specified name and location type.
+
+    Parameters
+    ----------
+    method : Ansys.ACT.Automation.Mechanical.MeshMethod
+        The method to set the location for.
+    object_name : str
+        The name of the object to set the location for.
+    location_type : str, optional
+        The type of location to set for the method. Can be "source", "target", or empty string.
+        Default is an empty string.
+    """
+    # Get the tree object for the specified name
+    tree_obj = app.DataModel.GetObjectsByName(object_name)[0]
+
+    # Set the method location based on the specified location type
+    if location_type == "source":
+        method.SourceLocation = tree_obj
+    elif location_type == "target":
+        method.TargetLocation = tree_obj
+    else:
+        method.Location = tree_obj
+
+
+# %%
+# Add a mesh sizing to the mesh with the specified name, quantity value, and measurement
+def add_mesh_sizing(mesh, object_name: str, element_size: Quantity) -> None:
+    """Add a mesh sizing to the mesh with the specified name, quantity value, and measurement.
+
+    Parameters
+    ----------
+    mesh : Ansys.ACT.Automation.Mechanical.Mesh
+        The mesh to add the sizing to.
+    object_name : str
+        The name of the object to set the sizing for.
+    element_size : Quantity
+        The element size for the mesh sizing.
+    """
+    # Add sizing to the mesh
+    body_sizing = mesh.AddSizing()
+    # Get the tree object for the specified name
+    body_sizing.Location = app.DataModel.GetObjectsByName(object_name)[0]
+
+    # Set the element size to the mesh
+    body_sizing.ElementSize = element_size
+
+
+# %%
+# Add mesh methods, sizing, and face meshing
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# %%
+# Add the mesh sizing to the ``bodies_5`` and ``shank`` objects
+
+mesh = model.Mesh
+add_mesh_sizing(mesh=mesh, object_name="bodies_5", element_size=Quantity(15, "mm"))
+add_mesh_sizing(mesh=mesh, object_name="shank", element_size=Quantity(7, "mm"))
+
+# %%
+# Add an automatic method to the mesh and set the method type
+hex_method = mesh.AddAutomaticMethod()
+hex_method.Method = MethodType.Automatic
+# Set the method location for the all_bodies object
+set_mesh_method_location(method=hex_method, object_name="all_bodies")
+
+# %%
+# Add face meshing to the mesh and set the MappedMesh property to False
+face_meshing = mesh.AddFaceMeshing()
+face_meshing.MappedMesh = False
+# Set the method location for the face meshing
+set_mesh_method_location(method=face_meshing, object_name="shank_face")
+
+# %%
+# Add an automatic method to the mesh, set the method type, and set the source target selection
+sweep_method = mesh.AddAutomaticMethod()
+sweep_method.Method = MethodType.Sweep
+sweep_method.SourceTargetSelection = 2
+# Set the method locations for the shank, shank_face, and shank_face2 objects
+set_mesh_method_location(method=sweep_method, object_name="shank")
+set_mesh_method_location(
+    method=sweep_method, object_name="shank_face", location_type="source"
+)
+set_mesh_method_location(
+    method=sweep_method, object_name="shank_face2", location_type="target"
+)
+
+# %%
+# Activate and generate the mesh
+mesh.Activate()
+mesh.GenerateMesh()
+
+# Fit the view to the entire model
+camera.SetFit()
+# Set the path for the output files (images, gifs, mechdat)
+output_path = Path.cwd() / "out"
+mesh_image_path = str(output_path / "mesh.png")
+# Set the image export format and export the image
+image_export_format = GraphicsImageExportFormat.PNG
+graphics.ExportImage(
+    mesh_image_path, image_export_format, graphics_image_export_settings
+)
+
+
+# %%
+# Create a function to display the image using matplotlib
+def display_image(
+    image_path: str,
+    pyplot_figsize_coordinates: tuple = (16, 9),
+    plot_xticks: list = [],
+    plot_yticks: list = [],
+    plot_axis: str = "off",
+):
+    """Display the image with the specified parameters."""
+    # Set the figure size based on the coordinates specified
+    plt.figure(figsize=pyplot_figsize_coordinates)
+
+    # Read the image from the file into an array
+    plt.imshow(mpimg.imread(image_path))
+
+    # Get or set the current tick locations and labels of the x-axis
+    plt.xticks(plot_xticks)
+    # Get or set the current tick locations and labels of the y-axis
+    plt.yticks(plot_yticks)
+    # Turn off the axis
+    plt.axis(plot_axis)
+    # Display the figure
+    plt.show()
+
+
+# %%
+# Display the mesh image
+display_image(mesh_image_path)
 
 # %%
 # Analysis settings
 # ~~~~~~~~~~~~~~~~~
 
-STAT_STRUC_ANA_SETTING.NumberOfSteps = 4
+# Set the number of steps for the static structural analysis
+static_structural_analysis_setting.NumberOfSteps = 4
+
+# Set the step index list
 step_index_list = [1]
 
+# Set the automatic time stepping method for the static structural analysis
+# based on the step index
 with Transaction():
     for step_index in step_index_list:
-        STAT_STRUC_ANA_SETTING.SetAutomaticTimeStepping(
+        static_structural_analysis_setting.SetAutomaticTimeStepping(
             step_index, AutomaticTimeStepping.Off
         )
 
-STAT_STRUC_ANA_SETTING.Activate()
-step_index_list = [1]
-
+# Set the number of substeps for the static structural analysis
+# based on the step index
 with Transaction():
     for step_index in step_index_list:
-        STAT_STRUC_ANA_SETTING.SetNumberOfSubSteps(step_index, 2)
+        static_structural_analysis_setting.SetNumberOfSubSteps(step_index, 2)
 
-STAT_STRUC_ANA_SETTING.Activate()
-STAT_STRUC_ANA_SETTING.SolverType = SolverType.Direct
-STAT_STRUC_ANA_SETTING.SolverPivotChecking = SolverPivotChecking.Off
+# Activate the static structural analysis settings
+static_structural_analysis_setting.Activate()
+
+# Set the solver type and solver pivoting check for the static structural analysis
+static_structural_analysis_setting.SolverType = SolverType.Direct
+static_structural_analysis_setting.SolverPivotChecking = SolverPivotChecking.Off
 
 # %%
 # Define loads and boundary conditions
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-FIX_SUP = STAT_STRUC.AddFixedSupport()
-FIX_SUP.Location = block2_surface
+# Add fixed support to the static structural analysis
+fixed_support = static_structural.AddFixedSupport()
+# Set the fixed support location for the block2_surface object
+set_mesh_method_location(method=fixed_support, object_name="block2_surface")
 
-Tabular_Force = STAT_STRUC.AddForce()
-Tabular_Force.Location = bottom_surface
-Tabular_Force.DefineBy = LoadDefineBy.Components
-Tabular_Force.XComponent.Inputs[0].DiscreteValues = [
-    Quantity("0[s]"),
-    Quantity("1[s]"),
-    Quantity("2[s]"),
-    Quantity("3[s]"),
-    Quantity("4[s]"),
+# Create a new force on the static structural analysis
+tabular_force = static_structural.AddForce()
+# Set the force location for the bottom_surface object
+set_mesh_method_location(method=tabular_force, object_name="bottom_surface")
+
+# Define the tabular force input and output components
+tabular_force.DefineBy = LoadDefineBy.Components
+tabular_force.XComponent.Inputs[0].DiscreteValues = [
+    Quantity(0, "s"),
+    Quantity(1, "s"),
+    Quantity(2, "s"),
+    Quantity(3, "s"),
+    Quantity(4, "s"),
 ]
-Tabular_Force.XComponent.Output.DiscreteValues = [
-    Quantity("0[N]"),
-    Quantity("0[N]"),
-    Quantity("5.e+005[N]"),
-    Quantity("0[N]"),
-    Quantity("-5.e+005[N]"),
+tabular_force.XComponent.Output.DiscreteValues = [
+    Quantity(0, "N"),
+    Quantity(0, "N"),
+    Quantity(5.0e005, "N"),
+    Quantity(0, "N"),
+    Quantity(-5.0e005, "N"),
 ]
 
-Bolt_Pretension = STAT_STRUC.AddBoltPretension()
-Bolt_Pretension.Location = shank_surface
-Bolt_Pretension.Preload.Inputs[0].DiscreteValues = [
-    Quantity("1[s]"),
-    Quantity("2[s]"),
-    Quantity("3[s]"),
-    Quantity("4[s]"),
-]
-Bolt_Pretension.Preload.Output.DiscreteValues = [
-    Quantity("6.1363e+005[N]"),
-    Quantity("0 [N]"),
-    Quantity("0 [N]"),
-    Quantity("0[N]"),
-]
-Bolt_Pretension.SetDefineBy(2, BoltLoadDefineBy.Lock)
-Bolt_Pretension.SetDefineBy(3, BoltLoadDefineBy.Lock)
-Bolt_Pretension.SetDefineBy(4, BoltLoadDefineBy.Lock)
+# Add a bolt presentation to the static structural analysis
+bolt_presentation = static_structural.AddBoltPretension()
+# Set the bolt presentation location for the shank_surface object
+set_mesh_method_location(bolt_presentation, "shank_surface")
 
-Tree.Activate([Bolt_Pretension])
-Graphics.ExportImage(
-    os.path.join(cwd, "loads_and_boundaryconditions.png"),
-    image_export_format,
-    settings_720p,
+# Define the bolt presentation input and output components
+bolt_presentation.Preload.Inputs[0].DiscreteValues = [
+    Quantity(1, "s"),
+    Quantity(2, "s"),
+    Quantity(3, "s"),
+    Quantity(4, "s"),
+]
+bolt_presentation.Preload.Output.DiscreteValues = [
+    Quantity(6.1363e005, "N"),
+    Quantity(0, "N"),
+    Quantity(0, "N"),
+    Quantity(0, "N"),
+]
+bolt_presentation.SetDefineBy(2, BoltLoadDefineBy.Lock)
+bolt_presentation.SetDefineBy(3, BoltLoadDefineBy.Lock)
+bolt_presentation.SetDefineBy(4, BoltLoadDefineBy.Lock)
+
+# Activate the bolt presentation
+app.Tree.Activate([bolt_presentation])
+
+# Set the image path for the loads and boundary conditions
+loads_boundary_conditions_image_path = str(
+    output_path / "loads_boundary_conditions.png"
 )
-display_image("loads_and_boundaryconditions.png")
+# Export the image of the loads and boundary conditions
+graphics.ExportImage(
+    loads_boundary_conditions_image_path,
+    image_export_format,
+    graphics_image_export_settings,
+)
+
+# Display the image of the loads and boundary conditions
+display_image(loads_boundary_conditions_image_path)
 
 # %%
 # Insert results
 # ~~~~~~~~~~~~~~
 
-Post_Contact_Tool = STAT_STRUC_SOLN.AddContactTool()
-Post_Contact_Tool.ScopingMethod = GeometryDefineByType.Worksheet
-Bolt_Tool = STAT_STRUC_SOLN.AddBoltTool()
-Bolt_Working_Load = Bolt_Tool.AddWorkingLoad()
-Total_Deformation = STAT_STRUC_SOLN.AddTotalDeformation()
-Equivalent_stress_1 = STAT_STRUC_SOLN.AddEquivalentStress()
-Equivalent_stress_2 = STAT_STRUC_SOLN.AddEquivalentStress()
-Equivalent_stress_2.Location = shank
-Force_Reaction_1 = STAT_STRUC_SOLN.AddForceReaction()
-Force_Reaction_1.BoundaryConditionSelection = FIX_SUP
-Moment_Reaction_2 = STAT_STRUC_SOLN.AddMomentReaction()
-Moment_Reaction_2.BoundaryConditionSelection = FIX_SUP
+# Add a contact tool to the static structural solution and set the scoping method for it
+post_contact_tool = static_structural_solution.AddContactTool()
+post_contact_tool.ScopingMethod = GeometryDefineByType.Worksheet
+
+# Add a bolt tool to the static structural solution and add a working load to it
+bolt_tool = static_structural_solution.AddBoltTool()
+bolt_tool.AddWorkingLoad()
+
+# Add the total deformation to the static structural solution
+total_deformation = static_structural_solution.AddTotalDeformation()
+
+# Add equivalent stress to the static structural solution
+equivalent_stress_1 = static_structural_solution.AddEquivalentStress()
+
+# Add equivalent stress to the static structural solution and set the location for the shank object
+equivalent_stress_2 = static_structural_solution.AddEquivalentStress()
+set_mesh_method_location(method=equivalent_stress_2, object_name="shank")
+
+# Add a force reaction to the static structural solution and set the boundary condition selection
+# to the fixed support
+force_reaction_1 = static_structural_solution.AddForceReaction()
+force_reaction_1.BoundaryConditionSelection = fixed_support
+
+# Add a moment reaction to the static structural solution and set the boundary condition selection
+# to the fixed support
+moment_reaction_2 = static_structural_solution.AddMomentReaction()
+moment_reaction_2.BoundaryConditionSelection = fixed_support
 
 # %%
-# Solve
-# ~~~~~
+# Solve the static structural solution
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-STAT_STRUC_SOLN.Solve(True)
-STAT_STRUC_SS = STAT_STRUC_SOLN.Status
+# Solve the static structural solution and wait for it to finish
+static_structural_solution.Solve(True)
+
 # sphinx_gallery_start_ignore
-assert str(STAT_STRUC_SS) == "Done", "Solution status is not 'Done'"
+# Assert the solution status is "Done"
+assert (
+    static_structural_solution.Status == SolutionStatusType.Done
+), "Solution status is not 'Done'"
 # sphinx_gallery_end_ignore
 
 # %%
-# Messages
-# ~~~~~~~~
+# Show messages
+# ~~~~~~~~~~~~~
 
-Messages = ExtAPI.Application.Messages
-if Messages:
-    for message in Messages:
-        print(f"[{message.Severity}] {message.DisplayString}")
-else:
-    print("No [Info]/[Warning]/[Error] Messages")
+# Print all messages from Mechanical
+app.messages.show()
 
 # %%
-# Results
-# ~~~~~~~
+# Display the results
+# ~~~~~~~~~~~~~~~~~~~
+
+# %%
 # Total deformation
 
-Tree.Activate([Total_Deformation])
-Graphics.Camera.SetFit()
-Graphics.ExportImage(
-    os.path.join(cwd, "total_deformation.png"), image_export_format, settings_720p
+# Activate the object
+app.Tree.Activate([total_deformation])
+# Set the camera to fit the model
+camera.SetFit()
+# Set the image name and path for the object
+image_path = str(output_path / f"total_deformation.png")
+# Export the image of the object
+app.Graphics.ExportImage(
+    image_path, image_export_format, graphics_image_export_settings
 )
-display_image("total_deformation.png")
+# Display the image of the object
+display_image(image_path)
 
 # %%
 # Equivalent stress on all bodies
 
-Tree.Activate([Equivalent_stress_1])
-Graphics.Camera.SetFit()
-Graphics.ExportImage(
-    os.path.join(cwd, "equivalent_stress_total.png"), image_export_format, settings_720p
+# Activate the object
+app.Tree.Activate([equivalent_stress_1])
+# Set the camera to fit the model
+camera.SetFit()
+# Set the image name and path for the object
+image_path = str(output_path / f"equivalent_stress_all_bodies.png")
+# Export the image of the object
+app.Graphics.ExportImage(
+    image_path, image_export_format, graphics_image_export_settings
 )
-display_image("equivalent_stress_total.png")
+# Display the image of the object
+display_image(image_path)
 
 # %%
-# Equivalent stress on shank
+# Equivalent stress on the shank
 
-Tree.Activate([Equivalent_stress_2])
-Graphics.Camera.SetFit()
-Graphics.ExportImage(
-    os.path.join(cwd, "equivalent_stress_shank.png"), image_export_format, settings_720p
+# Activate the object
+app.Tree.Activate([equivalent_stress_2])
+# Set the camera to fit the model
+camera.SetFit()
+# Set the image name and path for the object
+image_path = str(output_path / f"equivalent_stress_shank.png")
+# Export the image of the object
+app.Graphics.ExportImage(
+    image_path, image_export_format, graphics_image_export_settings
 )
-display_image("equivalent_stress_shank.png")
+# Display the image of the object
+display_image(image_path)
 
 # %%
-# Export contact status animation
-
-Post_Contact_Tool_status = Post_Contact_Tool.Children[0]
-Tree.Activate([Post_Contact_Tool_status])
-Graphics.Camera.SetFit()
-animation_export_format = (
-    Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
-)
-settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
-settings_720p.Width = 1280
-settings_720p.Height = 720
-
-Post_Contact_Tool_status.ExportAnimation(
-    os.path.join(cwd, "contact_status.gif"), animation_export_format, settings_720p
-)
-gif = Image.open(os.path.join(cwd, "contact_status.gif"))
-fig, ax = plt.subplots(figsize=(16, 9))
-ax.axis("off")
-img = ax.imshow(gif.convert("RGBA"))
+# Export and display the contact status animation
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-def update(frame):
+# %%
+# Create a function to update the animation frames
+def update_animation(frame: int) -> list[mpimg.AxesImage]:
+    """Update the animation frame for the GIF.
+
+    Parameters
+    ----------
+    frame : int
+        The frame number to update the animation.
+
+    Returns
+    -------
+    list[mpimg.AxesImage]
+        A list containing the updated image for the animation.
+    """
+    # Seeks to the given frame in this sequence file
     gif.seek(frame)
-    img.set_array(gif.convert("RGBA"))
-    return [img]
+    # Set the image array to the current frame of the GIF
+    image.set_data(gif.convert("RGBA"))
+    # Return the updated image
+    return [image]
 
 
-ani = FuncAnimation(
-    fig, update, frames=range(gif.n_frames), interval=200, repeat=True, blit=True
+# %%
+# Export and display the contact status animation
+
+# Get the post contact tool status
+post_contact_tool_status = post_contact_tool.Children[0]
+
+# Activate the post contact tool status in the tree
+app.Tree.Activate([post_contact_tool_status])
+
+# Set the camera to fit the model
+camera.SetFit()
+
+# Set the animation export format and settings
+animation_export_format = GraphicsAnimationExportFormat.GIF
+animation_export_settings = Ansys.Mechanical.Graphics.AnimationExportSettings()
+animation_export_settings.Width = 1280
+animation_export_settings.Height = 720
+
+# Set the path for the contact status GIF
+contact_status_gif_path = str(output_path / "contact_status.gif")
+
+# Export the contact status animation to a GIF file
+post_contact_tool_status.ExportAnimation(
+    contact_status_gif_path, animation_export_format, animation_export_settings
 )
+
+# Open the GIF file and create an animation
+gif = Image.open(contact_status_gif_path)
+# Set the subplots for the animation and turn off the axis
+figure, axes = plt.subplots(figsize=(8, 4))
+axes.axis("off")
+# Change the color of the image
+image = axes.imshow(gif.convert("RGBA"))
+
+# Create the animation using the figure, update_animation function, and the GIF frames
+# Set the interval between frames to 200 milliseconds and repeat the animation
+FuncAnimation(
+    figure,
+    update_animation,
+    frames=range(gif.n_frames),
+    interval=200,
+    repeat=True,
+    blit=True,
+)
+
+# Show the animation
 plt.show()
 
 # %%
-# Project tree
-# ~~~~~~~~~~~~
+# Print the project tree
+# ~~~~~~~~~~~~~~~~~~~~~~
 
 app.print_tree()
 
 # %%
-# Cleanup
-# ~~~~~~~
-# Save project
+# Clean up the project
+# ~~~~~~~~~~~~~~~~~~~~
 
-app.save(os.path.join(cwd, "bolt_pretension.mechdat"))
-app.new()
+# Save the project
+bolt_presentation_mechdat_path = str(output_path / "bolt_pretension.mechdat")
+app.save(bolt_presentation_mechdat_path)
 
-# %%
-# Delete the example file
+# Close the app
+app.close()
 
+# Delete the example files
 delete_downloads()
