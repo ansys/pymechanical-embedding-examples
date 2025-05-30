@@ -31,39 +31,114 @@ load, which is then transferred to the topology optimization.
 """
 
 # %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-import os
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 
-# %%
-# Embed Mechanical and set global variables
+if TYPE_CHECKING:
+    import Ansys
 
-app = App()
-app.update_globals(globals())
+# %%
+# Initialize the embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+app = App(globals=globals())
 print(app)
 
+# %%
+# Create functions to set camera and display images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def display_image(image_name):
-    plt.figure(figsize=(16, 9))
-    plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
-    plt.xticks([])
-    plt.yticks([])
-    plt.axis("off")
+# Set the path for the output files (images, gifs, mechdat)
+output_path = Path.cwd() / "out"
+
+
+def set_camera_and_display_image(
+    camera,
+    graphics,
+    graphics_image_export_settings,
+    image_output_path: Path,
+    image_name: str,
+) -> None:
+    """Set the camera to fit the model and display the image.
+
+    Parameters
+    ----------
+    camera : Ansys.ACT.Common.Graphics.MechanicalCameraWrapper
+        The camera object to set the view.
+    graphics : Ansys.ACT.Common.Graphics.MechanicalGraphicsWrapper
+        The graphics object to export the image.
+    graphics_image_export_settings : Ansys.Mechanical.Graphics.GraphicsImageExportSettings
+        The settings for exporting the image.
+    image_output_path : Path
+        The path to save the exported image.
+    image_name : str
+        The name of the exported image file.
+    """
+    # Set the camera to fit the mesh
+    camera.SetFit()
+    # Export the mesh image with the specified settings
+    image_path = image_output_path / image_name
+    graphics.ExportImage(
+        str(image_path), image_export_format, graphics_image_export_settings
+    )
+    # Display the exported mesh image
+    display_image(image_path)
+
+
+def display_image(
+    image_path: str,
+    pyplot_figsize_coordinates: tuple = (16, 9),
+    plot_xticks: list = [],
+    plot_yticks: list = [],
+    plot_axis: str = "off",
+) -> None:
+    """Display the image with the specified parameters.
+
+    Parameters
+    ----------
+    image_path : str
+        The path to the image file to display.
+    pyplot_figsize_coordinates : tuple
+        The size of the figure in inches (width, height).
+    plot_xticks : list
+        The x-ticks to display on the plot.
+    plot_yticks : list
+        The y-ticks to display on the plot.
+    plot_axis : str
+        The axis visibility setting ('on' or 'off').
+    """
+    # Set the figure size based on the coordinates specified
+    plt.figure(figsize=pyplot_figsize_coordinates)
+    # Read the image from the file into an array
+    plt.imshow(mpimg.imread(image_path))
+    # Get or set the current tick locations and labels of the x-axis
+    plt.xticks(plot_xticks)
+    # Get or set the current tick locations and labels of the y-axis
+    plt.yticks(plot_yticks)
+    # Turn off the axis
+    plt.axis(plot_axis)
+    # Display the figure
     plt.show()
 
-
-cwd = os.path.join(os.getcwd(), "out")
 
 # %%
 # Configure graphics for image export
 
-Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Front)
+graphics = app.Graphics
+camera = graphics.Camera
+
+# Set the camera orientation to the front view
+camera.SetSpecificViewOrientation(ViewOrientationType.Front)
+
+# Set the image export format and settings
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
 settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
@@ -73,135 +148,150 @@ settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
 
 # %%
-# Import structural analsys
-# ~~~~~~~~~~~~~~~~~~~~~~~~~
-# Download ``.mechdat`` file
+# Import the structural analysis model
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Download ``.mechdat`` file
 structural_mechdat_file = download_file(
     "cantilever.mechdat", "pymechanical", "embedding"
 )
+
+# Open the project file
 app.open(structural_mechdat_file)
-STRUCT = Model.Analyses[0]
+
+# Define the model
+model = app.Model
+
+# Get the structural analysis object
+struct = model.Analyses[0]
 
 # sphinx_gallery_start_ignore
-assert str(STRUCT.ObjectState) == "Solved"
+assert struct.ObjectState == ObjectState.Solved
 # sphinx_gallery_end_ignore
-STRUCT_SLN = STRUCT.Solution
-STRUCT_SLN.Solve(True)
+
+# Get the structural analysis object's solution and solve it
+struct_sln = struct.Solution
+struct_sln.Solve(True)
+
 # sphinx_gallery_start_ignore
-assert str(STRUCT_SLN.Status) == "Done", "Solution status is not 'Done'"
+assert struct_sln.Status == SolutionStatusType.Done, "Solution status is not 'Done'"
 # sphinx_gallery_end_ignore
 
 # %%
-# Display structural analsys results
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Total deformation
-
-STRUCT_SLN.Children[1].Activate()
-Graphics.Camera.SetFit()
-Graphics.ExportImage(
-    os.path.join(cwd, "total_deformation.png"), image_export_format, settings_720p
-)
-display_image("total_deformation.png")
+# Display the structural analysis results
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # %%
-# Equivalent stress
+# Activate the total deformation result and display the image
 
-STRUCT_SLN.Children[2].Activate()
-Graphics.Camera.SetFit()
-Graphics.ExportImage(
-    os.path.join(cwd, "equivalent_stress.png"), image_export_format, settings_720p
+struct_sln.Children[1].Activate()
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, "total_deformation.png"
 )
-display_image("equivalent_stress.png")
+
+# %%
+# Activate the equivalent stress result and display the image
+
+struct_sln.Children[2].Activate()
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, "equivalent_stress.png"
+)
 
 # %%
 # Topology optimization
 # ~~~~~~~~~~~~~~~~~~~~~
 
-# Set MKS unit system
+# Set the MKS unit system
+app.ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
 
-ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardMKS
+# Add the topology optimization analysis to the model and transfer data from the
+# structural analysis
+topology_optimization = model.AddTopologyOptimizationAnalysis()
+topology_optimization.TransferDataFrom(struct)
 
-# Get structural analysis and link to topology optimization
-
-TOPO_OPT = Model.AddTopologyOptimizationAnalysis()
-TOPO_OPT.TransferDataFrom(STRUCT)
-
-OPT_REG = DataModel.GetObjectsByType(DataModelObjectCategory.OptimizationRegion)[0]
-OPT_REG.BoundaryCondition = BoundaryConditionType.AllLoadsAndSupports
-OPT_REG.OptimizationType = OptimizationType.TopologyDensity
+# Get the optimization region from the data model
+optimization_region = DataModel.GetObjectsByType(
+    DataModelObjectCategory.OptimizationRegion
+)[0]
+# Set the optimization region's boundary condition to all loads and supports
+optimization_region.BoundaryCondition = BoundaryConditionType.AllLoadsAndSupports
+# Set the optimization region's optimization type to topology density
+optimization_region.OptimizationType = OptimizationType.TopologyDensity
 
 # sphinx_gallery_start_ignore
-assert str(TOPO_OPT.ObjectState) == "NotSolved"
+assert topology_optimization.ObjectState == ObjectState.NotSolved
 # sphinx_gallery_end_ignore
 
-# Insert volume response constraint object for topology optimization
-# Delete mass response constraint
+# Delete the mass response constraint from the topology optimization
+mass_constraint = topology_optimization.Children[3]
+app.DataModel.Remove(mass_constraint)
 
-MASS_CONSTRN = TOPO_OPT.Children[3]
-MASS_CONSTRN.Delete()
+# Add a volume response constraint to the topology optimization
+volume_constraint = topology_optimization.AddVolumeConstraint()
 
-# Add volume response constraint
-
-VOL_CONSTRN = TOPO_OPT.AddVolumeConstraint()
-
-# Insert member size manufacturing constraint
-
-MEM_SIZE_MFG_CONSTRN = TOPO_OPT.AddMemberSizeManufacturingConstraint()
-MEM_SIZE_MFG_CONSTRN.Minimum = ManuMemberSizeControlledType.Manual
-MEM_SIZE_MFG_CONSTRN.MinSize = Quantity("2.4 [m]")
-
-
-TOPO_OPT.Activate()
-Graphics.Camera.SetFit()
-Graphics.ExportImage(
-    os.path.join(cwd, "boundary_conditions.png"), image_export_format, settings_720p
+# Add a member size manufacturing constraint to the topology optimization
+mem_size_manufacturing_constraint = (
+    topology_optimization.AddMemberSizeManufacturingConstraint()
 )
-display_image("boundary_conditions.png")
+# Set the constraint's minimum to manual and its minimum size to 2.4m
+mem_size_manufacturing_constraint.Minimum = ManuMemberSizeControlledType.Manual
+mem_size_manufacturing_constraint.MinSize = Quantity("2.4 [m]")
+
+# Activate the topology optimization analysis and display the image
+topology_optimization.Activate()
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, "boundary_conditions.png"
+)
 
 # %%
-# Solve
-# ~~~~~
+# Solve the solution
+# ~~~~~~~~~~~~~~~~~~
 
-TOPO_OPT_SLN = TOPO_OPT.Solution
-TOPO_OPT_SLN.Solve(True)
+# Get the topology optimization analysis solution
+top_opt_sln = topology_optimization.Solution
+# Solve the solution
+top_opt_sln.Solve(True)
+
 # sphinx_gallery_start_ignore
-assert str(TOPO_OPT_SLN.Status) == "Done", "Solution status is not 'Done'"
+assert top_opt_sln.Status == SolutionStatusType.Done, "Solution status is not 'Done'"
 # sphinx_gallery_end_ignore
 
 # %%
-# Messages
-# ~~~~~~~~
+# Show messages
+# ~~~~~~~~~~~~~
 
-Messages = ExtAPI.Application.Messages
-if Messages:
-    for message in Messages:
-        print(f"[{message.Severity}] {message.DisplayString}")
-else:
-    print("No [Info]/[Warning]/[Error] Messages")
+# Print all messages from Mechanical
+app.messages.show()
 
 # %%
-# Display results
-# ~~~~~~~~~~~~~~~
+# Display the results
+# ~~~~~~~~~~~~~~~~~~~
 
-TOPO_OPT_SLN.Children[1].Activate()
-TOPO_DENS = TOPO_OPT_SLN.Children[1]
+# Get the topology density result and activate it
+top_opt_sln.Children[1].Activate()
+topology_density = top_opt_sln.Children[1]
 
 # %%
-# Add smoothing to the STL
+# Add smoothing to the stereolithography (STL)
 
-TOPO_DENS.AddSmoothing()
-TOPO_OPT.Solution.EvaluateAllResults()
-TOPO_DENS.Children[0].Activate()
-Graphics.Camera.SetFit()
-Graphics.ExportImage(
-    os.path.join(cwd, "topo_opitimized_smooth.png"), image_export_format, settings_720p
+# Add smoothing to the topology density result
+topology_density.AddSmoothing()
+
+# Evaluate all results for the topology optimization solution
+topology_optimization.Solution.EvaluateAllResults()
+
+# Activate the topology density result after smoothing and display the image
+topology_density.Children[0].Activate()
+set_camera_and_display_image(
+    camera, graphics, settings_720p, output_path, "topo_opitimized_smooth.png"
 )
-display_image("topo_opitimized_smooth.png")
 
 # %%
-# Export animation
+# Export the animation
 
+app.Tree.Activate([topology_density])
+
+# Set the animation export format and settings
 animation_export_format = (
     Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.GIF
 )
@@ -209,8 +299,10 @@ settings_720p = Ansys.Mechanical.Graphics.AnimationExportSettings()
 settings_720p.Width = 1280
 settings_720p.Height = 720
 
-TOPO_DENS.ExportAnimation(
-    os.path.join(cwd, "Topo_opitimized.gif"), animation_export_format, settings_720p
+# Export the animation of the topology density result
+topology_optimized_gif = output_path / "topology_opitimized.gif"
+topology_density.ExportAnimation(
+    str(topology_optimized_gif), animation_export_format, settings_720p
 )
 
 # %%
@@ -219,34 +311,34 @@ TOPO_DENS.ExportAnimation(
 # %%
 # Review the results
 
-# Print topology density results
+# Print the topology density results
 print("Topology Density Results")
-print("Minimum Density: ", TOPO_DENS.Minimum)
-print("Maximum Density: ", TOPO_DENS.Maximum)
-print("Iteration Number: ", TOPO_DENS.IterationNumber)
-print("Original Volume: ", TOPO_DENS.OriginalVolume.Value)
-print("Final Volume: ", TOPO_DENS.FinalVolume.Value)
-print("Percent Volume of Original: ", TOPO_DENS.PercentVolumeOfOriginal)
-print("Original Mass: ", TOPO_DENS.OriginalMass.Value)
-print("Final Mass: ", TOPO_DENS.FinalMass.Value)
-print("Percent Mass of Original: ", TOPO_DENS.PercentMassOfOriginal)
-
+print("Minimum Density: ", topology_density.Minimum)
+print("Maximum Density: ", topology_density.Maximum)
+print("Iteration Number: ", topology_density.IterationNumber)
+print("Original Volume: ", topology_density.OriginalVolume.Value)
+print("Final Volume: ", topology_density.FinalVolume.Value)
+print("Percent Volume of Original: ", topology_density.PercentVolumeOfOriginal)
+print("Original Mass: ", topology_density.OriginalMass.Value)
+print("Final Mass: ", topology_density.FinalMass.Value)
+print("Percent Mass of Original: ", topology_density.PercentMassOfOriginal)
 
 # %%
-# Project tree
-# ~~~~~~~~~~~~
+# Display the project tree
+# ~~~~~~~~~~~~~~~~~~~~~~~~
 
 app.print_tree()
 
 # %%
-# Cleanup
-# ~~~~~~~
-# Save project
+# Clean up the project
+# ~~~~~~~~~~~~~~~~~~~~
 
-app.save(os.path.join(cwd, "cantilever_beam_topology_optimization.mechdat"))
-app.new()
+# Save the project file
+mechdat_file = output_path / "cantilever_beam_topology_optimization.mechdat"
+app.save(str(mechdat_file))
 
-# %%
+# Close the app
+app.close()
+
 # Delete the example files
-
 delete_downloads()
