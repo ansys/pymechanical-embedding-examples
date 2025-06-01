@@ -180,19 +180,19 @@ BRACKET_NS = [x for x in ExtAPI.DataModel.Tree.AllObjects if x.Name == "bracket"
 
 
 mesh = app.Model.Mesh
-automatic_method_33 = mesh.AddAutomaticMethod()
-automatic_method_33.ScopingMethod = GeometryDefineByType.Component
+automatic_method = mesh.AddAutomaticMethod()
+automatic_method.ScopingMethod = GeometryDefineByType.Component
 
 selection = NS_GRP.Children[3]
-automatic_method_33.Location = selection
-automatic_method_33.Method = MethodType.AllTriAllTet
-automatic_method_33.ElementOrder = ElementOrder.Linear
+automatic_method.Location = selection
+automatic_method.Method = MethodType.AllTriAllTet
+automatic_method.ElementOrder = ElementOrder.Linear
 
-sizing_35 = mesh.AddSizing()
-sizing_35.ScopingMethod = GeometryDefineByType.Component
+sizing = mesh.AddSizing()
+sizing.ScopingMethod = GeometryDefineByType.Component
 selection = NS_GRP.Children[3]
-sizing_35.Location = selection
-sizing_35.ElementSize = Quantity(6e-3, "m")
+sizing.Location = selection
+sizing.ElementSize = Quantity(6e-3, "m")
 
 mesh.GenerateMesh()
 
