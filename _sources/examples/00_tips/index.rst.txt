@@ -1,0 +1,83 @@
+
+
+.. _sphx_glr_examples_00_tips:
+
+Tips
+====
+
+This section showcases some of the useful functions that can be used
+in PyMechanical embedding workflow.
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The following example demonstrates how to visualize imported geometry in 3D.">
+
+.. only:: html
+
+  .. image:: /examples/00_tips/images/thumb/sphx_glr_tips_01_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_00_tips_tips_01.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">3D visualization</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The following example demonstrates how to export an image of the imported geometry and display it using matplotlib.">
+
+.. only:: html
+
+  .. image:: /examples/00_tips/images/thumb/sphx_glr_tips_02_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_00_tips_tips_02.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Export image</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The following example demonstrates how to print the heirarchial Mechanical project structure.">
+
+.. only:: html
+
+  .. image:: /examples/00_tips/images/thumb/sphx_glr_tips_03_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_00_tips_tips_03.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Project tree</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/00_tips/tips_01
+   /examples/00_tips/tips_02
+   /examples/00_tips/tips_03
+
