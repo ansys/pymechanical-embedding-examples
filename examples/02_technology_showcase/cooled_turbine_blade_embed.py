@@ -41,6 +41,7 @@ import os
 import os.path
 
 from ansys.mechanical.core import App
+from ansys.mechanical.core.embedding import AddinConfiguration
 from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
@@ -48,7 +49,11 @@ from matplotlib import pyplot as plt
 # %%
 # Embed mechanical and set global variables
 
-app = App()
+
+# config = AddinConfiguration("Mechanical")
+config = AddinConfiguration("WorkBench")
+config.no_act_addins = True
+app = App(config=config)
 app.update_globals(globals())
 print(app)
 
