@@ -51,14 +51,14 @@ import os.path
 
 from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
+from matplotlib import pyplot as plt
 
 # %%
 # Embed mechanical and set global variables
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Embed the Ansys Mechanical application and set the global variables.
 
-app = App(version=251)
-app.update_globals(globals())
+app = App(globals=globals())
 print(app)
 
 cwd = os.path.join(os.getcwd(), "out")
