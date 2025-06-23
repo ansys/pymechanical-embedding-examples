@@ -112,6 +112,7 @@ geometry_path = download_file("cyclic_sector_model.cdb", "pymechanical", "embedd
 geometry_import.ModelImportSourceFilePath = geometry_path
 geometry_import.UnitSystemTypeForImport = ModelImportUnitSystemType.UnitSystemMetricNMM
 geometry_import.Import()
+app.save_as(os.path.join(cwd, "after_cdb_import.mechdb"), overwrite=True)
 
 app.plot()
 
@@ -370,10 +371,12 @@ TOT_DEF_MODAL01 = SOLN_MODAL01.AddTotalDeformation()
 # Solve the modal analysis to obtain the natural frequencies and mode shapes of the system.
 # The solution is performed for the specified number of modes and harmonic indices.
 # The results are stored in the solution object for further analysis and visualization.
+app.save_as(os.path.join(cwd, "before_solve_prestressed.mechdb"), overwrite=True)
+
 SOLN_MODAL01.Solve(True)
 SOLN_MODAL01_SS = SOLN_MODAL01.Status
 
-app.save_as(os.path.join(cwd, "prestressed.mechdb"), overwrite=True)
+app.save_as(os.path.join(cwd, "after_solve_prestressed.mechdb"), overwrite=True)
 # sphinx_gallery_start_ignore
 assert str(SOLN_MODAL01_SS) == "Done", "Solution status is not 'Done'"
 # sphinx_gallery_end_ignore
