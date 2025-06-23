@@ -7,8 +7,8 @@ on:
 
 env:
   MAIN_PYTHON_VERSION: '3.12'
-  DEV_MAJOR_REV: '25'
-  DEV_MINOR_REV: '2'
+  DEV_MAJOR_REV: '26'
+  DEV_MINOR_REV: '1'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

@@ -79,33 +79,15 @@ jobs:
           ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
         run: |
           . /env/bin/activate
-          . /env/bin/activate
-          xvfb-run mechanical-env make -C doc html > doc_build_output.txt 2>&1 || true
-          cat doc_build_output.txt
-          #
-          # Check if "build succeeded" string is present in doc_build_output.txt
-          #
-          if grep -q "build succeeded" doc_build_output.txt; then
-            echo "Documentation building succeeded"
-            exit 0
-          else
-            echo "Documentation building failed"
-            exit 1
-          fi
+          xvfb-run mechanical-env make -C doc html
+
       - name: Link check
         env:
           SPHINXOPTS: '-j auto -W --keep-going'
         run: |
           . /env/bin/activate
-          xvfb-run make -C doc linkcheck > doc_linkcheck_output.txt 2>&1 || true
-          cat doc_linkcheck_output.txt
-          if grep -q "build succeeded" doc_build_output.txt; then
-            echo "LinkCheck  succeeded"
-            exit 0
-          else
-            echo "LinkCheck failed"
-            exit 1
-          fi
+          xvfb-run make -C doc linkcheck
+
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v4
         with:
