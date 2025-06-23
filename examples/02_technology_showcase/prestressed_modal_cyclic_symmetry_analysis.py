@@ -39,63 +39,96 @@ Pressure, rotational velocity and thermal boundary condition are applied.
 
 """
 
-# %%
-# Import necessary libraries
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Import the required libraries for the analysis.
-# The libraries include os, string, json for file handling and data manipulation,
-# PIL for image processing, ansys.mechanical.core for Ansys Mechanical API,
-# matplotlib for plotting and animation.
-import os
-import os.path
+## %%
+# Import the necessary libraries
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 from ansys.mechanical.core import App
 from ansys.mechanical.core.examples import delete_downloads, download_file
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 
-# %%
-# Embed mechanical and set global variables
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Embed the Ansys Mechanical application and set the global variables.
+if TYPE_CHECKING:
+    import Ansys
 
-app = App(globals=globals())
+# %%
+# Initialize the embedded application
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+app = App(globals=globals(), version=251)
 print(app)
 
-cwd = os.path.join(os.getcwd(), "out")
 
 # %%
-# Define function to display images
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Define a function to display images using matplotlib.
-# The function takes the image name as input and displays the image using matplotlib.
+# Create functions to set camera and display images
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Set the path for the output files (images, gifs, mechdat)
+output_path = Path.cwd() / "out"
 
 
-def display_image(image_name):
-    plt.figure(figsize=(16, 9))
-    plt.imshow(mpimg.imread(os.path.join(cwd, image_name)))
-    plt.xticks([])
-    plt.yticks([])
-    plt.axis("off")
+def display_image(
+    image_path: str,
+    pyplot_figsize_coordinates: tuple = (16, 9),
+    plot_xticks: list = [],
+    plot_yticks: list = [],
+    plot_axis: str = "off",
+) -> None:
+    """Display the image with the specified parameters.
+
+    Parameters
+    ----------
+    image_path : str
+        The path to the image file to display.
+    pyplot_figsize_coordinates : tuple
+        The size of the figure in inches (width, height).
+    plot_xticks : list
+        The x-ticks to display on the plot.
+    plot_yticks : list
+        The y-ticks to display on the plot.
+    plot_axis : str
+        The axis visibility setting ('on' or 'off').
+    """
+    # Set the figure size based on the coordinates specified
+    plt.figure(figsize=pyplot_figsize_coordinates)
+    # Read the image from the file into an array
+    image_path = str(output_path / image_path)
+    plt.imshow(mpimg.imread(image_path))
+    # Get or set the current tick locations and labels of the x-axis
+    plt.xticks(plot_xticks)
+    # Get or set the current tick locations and labels of the y-axis
+    plt.yticks(plot_yticks)
+    # Turn off the axis
+    plt.axis(plot_axis)
+    # Display the figure
     plt.show()
 
 
 # %%
 # Configure graphics for image export
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Set the graphics resolution and background color for image export.
-# The resolution is set to 1280x720 pixels, and the background color is set to white.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
-Graphics.Camera.SetFit()
+# Define the graphics and camera
+graphics = app.Graphics
+camera = graphics.Camera
+
+# Set the camera orientation to the isometric view and set the camera to fit the model
+camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+camera.SetFit()
+
+# Set the image export format and settings
 image_export_format = GraphicsImageExportFormat.PNG
 settings_720p = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
-settings_720p.Resolution = GraphicsResolutionType.EnhancedResolution
-settings_720p.Background = GraphicsBackgroundType.White
+settings_720p.Resolution = (
+    Ansys.Mechanical.DataModel.Enums.GraphicsResolutionType.EnhancedResolution
+)
+settings_720p.Background = Ansys.Mechanical.DataModel.Enums.GraphicsBackgroundType.White
 settings_720p.Width = 1280
 settings_720p.Height = 720
 settings_720p.CurrentGraphicsDisplay = False
-Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
 
 # %%
 # Download and Import CDB File
@@ -106,15 +139,19 @@ Graphics.Camera.Rotate(180, CameraAxisType.ScreenY)
 # using the Model Import API.
 # The CDB file is a pre-existing model file that contains
 # the geometry and mesh information for the analysis.
+# Define the model
 
-geometry_import_group = Model.GeometryImportGroup
-geometry_import = geometry_import_group.AddModelImport()
 geometry_path = download_file("cyclic_sector_model.cdb", "pymechanical", "embedding")
+model = app.Model
+
+# Add the geometry import to the geometry import group
+geometry_import_group = model.GeometryImportGroup
+geometry_import = geometry_import_group.AddModelImport()
 geometry_import.ModelImportSourceFilePath = geometry_path
 geometry_import.UnitSystemTypeForImport = ModelImportUnitSystemType.UnitSystemMetricNMM
 geometry_import.Import()
-app.save_as(os.path.join(cwd, "after_cdb_import.mechdb"), overwrite=True)
 
+# Visualize the model in 3D
 app.plot()
 
 # %%
@@ -324,8 +361,8 @@ NS_RESP_VERTEX.Generate()
 # The symmetry region allows for the analysis of a smaller
 # portion of the model while accounting for the cyclic
 # nature of the full model.
-
-SYMM = Model.AddSymmetry()
+model = app.Model
+SYMM = model.AddSymmetry()
 SYMMETRY_REGION = SYMM.AddPreMeshedCyclicRegion()
 SYMMETRY_REGION.LowBoundaryLocation = NS_LOW
 SYMMETRY_REGION.HighBoundaryLocation = NS_HIGH
@@ -345,12 +382,11 @@ SYMMETRY_REGION.NumberOfSectors = 13
 # The harmonic index is used to specify the frequency range for the analysis.
 # The analysis settings and solution settings are defined for the modal analysis.
 
-modal = Model
-MODAL01 = modal.AddModalAnalysis()
+MODAL01 = model.AddModalAnalysis()
 
 # Solve first standalone Modal analysis
-ANA_SETTING_MODAL01 = Model.Analyses[0].AnalysisSettings
-SOLN_MODAL01 = Model.Analyses[0].Solution
+ANA_SETTING_MODAL01 = model.Analyses[0].AnalysisSettings
+SOLN_MODAL01 = model.Analyses[0].Solution
 
 ANA_SETTING_MODAL01.MaximumModesToFind = 2
 ANA_SETTING_MODAL01.HarmonicIndexRange = CyclicHarmonicIndex.Manual
@@ -372,12 +408,12 @@ TOT_DEF_MODAL01 = SOLN_MODAL01.AddTotalDeformation()
 # Solve the modal analysis to obtain the natural frequencies and mode shapes of the system.
 # The solution is performed for the specified number of modes and harmonic indices.
 # The results are stored in the solution object for further analysis and visualization.
-app.save_as(os.path.join(cwd, "before_solve_prestressed.mechdb"), overwrite=True)
+app.save_as(str(output_path / "before_solve_prestressed.mechdb"), overwrite=True)
 
 SOLN_MODAL01.Solve(True)
 SOLN_MODAL01_SS = SOLN_MODAL01.Status
 
-app.save_as(os.path.join(cwd, "after_solve_prestressed.mechdb"), overwrite=True)
+app.save_as(str(output_path / "after_solve_prestressed.mechdb"), overwrite=True)
 # sphinx_gallery_start_ignore
 assert str(SOLN_MODAL01_SS) == "Done", "Solution status is not 'Done'"
 # sphinx_gallery_end_ignore
@@ -405,7 +441,7 @@ H4_FRQ2_MODAL01 = TOT_DEF_MODAL01.TabularData["Frequency"][9]
 # The analysis is set to be a linear static analysis, which means that the response of the system
 # is assumed to be linear with respect to the applied loads.
 
-STAT_STRUC01 = modal.AddStaticStructuralAnalysis()
+STAT_STRUC01 = model.AddStaticStructuralAnalysis()
 ANA_SETTING_STAT_STRUC01 = Model.Analyses[1].AnalysisSettings
 SOLN_STAT_STRUC01 = Model.Analyses[1].Solution
 
@@ -434,7 +470,7 @@ THERM_COND_STRUC01.Magnitude.Output.DiscreteValues = [Quantity("50 [C]")]
 # The prestress modal analysis is used to analyze the
 # response of the system under prestressed conditions.
 
-MODAL02 = modal.AddModalAnalysis()
+MODAL02 = model.AddModalAnalysis()
 Pre_Stress02 = MODAL02.Children[0]
 Pre_Stress02.PreStressICEnvironment = Model.Analyses[1]
 ANA_SETTING_MODAL02 = Model.Analyses[2].AnalysisSettings
@@ -485,7 +521,7 @@ H4_FRQ2_MODAL02 = TOT_DEF_MODAL02.TabularData["Frequency"][9]
 # Setup Non-linear Static Structural Analysis
 # The non-linear static analysis is used to analyze the
 # response of the system under non-linear loading conditions.
-STAT_STRUC02 = modal.AddStaticStructuralAnalysis()
+STAT_STRUC02 = model.AddStaticStructuralAnalysis()
 ANA_SETTING_STAT_STRUC02 = Model.Analyses[3].AnalysisSettings
 SOLN_STAT_STRUC02 = Model.Analyses[3].Solution
 
@@ -520,7 +556,7 @@ THERM_COND_STRUC02.Magnitude.Output.DiscreteValues = [Quantity("50 [C]")]
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Setup and solve modal with prestress from non-linear static analysis
 
-MODAL03 = modal.AddModalAnalysis()
+MODAL03 = model.AddModalAnalysis()
 Pre_Stress03 = MODAL03.Children[0]
 Pre_Stress03.PreStressICEnvironment = Model.Analyses[3]
 ANA_SETTING_MODAL03 = Model.Analyses[4].AnalysisSettings
@@ -571,7 +607,7 @@ H4_FRQ2_MODAL03 = TOT_DEF_MODAL03.TabularData["Frequency"][9]
 # The harmonic response analysis is used to analyze the
 # response of the system under harmonic loading conditions.
 
-HARM_RESP01 = modal.AddHarmonicResponseAnalysis()
+HARM_RESP01 = model.AddHarmonicResponseAnalysis()
 ANA_SETTING_HARM_RESP01 = Model.Analyses[5].AnalysisSettings
 SOLN_HARM_RESP01 = Model.Analyses[5].Solution
 
@@ -654,13 +690,16 @@ assert str(SOLN_HARM_RESP01_SS) == "Done", "Solution status is not 'Done'"
 # Activate the results and set the view to isometric
 
 TOT_DEF4_1.Activate()
-Graphics.Camera.SetFit()
-Graphics.ExportImage(
-    os.path.join(cwd, "deform_frequency_response.png"),
+camera.SetFit()
+camera.SetFit()
+graphics.ExportImage(
+    str(output_path / "deform_frequency_response.png"),
     image_export_format,
     settings_720p,
 )
 display_image("deform_frequency_response.png")
+
+app.save_as(str(output_path / "final.mechdb"), overwrite=True)
 
 
 # Close the app
