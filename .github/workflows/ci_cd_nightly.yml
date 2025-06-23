@@ -102,24 +102,20 @@ jobs:
           ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
         run: |
           . /env/bin/activate
-          xvfb-run mechanical-env make -C doc html > doc_build_output.txt 2>&1 || true
-          cat doc_build_output.txt
-          #
-          # Check if "build succeeded" string is present in doc_build_output.txt
-          #
-          if grep -q "build succeeded" doc_build_output.txt; then
-            echo "Documentation building succeeded"
-            exit 0
-          else
-            echo "Documentation building failed"
-            exit 1
-          fi
+          xvfb-run mechanical-env make -C doc html
 
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v4
         with:
           name: documentation-html
           path: doc/_build/html
+          retention-days: 7
+
+      - name: Upload example output
+        uses: actions/upload-artifact@v4
+        with:
+          name: examples
+          path: examples/02_technology_showcase
           retention-days: 7
 
   build-failure:
