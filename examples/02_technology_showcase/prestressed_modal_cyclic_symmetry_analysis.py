@@ -149,6 +149,7 @@ geometry_import_group = model.GeometryImportGroup
 geometry_import = geometry_import_group.AddModelImport()
 geometry_import.ModelImportSourceFilePath = geometry_path
 geometry_import.UnitSystemTypeForImport = ModelImportUnitSystemType.UnitSystemMetricNMM
+print(geometry_import.UnitSystemTypeForImport)
 geometry_import.Import()
 
 # Visualize the model in 3D
