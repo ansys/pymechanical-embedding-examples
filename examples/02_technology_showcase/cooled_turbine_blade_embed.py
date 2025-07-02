@@ -50,8 +50,8 @@ from matplotlib import pyplot as plt
 # Embed mechanical and set global variables
 
 
-# config = AddinConfiguration("Mechanical")
-config = AddinConfiguration("WorkBench")
+config = AddinConfiguration("Mechanical")
+#config = AddinConfiguration("WorkBench")
 config.no_act_addins = True
 app = App(config=config)
 app.update_globals(globals())
