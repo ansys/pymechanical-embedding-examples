@@ -51,7 +51,7 @@ from matplotlib import pyplot as plt
 
 
 config = AddinConfiguration("Mechanical")
-#config = AddinConfiguration("WorkBench")
+# config = AddinConfiguration("WorkBench")
 config.no_act_addins = True
 app = App(config=config)
 app.update_globals(globals())
