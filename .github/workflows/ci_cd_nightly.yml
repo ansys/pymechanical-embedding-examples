@@ -111,13 +111,6 @@ jobs:
           path: doc/_build/html
           retention-days: 7
 
-      - name: Upload example output
-        uses: actions/upload-artifact@v4
-        with:
-          name: examples
-          path: examples/02_technology_showcase
-          retention-days: 7
-
   build-failure:
     name: Teams notify on failure
     if: failure()
