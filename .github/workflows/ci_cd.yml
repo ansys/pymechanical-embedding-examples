@@ -95,13 +95,6 @@ jobs:
           path: doc/_build/html
           retention-days: 7
 
-      - name: Upload examples
-        uses: actions/upload-artifact@v4
-        with:
-          name: examples-out
-          path: examples/02_technology_showcase
-          retention-days: 7
-
   doc-deploy:
     name: Documentation deploy
     runs-on: ubuntu-latest
