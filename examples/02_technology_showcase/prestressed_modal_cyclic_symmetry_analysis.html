@@ -1,0 +1,1329 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta property="og:site_name" content="PyAnsys" />
+    <title>Centrifugal Impeller Analysis Using Cyclic Symmetry and Linear Perturbation &#8212; PyMechanical Embedding Examples</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=fbf3eb5d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=fbf3eb5d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../_static/documentation_options.js?v=e7fb764e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/thebelab-helper.js"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/02_technology_showcase/prestressed_modal_cyclic_symmetry_analysis';</script>
+    <link rel="icon" href="../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Shape Optimization of a Bracket" href="shape_optimization_bracket_model.html" />
+    <link rel="prev" title="Nonlinear Analysis of a Rubber Boot Seal Model" href="non_linear_analysis_rubber_boot_seal.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.dev0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyMechanical Embedding Examples - Home"/>
+    <img src="../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyMechanical Embedding Examples - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../00_tips/index.html">
+    Tips
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../01_basic/index.html">
+    Basic
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Technology showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../00_tips/index.html">
+    Tips
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../01_basic/index.html">
+    Basic
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Technology showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Rotor_Blade_Inverse_solve.html">Inverse-Solving analysis of a rotor fan blade with disk</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact_wear_simulation.html">Contact Surface Wear Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="non_linear_analysis_rubber_boot_seal.html">Nonlinear Analysis of a Rubber Boot Seal Model</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Centrifugal Impeller Analysis Using Cyclic Symmetry and Linear Perturbation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shape_optimization_bracket_model.html">Shape Optimization of a Bracket</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+       
+    <li class="breadcrumb-item">
+      <a href="https://mechanical.docs.pyansys.com/" class="nav-link">PyMechanical</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Technology showcase</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Centrifugal Impeller Analysis Using Cyclic Symmetry and Linear Perturbation</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-examples-02-technology-showcase-prestressed-modal-cyclic-symmetry-analysis-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="centrifugal-impeller-analysis-using-cyclic-symmetry-and-linear-perturbation">
+<span id="ref-example-td-013"></span><span id="sphx-glr-examples-02-technology-showcase-prestressed-modal-cyclic-symmetry-analysis-py"></span><h1>Centrifugal Impeller Analysis Using Cyclic Symmetry and Linear Perturbation<a class="headerlink" href="#centrifugal-impeller-analysis-using-cyclic-symmetry-and-linear-perturbation" title="Link to this heading">#</a></h1>
+<p>The impeller blade assembly in this example is a subsystem of a gas turbine
+engine used in aerospace applications. The model consists of a shroud and
+an impeller blade assembly with a sector angle of 27.692 degrees. The full
+model is composed of 13 primary blades and splitters located at a distance
+of 1 mm from the rigid wall at the start of the analysis.</p>
+<p>Coverage:
+Modal, perturbed prestressed modal with linear and nonlinear base static
+solution, full-harmonic are performed on the cyclic-sector model.
+Cyclic symmetry is applied.
+Pressure, rotational velocity and thermal boundary condition are applied.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1">## %%</span>
+<span class="c1"># Import the necessary libraries</span>
+<span class="c1"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.mechanical.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">App</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.mechanical.core.examples</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete_downloads</span><span class="p">,</span> <span class="n">download_file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">image</span> <span class="k">as</span> <span class="n">mpimg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">Ansys</span>
+</pre></div>
+</div>
+<section id="initialize-the-embedded-application">
+<h2>Initialize the embedded application<a class="headerlink" href="#initialize-the-embedded-application" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="nb">globals</span><span class="o">=</span><span class="nb">globals</span><span class="p">(),</span> <span class="n">version</span><span class="o">=</span><span class="mi">251</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Ansys Mechanical [Ansys Mechanical Enterprise]
+Product Version:251
+Software build date: 11/27/2024 09:34:44
+</pre></div>
+</div>
+</section>
+<section id="create-functions-to-set-camera-and-display-images">
+<h2>Create functions to set camera and display images<a class="headerlink" href="#create-functions-to-set-camera-and-display-images" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set the path for the output files (images, gifs, mechdat)</span>
+<span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;out&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">display_image</span><span class="p">(</span>
+    <span class="n">image_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">pyplot_figsize_coordinates</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span>
+    <span class="n">plot_xticks</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+    <span class="n">plot_yticks</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+    <span class="n">plot_axis</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;off&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Display the image with the specified parameters.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image_path : str</span>
+<span class="sd">        The path to the image file to display.</span>
+<span class="sd">    pyplot_figsize_coordinates : tuple</span>
+<span class="sd">        The size of the figure in inches (width, height).</span>
+<span class="sd">    plot_xticks : list</span>
+<span class="sd">        The x-ticks to display on the plot.</span>
+<span class="sd">    plot_yticks : list</span>
+<span class="sd">        The y-ticks to display on the plot.</span>
+<span class="sd">    plot_axis : str</span>
+<span class="sd">        The axis visibility setting (&#39;on&#39; or &#39;off&#39;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Set the figure size based on the coordinates specified</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">pyplot_figsize_coordinates</span><span class="p">)</span>
+    <span class="c1"># Read the image from the file into an array</span>
+    <span class="n">image_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">output_path</span> <span class="o">/</span> <span class="n">image_path</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">image_path</span><span class="p">))</span>
+    <span class="c1"># Get or set the current tick locations and labels of the x-axis</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">plot_xticks</span><span class="p">)</span>
+    <span class="c1"># Get or set the current tick locations and labels of the y-axis</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">plot_yticks</span><span class="p">)</span>
+    <span class="c1"># Turn off the axis</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">plot_axis</span><span class="p">)</span>
+    <span class="c1"># Display the figure</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="configure-graphics-for-image-export">
+<h2>Configure graphics for image export<a class="headerlink" href="#configure-graphics-for-image-export" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the graphics and camera</span>
+<span class="n">graphics</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">Graphics</span>
+<span class="n">camera</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">Camera</span>
+
+<span class="c1"># Set the camera orientation to the isometric view and set the camera to fit the model</span>
+<span class="n">camera</span><span class="o">.</span><span class="n">SetSpecificViewOrientation</span><span class="p">(</span><span class="n">ViewOrientationType</span><span class="o">.</span><span class="n">Iso</span><span class="p">)</span>
+<span class="n">camera</span><span class="o">.</span><span class="n">SetFit</span><span class="p">()</span>
+
+<span class="c1"># Set the image export format and settings</span>
+<span class="n">image_export_format</span> <span class="o">=</span> <span class="n">GraphicsImageExportFormat</span><span class="o">.</span><span class="n">PNG</span>
+<span class="n">settings_720p</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">GraphicsImageExportSettings</span><span class="p">()</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Resolution</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Enums</span><span class="o">.</span><span class="n">GraphicsResolutionType</span><span class="o">.</span><span class="n">EnhancedResolution</span>
+<span class="p">)</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Background</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Enums</span><span class="o">.</span><span class="n">GraphicsBackgroundType</span><span class="o">.</span><span class="n">White</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Width</span> <span class="o">=</span> <span class="mi">1280</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Height</span> <span class="o">=</span> <span class="mi">720</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">CurrentGraphicsDisplay</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</section>
+<section id="download-and-import-cdb-file">
+<h2>Download and Import CDB File<a class="headerlink" href="#download-and-import-cdb-file" title="Link to this heading">#</a></h2>
+<p>Download the CDB file from the specified URL
+and save it to a temporary directory.
+The CDB file is then imported into the Ansys Mechanical model
+using the Model Import API.
+The CDB file is a pre-existing model file that contains
+the geometry and mesh information for the analysis.
+Define the model</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">geometry_path</span> <span class="o">=</span> <span class="n">download_file</span><span class="p">(</span><span class="s2">&quot;cyclic_sector_model.cdb&quot;</span><span class="p">,</span> <span class="s2">&quot;pymechanical&quot;</span><span class="p">,</span> <span class="s2">&quot;embedding&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">Model</span>
+
+<span class="c1"># Add the geometry import to the geometry import group</span>
+<span class="n">geometry_import_group</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">GeometryImportGroup</span>
+<span class="n">geometry_import</span> <span class="o">=</span> <span class="n">geometry_import_group</span><span class="o">.</span><span class="n">AddModelImport</span><span class="p">()</span>
+<span class="n">geometry_import</span><span class="o">.</span><span class="n">ModelImportSourceFilePath</span> <span class="o">=</span> <span class="n">geometry_path</span>
+<span class="n">geometry_import</span><span class="o">.</span><span class="n">UnitSystemTypeForImport</span> <span class="o">=</span> <span class="n">ModelImportUnitSystemType</span><span class="o">.</span><span class="n">UnitSystemMetricNMM</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">geometry_import</span><span class="o">.</span><span class="n">UnitSystemTypeForImport</span><span class="p">)</span>
+<span class="n">geometry_import</span><span class="o">.</span><span class="n">Import</span><span class="p">()</span>
+
+<span class="c1"># Visualize the model in 3D</span>
+<span class="n">app</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Static Scene</label><div class="sd-tab-content docutils">
+<img src="../../_images/sphx_glr_prestressed_modal_cyclic_symmetry_analysis_001.png" srcset="../../_images/sphx_glr_prestressed_modal_cyclic_symmetry_analysis_001.png" alt="prestressed modal cyclic symmetry analysis" class = "sphx-glr-single-img"/></div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Interactive Scene</label><div class="sd-tab-content docutils">
+
+    <iframe src='../../_static/static_viewer.html?fileURL=../_images/examples/02_technology_showcase/images/sphx_glr_prestressed_modal_cyclic_symmetry_analysis_001.vtksz' width='100%%' height='400px' frameborder='0'></iframe>
+</div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>UnitSystemMetricNMM
+</pre></div>
+</div>
+</section>
+<section id="store-all-main-tree-nodes-as-variables">
+<h2>Store all main tree nodes as variables<a class="headerlink" href="#store-all-main-tree-nodes-as-variables" title="Link to this heading">#</a></h2>
+<p>Store the main tree nodes of the Ansys Mechanical model
+in variables for easy access.
+The variables include the model, geometry, mesh,
+named selections, connections, and coordinate systems.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">GEOM</span> <span class="o">=</span> <span class="n">ExtAPI</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">Model</span><span class="o">.</span><span class="n">Geometry</span>
+<span class="n">MSH</span> <span class="o">=</span> <span class="n">ExtAPI</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">Model</span><span class="o">.</span><span class="n">Mesh</span>
+<span class="n">NS_GRP</span> <span class="o">=</span> <span class="n">ExtAPI</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">Model</span><span class="o">.</span><span class="n">NamedSelections</span>
+<span class="n">CONN_GRP</span> <span class="o">=</span> <span class="n">ExtAPI</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">Model</span><span class="o">.</span><span class="n">Connections</span>
+<span class="n">CS_GRP</span> <span class="o">=</span> <span class="n">ExtAPI</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">Model</span><span class="o">.</span><span class="n">CoordinateSystems</span>
+</pre></div>
+</div>
+</section>
+<section id="define-and-select-nmm-units-system">
+<h2>Define and Select NMM Units System<a class="headerlink" href="#define-and-select-nmm-units-system" title="Link to this heading">#</a></h2>
+<p>Define the unit system for the model as Standard NMM (Newton, millimeter).
+This unit system is commonly used in engineering applications
+and is suitable for the analysis being performed.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtAPI</span><span class="o">.</span><span class="n">Application</span><span class="o">.</span><span class="n">ActiveUnitSystem</span> <span class="o">=</span> <span class="n">MechanicalUnitSystem</span><span class="o">.</span><span class="n">StandardNMM</span>
+</pre></div>
+</div>
+</section>
+<section id="materials-assignment">
+<h2>Materials Assignment<a class="headerlink" href="#materials-assignment" title="Link to this heading">#</a></h2>
+<p>Assign materials to the geometry components of the model.
+The materials are defined in the Ansys Mechanical
+database and are assigned to the geometry components based on their names.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">blade1</span> <span class="o">=</span> <span class="n">GEOM</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">blade1</span><span class="o">.</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;Structural Steel&quot;</span>
+<span class="n">blade2</span> <span class="o">=</span> <span class="n">GEOM</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">blade2</span><span class="o">.</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;Structural Steel&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="coordinate-system-definition">
+<h2>Coordinate System Definition<a class="headerlink" href="#coordinate-system-definition" title="Link to this heading">#</a></h2>
+<p>Define a local coordinate system (LCS) for the model.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">LCS1</span> <span class="o">=</span> <span class="n">CS_GRP</span><span class="o">.</span><span class="n">AddCoordinateSystem</span><span class="p">()</span>
+<span class="n">LCS1</span><span class="o">.</span><span class="n">CoordinateSystemType</span> <span class="o">=</span> <span class="n">CoordinateSystemTypeEnum</span><span class="o">.</span><span class="n">Cylindrical</span>
+<span class="n">LCS1</span><span class="o">.</span><span class="n">OriginX</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0 [mm]&quot;</span><span class="p">)</span>
+<span class="n">LCS1</span><span class="o">.</span><span class="n">OriginY</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0 [mm]&quot;</span><span class="p">)</span>
+<span class="n">LCS1</span><span class="o">.</span><span class="n">OriginZ</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0 [mm]&quot;</span><span class="p">)</span>
+<span class="n">LCS1</span><span class="o">.</span><span class="n">SecondaryAxisDefineBy</span> <span class="o">=</span> <span class="n">CoordinateSystemAlignmentType</span><span class="o">.</span><span class="n">GlobalZ</span>
+</pre></div>
+</div>
+</section>
+<section id="add-named-selections">
+<h2>Add Named Selections<a class="headerlink" href="#add-named-selections" title="Link to this heading">#</a></h2>
+<p>The named selections are used to specify the locations
+where loads and boundary conditions will be applied during the analysis.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">NS_LOW</span> <span class="o">=</span> <span class="n">NS_GRP</span><span class="o">.</span><span class="n">AddNamedSelection</span><span class="p">()</span>
+<span class="n">NS_LOW</span><span class="o">.</span><span class="n">Name</span> <span class="o">=</span> <span class="s2">&quot;NS_LOW&quot;</span>
+<span class="n">NS_LOW</span><span class="o">.</span><span class="n">ScopingMethod</span> <span class="o">=</span> <span class="n">GeometryDefineByType</span><span class="o">.</span><span class="n">Worksheet</span>
+
+<span class="n">GEN_CRT</span> <span class="o">=</span> <span class="n">NS_LOW</span><span class="o">.</span><span class="n">GenerationCriteria</span>
+<span class="n">CRT1</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelectionCriterion</span><span class="p">()</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Active</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Action</span> <span class="o">=</span> <span class="n">SelectionActionType</span><span class="o">.</span><span class="n">Add</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">EntityType</span> <span class="o">=</span> <span class="n">SelectionType</span><span class="o">.</span><span class="n">GeoFace</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Criterion</span> <span class="o">=</span> <span class="n">SelectionCriterionType</span><span class="o">.</span><span class="n">Size</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Operator</span> <span class="o">=</span> <span class="n">SelectionOperatorType</span><span class="o">.</span><span class="n">Equal</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;607.35 [mm^2]&quot;</span><span class="p">)</span>
+<span class="n">GEN_CRT</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">CRT1</span><span class="p">)</span>
+
+<span class="n">CRT2</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelectionCriterion</span><span class="p">()</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Active</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Action</span> <span class="o">=</span> <span class="n">SelectionActionType</span><span class="o">.</span><span class="n">Filter</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">EntityType</span> <span class="o">=</span> <span class="n">SelectionType</span><span class="o">.</span><span class="n">GeoFace</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Criterion</span> <span class="o">=</span> <span class="n">SelectionCriterionType</span><span class="o">.</span><span class="n">LocationZ</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Operator</span> <span class="o">=</span> <span class="n">SelectionOperatorType</span><span class="o">.</span><span class="n">Equal</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;46.544 [mm]&quot;</span><span class="p">)</span>
+<span class="n">GEN_CRT</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">CRT2</span><span class="p">)</span>
+
+<span class="n">CRT3</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelectionCriterion</span><span class="p">()</span>
+<span class="n">CRT3</span><span class="o">.</span><span class="n">Active</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CRT3</span><span class="o">.</span><span class="n">Action</span> <span class="o">=</span> <span class="n">SelectionActionType</span><span class="o">.</span><span class="n">Add</span>
+<span class="n">CRT3</span><span class="o">.</span><span class="n">EntityType</span> <span class="o">=</span> <span class="n">SelectionType</span><span class="o">.</span><span class="n">GeoFace</span>
+<span class="n">CRT3</span><span class="o">.</span><span class="n">Criterion</span> <span class="o">=</span> <span class="n">SelectionCriterionType</span><span class="o">.</span><span class="n">Size</span>
+<span class="n">CRT3</span><span class="o">.</span><span class="n">Operator</span> <span class="o">=</span> <span class="n">SelectionOperatorType</span><span class="o">.</span><span class="n">Equal</span>
+<span class="n">CRT3</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;997.65 [mm^2]&quot;</span><span class="p">)</span>
+<span class="n">GEN_CRT</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">CRT3</span><span class="p">)</span>
+
+<span class="n">CRT4</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelectionCriterion</span><span class="p">()</span>
+<span class="n">CRT4</span><span class="o">.</span><span class="n">Active</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CRT4</span><span class="o">.</span><span class="n">Action</span> <span class="o">=</span> <span class="n">SelectionActionType</span><span class="o">.</span><span class="n">Filter</span>
+<span class="n">CRT4</span><span class="o">.</span><span class="n">EntityType</span> <span class="o">=</span> <span class="n">SelectionType</span><span class="o">.</span><span class="n">GeoFace</span>
+<span class="n">CRT4</span><span class="o">.</span><span class="n">Criterion</span> <span class="o">=</span> <span class="n">SelectionCriterionType</span><span class="o">.</span><span class="n">LocationZ</span>
+<span class="n">CRT4</span><span class="o">.</span><span class="n">Operator</span> <span class="o">=</span> <span class="n">SelectionOperatorType</span><span class="o">.</span><span class="n">GreaterThan</span>
+<span class="n">CRT4</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;21 [mm]&quot;</span><span class="p">)</span>
+<span class="n">GEN_CRT</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">CRT4</span><span class="p">)</span>
+<span class="n">NS_LOW</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">NS_LOW</span><span class="o">.</span><span class="n">Generate</span><span class="p">()</span>
+
+<span class="n">NS_HIGH</span> <span class="o">=</span> <span class="n">NS_GRP</span><span class="o">.</span><span class="n">AddNamedSelection</span><span class="p">()</span>
+<span class="n">NS_HIGH</span><span class="o">.</span><span class="n">Name</span> <span class="o">=</span> <span class="s2">&quot;NS_LOW&quot;</span>
+<span class="n">NS_HIGH</span><span class="o">.</span><span class="n">ScopingMethod</span> <span class="o">=</span> <span class="n">GeometryDefineByType</span><span class="o">.</span><span class="n">Worksheet</span>
+
+<span class="n">GEN_CRT</span> <span class="o">=</span> <span class="n">NS_HIGH</span><span class="o">.</span><span class="n">GenerationCriteria</span>
+<span class="n">CRT1</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelectionCriterion</span><span class="p">()</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Active</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Action</span> <span class="o">=</span> <span class="n">SelectionActionType</span><span class="o">.</span><span class="n">Add</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">EntityType</span> <span class="o">=</span> <span class="n">SelectionType</span><span class="o">.</span><span class="n">GeoFace</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Criterion</span> <span class="o">=</span> <span class="n">SelectionCriterionType</span><span class="o">.</span><span class="n">Size</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Operator</span> <span class="o">=</span> <span class="n">SelectionOperatorType</span><span class="o">.</span><span class="n">Equal</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;607.35 [mm^2]&quot;</span><span class="p">)</span>
+<span class="n">GEN_CRT</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">CRT1</span><span class="p">)</span>
+
+<span class="n">CRT2</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelectionCriterion</span><span class="p">()</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Active</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Action</span> <span class="o">=</span> <span class="n">SelectionActionType</span><span class="o">.</span><span class="n">Filter</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">EntityType</span> <span class="o">=</span> <span class="n">SelectionType</span><span class="o">.</span><span class="n">GeoFace</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Criterion</span> <span class="o">=</span> <span class="n">SelectionCriterionType</span><span class="o">.</span><span class="n">LocationZ</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Operator</span> <span class="o">=</span> <span class="n">SelectionOperatorType</span><span class="o">.</span><span class="n">Equal</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;24.348 [mm]&quot;</span><span class="p">)</span>
+<span class="n">GEN_CRT</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">CRT2</span><span class="p">)</span>
+
+<span class="n">CRT3</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelectionCriterion</span><span class="p">()</span>
+<span class="n">CRT3</span><span class="o">.</span><span class="n">Active</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CRT3</span><span class="o">.</span><span class="n">Action</span> <span class="o">=</span> <span class="n">SelectionActionType</span><span class="o">.</span><span class="n">Add</span>
+<span class="n">CRT3</span><span class="o">.</span><span class="n">EntityType</span> <span class="o">=</span> <span class="n">SelectionType</span><span class="o">.</span><span class="n">GeoFace</span>
+<span class="n">CRT3</span><span class="o">.</span><span class="n">Criterion</span> <span class="o">=</span> <span class="n">SelectionCriterionType</span><span class="o">.</span><span class="n">Size</span>
+<span class="n">CRT3</span><span class="o">.</span><span class="n">Operator</span> <span class="o">=</span> <span class="n">SelectionOperatorType</span><span class="o">.</span><span class="n">Equal</span>
+<span class="n">CRT3</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;997.65 [mm^2]&quot;</span><span class="p">)</span>
+<span class="n">GEN_CRT</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">CRT3</span><span class="p">)</span>
+
+<span class="n">CRT4</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelectionCriterion</span><span class="p">()</span>
+<span class="n">CRT4</span><span class="o">.</span><span class="n">Active</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CRT4</span><span class="o">.</span><span class="n">Action</span> <span class="o">=</span> <span class="n">SelectionActionType</span><span class="o">.</span><span class="n">Filter</span>
+<span class="n">CRT4</span><span class="o">.</span><span class="n">EntityType</span> <span class="o">=</span> <span class="n">SelectionType</span><span class="o">.</span><span class="n">GeoFace</span>
+<span class="n">CRT4</span><span class="o">.</span><span class="n">Criterion</span> <span class="o">=</span> <span class="n">SelectionCriterionType</span><span class="o">.</span><span class="n">LocationX</span>
+<span class="n">CRT4</span><span class="o">.</span><span class="n">Operator</span> <span class="o">=</span> <span class="n">SelectionOperatorType</span><span class="o">.</span><span class="n">GreaterThan</span>
+<span class="n">CRT4</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;13 [mm]&quot;</span><span class="p">)</span>
+<span class="n">GEN_CRT</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">CRT4</span><span class="p">)</span>
+<span class="n">NS_HIGH</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">NS_HIGH</span><span class="o">.</span><span class="n">Generate</span><span class="p">()</span>
+
+<span class="n">NS_PRES</span> <span class="o">=</span> <span class="n">NS_GRP</span><span class="o">.</span><span class="n">AddNamedSelection</span><span class="p">()</span>
+<span class="n">NS_PRES</span><span class="o">.</span><span class="n">Name</span> <span class="o">=</span> <span class="s2">&quot;NS_PRES&quot;</span>
+<span class="n">NS_PRES</span><span class="o">.</span><span class="n">ScopingMethod</span> <span class="o">=</span> <span class="n">GeometryDefineByType</span><span class="o">.</span><span class="n">Worksheet</span>
+
+<span class="n">GEN_CRT</span> <span class="o">=</span> <span class="n">NS_PRES</span><span class="o">.</span><span class="n">GenerationCriteria</span>
+<span class="n">CRT1</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelectionCriterion</span><span class="p">()</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Active</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Action</span> <span class="o">=</span> <span class="n">SelectionActionType</span><span class="o">.</span><span class="n">Add</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">EntityType</span> <span class="o">=</span> <span class="n">SelectionType</span><span class="o">.</span><span class="n">GeoFace</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Criterion</span> <span class="o">=</span> <span class="n">SelectionCriterionType</span><span class="o">.</span><span class="n">Size</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Operator</span> <span class="o">=</span> <span class="n">SelectionOperatorType</span><span class="o">.</span><span class="n">Equal</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;2423.7 [mm^2]&quot;</span><span class="p">)</span>
+<span class="n">GEN_CRT</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">CRT1</span><span class="p">)</span>
+
+<span class="n">CRT2</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelectionCriterion</span><span class="p">()</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Active</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Action</span> <span class="o">=</span> <span class="n">SelectionActionType</span><span class="o">.</span><span class="n">Add</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">EntityType</span> <span class="o">=</span> <span class="n">SelectionType</span><span class="o">.</span><span class="n">GeoFace</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Criterion</span> <span class="o">=</span> <span class="n">SelectionCriterionType</span><span class="o">.</span><span class="n">Size</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Operator</span> <span class="o">=</span> <span class="n">SelectionOperatorType</span><span class="o">.</span><span class="n">Equal</span>
+<span class="n">CRT2</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;101.11 [mm^2]&quot;</span><span class="p">)</span>
+<span class="n">GEN_CRT</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">CRT2</span><span class="p">)</span>
+<span class="n">NS_PRES</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">NS_PRES</span><span class="o">.</span><span class="n">Generate</span><span class="p">()</span>
+
+<span class="n">NS_BODIES</span> <span class="o">=</span> <span class="n">NS_GRP</span><span class="o">.</span><span class="n">AddNamedSelection</span><span class="p">()</span>
+<span class="n">NS_BODIES</span><span class="o">.</span><span class="n">Name</span> <span class="o">=</span> <span class="s2">&quot;NS_BODIES&quot;</span>
+<span class="n">NS_BODIES</span><span class="o">.</span><span class="n">ScopingMethod</span> <span class="o">=</span> <span class="n">GeometryDefineByType</span><span class="o">.</span><span class="n">Worksheet</span>
+
+<span class="n">GEN_CRT</span> <span class="o">=</span> <span class="n">NS_BODIES</span><span class="o">.</span><span class="n">GenerationCriteria</span>
+<span class="n">CRT1</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelectionCriterion</span><span class="p">()</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Active</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Action</span> <span class="o">=</span> <span class="n">SelectionActionType</span><span class="o">.</span><span class="n">Add</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">EntityType</span> <span class="o">=</span> <span class="n">SelectionType</span><span class="o">.</span><span class="n">GeoBody</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Criterion</span> <span class="o">=</span> <span class="n">SelectionCriterionType</span><span class="o">.</span><span class="n">Size</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Operator</span> <span class="o">=</span> <span class="n">SelectionOperatorType</span><span class="o">.</span><span class="n">GreaterThan</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;1 [mm^3]&quot;</span><span class="p">)</span>
+<span class="n">GEN_CRT</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">CRT1</span><span class="p">)</span>
+<span class="n">NS_BODIES</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">NS_BODIES</span><span class="o">.</span><span class="n">Generate</span><span class="p">()</span>
+
+<span class="n">NS_RESP_VERTEX</span> <span class="o">=</span> <span class="n">NS_GRP</span><span class="o">.</span><span class="n">AddNamedSelection</span><span class="p">()</span>
+<span class="n">NS_RESP_VERTEX</span><span class="o">.</span><span class="n">Name</span> <span class="o">=</span> <span class="s2">&quot;NS_RESP_VERTEX&quot;</span>
+<span class="n">NS_RESP_VERTEX</span><span class="o">.</span><span class="n">ScopingMethod</span> <span class="o">=</span> <span class="n">GeometryDefineByType</span><span class="o">.</span><span class="n">Worksheet</span>
+
+<span class="n">GEN_CRT</span> <span class="o">=</span> <span class="n">NS_RESP_VERTEX</span><span class="o">.</span><span class="n">GenerationCriteria</span>
+<span class="n">CRT1</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelectionCriterion</span><span class="p">()</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Active</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Action</span> <span class="o">=</span> <span class="n">SelectionActionType</span><span class="o">.</span><span class="n">Add</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">EntityType</span> <span class="o">=</span> <span class="n">SelectionType</span><span class="o">.</span><span class="n">GeoVertex</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Criterion</span> <span class="o">=</span> <span class="n">SelectionCriterionType</span><span class="o">.</span><span class="n">LocationX</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Operator</span> <span class="o">=</span> <span class="n">SelectionOperatorType</span><span class="o">.</span><span class="n">Equal</span>
+<span class="n">CRT1</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;96.3 [mm]&quot;</span><span class="p">)</span>
+<span class="n">GEN_CRT</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">CRT1</span><span class="p">)</span>
+<span class="n">NS_RESP_VERTEX</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">NS_RESP_VERTEX</span><span class="o">.</span><span class="n">Generate</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="add-and-define-premeshed-cyclic-region">
+<h2>Add and Define Premeshed Cyclic Region<a class="headerlink" href="#add-and-define-premeshed-cyclic-region" title="Link to this heading">#</a></h2>
+<p>Add a symmetry region to the model to define the
+cyclic symmetry boundary conditions.
+The symmetry region is defined by specifying the
+low and high boundary locations,the coordinate system,
+and the number of sectors.
+The symmetry region allows for the analysis of a smaller
+portion of the model while accounting for the cyclic
+nature of the full model.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">Model</span>
+<span class="n">SYMM</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">AddSymmetry</span><span class="p">()</span>
+<span class="n">SYMMETRY_REGION</span> <span class="o">=</span> <span class="n">SYMM</span><span class="o">.</span><span class="n">AddPreMeshedCyclicRegion</span><span class="p">()</span>
+<span class="n">SYMMETRY_REGION</span><span class="o">.</span><span class="n">LowBoundaryLocation</span> <span class="o">=</span> <span class="n">NS_LOW</span>
+<span class="n">SYMMETRY_REGION</span><span class="o">.</span><span class="n">HighBoundaryLocation</span> <span class="o">=</span> <span class="n">NS_HIGH</span>
+<span class="n">SYMMETRY_REGION</span><span class="o">.</span><span class="n">CoordinateSystem</span> <span class="o">=</span> <span class="n">LCS1</span>
+<span class="n">SYMMETRY_REGION</span><span class="o">.</span><span class="n">NumberOfSectors</span> <span class="o">=</span> <span class="mi">13</span>
+</pre></div>
+</div>
+</section>
+<section id="define-analysis">
+<h2>Define Analysis<a class="headerlink" href="#define-analysis" title="Link to this heading">#</a></h2>
+<p>The analysis type is set to Modal, which is used to
+determine the natural frequencies and mode shapes of the system.
+The analysis is performed in a cyclic symmetry environment,
+which allows for the analysis of a smaller portion of the
+model while accounting for the cyclic nature of the full model.
+The analysis is defined with a maximum of 2 modes to find
+and a harmonic index range of 0 to 6.
+The harmonic index is used to specify the frequency range for the analysis.
+The analysis settings and solution settings are defined for the modal analysis.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">MODAL01</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">AddModalAnalysis</span><span class="p">()</span>
+
+<span class="c1"># Solve first standalone Modal analysis</span>
+<span class="n">ANA_SETTING_MODAL01</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">AnalysisSettings</span>
+<span class="n">SOLN_MODAL01</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">Solution</span>
+
+<span class="n">ANA_SETTING_MODAL01</span><span class="o">.</span><span class="n">MaximumModesToFind</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">ANA_SETTING_MODAL01</span><span class="o">.</span><span class="n">HarmonicIndexRange</span> <span class="o">=</span> <span class="n">CyclicHarmonicIndex</span><span class="o">.</span><span class="n">Manual</span>
+<span class="n">ANA_SETTING_MODAL01</span><span class="o">.</span><span class="n">MaximumHarmonicIndex</span> <span class="o">=</span> <span class="mi">6</span>
+</pre></div>
+</div>
+</section>
+<section id="insert-results">
+<h2>Insert results<a class="headerlink" href="#insert-results" title="Link to this heading">#</a></h2>
+<p>Insert results for the modal analysis.
+The results include the total deformation, which is
+used to visualize the mode shapes of the system.
+The total deformation is calculated based on the modal analysis results.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">TOT_DEF_MODAL01</span> <span class="o">=</span> <span class="n">SOLN_MODAL01</span><span class="o">.</span><span class="n">AddTotalDeformation</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="solve-modal-analysis">
+<h2>Solve Modal Analysis<a class="headerlink" href="#solve-modal-analysis" title="Link to this heading">#</a></h2>
+<p>Solve the modal analysis to obtain the natural frequencies and mode shapes of the system.
+The solution is performed for the specified number of modes and harmonic indices.
+The results are stored in the solution object for further analysis and visualization.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">save_as</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">output_path</span> <span class="o">/</span> <span class="s2">&quot;before_solve_prestressed.mechdb&quot;</span><span class="p">),</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">SOLN_MODAL01</span><span class="o">.</span><span class="n">Solve</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">SOLN_MODAL01_SS</span> <span class="o">=</span> <span class="n">SOLN_MODAL01</span><span class="o">.</span><span class="n">Status</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">save_as</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">output_path</span> <span class="o">/</span> <span class="s2">&quot;after_solve_prestressed.mechdb&quot;</span><span class="p">),</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">H0_FRQ1_MODAL01</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL01</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">H0_FRQ2_MODAL01</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL01</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">H1_FRQ1_MODAL01</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL01</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">H1_FRQ2_MODAL01</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL01</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">H2_FRQ1_MODAL01</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL01</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">H2_FRQ2_MODAL01</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL01</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span>
+<span class="n">H3_FRQ1_MODAL01</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL01</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">H3_FRQ2_MODAL01</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL01</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">7</span><span class="p">]</span>
+<span class="n">H4_FRQ1_MODAL01</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL01</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">8</span><span class="p">]</span>
+<span class="n">H4_FRQ2_MODAL01</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL01</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">9</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;/__w/pymechanical-embedding-examples/pymechanical-embedding-examples/examples/02_technology_showcase/prestressed_modal_cyclic_symmetry_analysis.py&quot;</span>, line <span class="m">419</span>, in <span class="n">&lt;module&gt;</span>
+<span class="w">    </span><span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">SOLN_MODAL01_SS</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;Done&quot;</span><span class="p">,</span> <span class="s2">&quot;Solution status is not &#39;Done&#39;&quot;</span>
+<span class="w">           </span><span class="pm">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+<span class="gr">AssertionError</span>: <span class="n">Solution status is not &#39;Done&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="add-static-structural-analysis">
+<h2>Add Static Structural Analysis<a class="headerlink" href="#add-static-structural-analysis" title="Link to this heading">#</a></h2>
+<p>The static structural analysis is used to analyze
+the response of the system under static loading conditions.
+The analysis is performed in a cyclic symmetry environment,
+which allows for the analysis of a smaller portion
+of the model while accounting for the cyclic nature of the full model.
+The analysis settings and solution settings are defined for the static structural analysis.
+The analysis is set to be a linear static analysis, which means that the response of the system
+is assumed to be linear with respect to the applied loads.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">STAT_STRUC01</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">AddStaticStructuralAnalysis</span><span class="p">()</span>
+<span class="n">ANA_SETTING_STAT_STRUC01</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">AnalysisSettings</span>
+<span class="n">SOLN_STAT_STRUC01</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">Solution</span>
+</pre></div>
+</div>
+</section>
+<section id="apply-loads-and-boundary-conditions">
+<h2>Apply Loads and Boundary Conditions<a class="headerlink" href="#apply-loads-and-boundary-conditions" title="Link to this heading">#</a></h2>
+<p>Apply pressure, rotational velocity and thermal boundary conditions</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">PRES_STAT_STRUC01</span> <span class="o">=</span> <span class="n">STAT_STRUC01</span><span class="o">.</span><span class="n">AddPressure</span><span class="p">()</span>
+<span class="n">PRES_STAT_STRUC01</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_PRES</span>
+<span class="n">PRES_STAT_STRUC01</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;20 [MPa]&quot;</span><span class="p">)]</span>
+
+<span class="n">ROT_VEL_STAT_STRUC01</span> <span class="o">=</span> <span class="n">STAT_STRUC01</span><span class="o">.</span><span class="n">AddRotationalVelocity</span><span class="p">()</span>
+<span class="n">ROT_VEL_STAT_STRUC01</span><span class="o">.</span><span class="n">DefineBy</span> <span class="o">=</span> <span class="n">LoadDefineBy</span><span class="o">.</span><span class="n">Components</span>
+<span class="n">ROT_VEL_STAT_STRUC01</span><span class="o">.</span><span class="n">CoordinateSystem</span> <span class="o">=</span> <span class="n">LCS1</span>
+<span class="n">ROT_VEL_STAT_STRUC01</span><span class="o">.</span><span class="n">ZComponent</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;3000 [rad sec^-1]&quot;</span><span class="p">)]</span>
+
+<span class="n">THERM_COND_STRUC01</span> <span class="o">=</span> <span class="n">STAT_STRUC01</span><span class="o">.</span><span class="n">AddThermalCondition</span><span class="p">()</span>
+<span class="n">THERM_COND_STRUC01</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_BODIES</span>
+<span class="n">THERM_COND_STRUC01</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;50 [C]&quot;</span><span class="p">)]</span>
+</pre></div>
+</div>
+</section>
+<section id="add-modal-to-perform-prestress-modal-analysis">
+<h2>Add Modal to perform prestress modal analysis<a class="headerlink" href="#add-modal-to-perform-prestress-modal-analysis" title="Link to this heading">#</a></h2>
+<p>Setup and solve prestress modal analysis
+The prestress modal analysis is used to analyze the
+response of the system under prestressed conditions.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">MODAL02</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">AddModalAnalysis</span><span class="p">()</span>
+<span class="n">Pre_Stress02</span> <span class="o">=</span> <span class="n">MODAL02</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">Pre_Stress02</span><span class="o">.</span><span class="n">PreStressICEnvironment</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">ANA_SETTING_MODAL02</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">AnalysisSettings</span>
+<span class="n">SOLN_MODAL02</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">Solution</span>
+
+<span class="n">ANA_SETTING_MODAL02</span><span class="o">.</span><span class="n">MaximumModesToFind</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">ANA_SETTING_MODAL02</span><span class="o">.</span><span class="n">HarmonicIndexRange</span> <span class="o">=</span> <span class="n">CyclicHarmonicIndex</span><span class="o">.</span><span class="n">Manual</span>
+<span class="n">ANA_SETTING_MODAL02</span><span class="o">.</span><span class="n">MaximumHarmonicIndex</span> <span class="o">=</span> <span class="mi">6</span>
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h2>Insert results<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>Insert results for the prestress modal analysis.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">TOT_DEF_MODAL02</span> <span class="o">=</span> <span class="n">SOLN_MODAL02</span><span class="o">.</span><span class="n">AddTotalDeformation</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="solve-prestressed-modal-analysis">
+<h2>Solve Prestressed Modal Analysis<a class="headerlink" href="#solve-prestressed-modal-analysis" title="Link to this heading">#</a></h2>
+<p>Solve the prestress modal analysis to obtain
+the natural frequencies and mode shapes of the
+system under prestressed conditions.
+The solution is performed for the specified number
+of modes and harmonic indices.
+The results are stored in the solution object for
+further analysis and visualization.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">SOLN_MODAL02</span><span class="o">.</span><span class="n">Solve</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">SOLN_MODAL02_SS</span> <span class="o">=</span> <span class="n">SOLN_MODAL02</span><span class="o">.</span><span class="n">Status</span>
+
+<span class="n">H0_FRQ1_MODAL02</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL02</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">H0_FRQ2_MODAL02</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL02</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">H1_FRQ1_MODAL02</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL02</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">H1_FRQ2_MODAL02</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL02</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">H2_FRQ1_MODAL02</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL02</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">H2_FRQ2_MODAL02</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL02</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span>
+<span class="n">H3_FRQ1_MODAL02</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL02</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">H3_FRQ2_MODAL02</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL02</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">7</span><span class="p">]</span>
+<span class="n">H4_FRQ1_MODAL02</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL02</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">8</span><span class="p">]</span>
+<span class="n">H4_FRQ2_MODAL02</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL02</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">9</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="add-static-structural-to-perform-non-linear-static-analysis">
+<h2>Add Static Structural to perform Non-linear Static Analysis<a class="headerlink" href="#add-static-structural-to-perform-non-linear-static-analysis" title="Link to this heading">#</a></h2>
+<p>Setup Non-linear Static Structural Analysis
+The non-linear static analysis is used to analyze the
+response of the system under non-linear loading conditions.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">STAT_STRUC02</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">AddStaticStructuralAnalysis</span><span class="p">()</span>
+<span class="n">ANA_SETTING_STAT_STRUC02</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">AnalysisSettings</span>
+<span class="n">SOLN_STAT_STRUC02</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">Solution</span>
+</pre></div>
+</div>
+</section>
+<section id="turn-on-large-deflection-option">
+<h2>Turn on large deflection option<a class="headerlink" href="#turn-on-large-deflection-option" title="Link to this heading">#</a></h2>
+<p>This option is required for the non-linear static
+analysis to account for large displacements and rotations.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ANA_SETTING_STAT_STRUC02</span><span class="o">.</span><span class="n">LargeDeflection</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2>Apply Loads and Boundary Conditions<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>Apply pressure, rotational velocity and thermal boundary conditions</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">PRES_STAT_STRUC02</span> <span class="o">=</span> <span class="n">STAT_STRUC02</span><span class="o">.</span><span class="n">AddPressure</span><span class="p">()</span>
+<span class="n">PRES_STAT_STRUC02</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_PRES</span>
+<span class="n">PRES_STAT_STRUC02</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;20 [MPa]&quot;</span><span class="p">)]</span>
+
+<span class="n">ROT_VEL_STAT_STRUC02</span> <span class="o">=</span> <span class="n">STAT_STRUC02</span><span class="o">.</span><span class="n">AddRotationalVelocity</span><span class="p">()</span>
+<span class="n">ROT_VEL_STAT_STRUC02</span><span class="o">.</span><span class="n">DefineBy</span> <span class="o">=</span> <span class="n">LoadDefineBy</span><span class="o">.</span><span class="n">Components</span>
+<span class="n">ROT_VEL_STAT_STRUC02</span><span class="o">.</span><span class="n">CoordinateSystem</span> <span class="o">=</span> <span class="n">LCS1</span>
+<span class="n">ROT_VEL_STAT_STRUC02</span><span class="o">.</span><span class="n">ZComponent</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;6000 [rad sec^-1]&quot;</span><span class="p">)]</span>
+
+<span class="n">THERM_COND_STRUC02</span> <span class="o">=</span> <span class="n">STAT_STRUC02</span><span class="o">.</span><span class="n">AddThermalCondition</span><span class="p">()</span>
+<span class="n">THERM_COND_STRUC02</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_BODIES</span>
+<span class="n">THERM_COND_STRUC02</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;50 [C]&quot;</span><span class="p">)]</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>Add modal to perform prestress modal analysis<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>Setup and solve modal with prestress from non-linear static analysis</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">MODAL03</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">AddModalAnalysis</span><span class="p">()</span>
+<span class="n">Pre_Stress03</span> <span class="o">=</span> <span class="n">MODAL03</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">Pre_Stress03</span><span class="o">.</span><span class="n">PreStressICEnvironment</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">ANA_SETTING_MODAL03</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">AnalysisSettings</span>
+<span class="n">SOLN_MODAL03</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">Solution</span>
+
+<span class="n">ANA_SETTING_MODAL03</span><span class="o">.</span><span class="n">MaximumModesToFind</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">ANA_SETTING_MODAL03</span><span class="o">.</span><span class="n">HarmonicIndexRange</span> <span class="o">=</span> <span class="n">CyclicHarmonicIndex</span><span class="o">.</span><span class="n">Manual</span>
+<span class="n">ANA_SETTING_MODAL03</span><span class="o">.</span><span class="n">MaximumHarmonicIndex</span> <span class="o">=</span> <span class="mi">6</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h2>Insert results<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p>Insert results for the prestress modal analysis.
+The results include the total deformation, which is used to
+visualize the mode shapes of the system.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">TOT_DEF_MODAL03</span> <span class="o">=</span> <span class="n">SOLN_MODAL03</span><span class="o">.</span><span class="n">AddTotalDeformation</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h2>Solve Prestressed Modal Analysis<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<p>Solve the prestress modal analysis to obtain the natural
+frequencies and mode shapes of the system under prestressed conditions.
+The solution is performed for the specified number of modes and harmonic indices.
+The results are stored in the solution object for further analysis and visualization.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">SOLN_MODAL03</span><span class="o">.</span><span class="n">Solve</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">SOLN_MODAL03_SS</span> <span class="o">=</span> <span class="n">SOLN_MODAL03</span><span class="o">.</span><span class="n">Status</span>
+
+<span class="n">H0_FRQ1_MODAL03</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL03</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">H0_FRQ2_MODAL03</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL03</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">H1_FRQ1_MODAL03</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL03</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">H1_FRQ2_MODAL03</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL03</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">H2_FRQ1_MODAL03</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL03</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">H2_FRQ2_MODAL03</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL03</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span>
+<span class="n">H3_FRQ1_MODAL03</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL03</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">H3_FRQ2_MODAL03</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL03</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">7</span><span class="p">]</span>
+<span class="n">H4_FRQ1_MODAL03</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL03</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">8</span><span class="p">]</span>
+<span class="n">H4_FRQ2_MODAL03</span> <span class="o">=</span> <span class="n">TOT_DEF_MODAL03</span><span class="o">.</span><span class="n">TabularData</span><span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">][</span><span class="mi">9</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="add-harmonic-response-analysis">
+<h2>Add Harmonic Response Analysis<a class="headerlink" href="#add-harmonic-response-analysis" title="Link to this heading">#</a></h2>
+<p>Setup and Solve Standalone FULL Harmonic Analysis
+The harmonic response analysis is used to analyze the
+response of the system under harmonic loading conditions.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">HARM_RESP01</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">AddHarmonicResponseAnalysis</span><span class="p">()</span>
+<span class="n">ANA_SETTING_HARM_RESP01</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">AnalysisSettings</span>
+<span class="n">SOLN_HARM_RESP01</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">Solution</span>
+</pre></div>
+</div>
+</section>
+<section id="specify-the-frequency-range-for-the-harmonic-response-analysis">
+<h2>Specify the frequency range for the harmonic response analysis<a class="headerlink" href="#specify-the-frequency-range-for-the-harmonic-response-analysis" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ANA_SETTING_HARM_RESP01</span><span class="o">.</span><span class="n">RangeMinimum</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;1200 [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ANA_SETTING_HARM_RESP01</span><span class="o">.</span><span class="n">RangeMaximum</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;5500 [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ANA_SETTING_HARM_RESP01</span><span class="o">.</span><span class="n">SolutionIntervals</span> <span class="o">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</section>
+<section id="specify-full-harmonic-response-analysis-method">
+<h2>Specify Full Harmonic Response Analysis Method<a class="headerlink" href="#specify-full-harmonic-response-analysis-method" title="Link to this heading">#</a></h2>
+<p>The full harmonic response analysis method is used to
+analyze the response of the system under harmonic loading conditions.
+The method is specified as Full, which means that the analysis
+will consider the full frequency range specified above.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ANA_SETTING_HARM_RESP01</span><span class="o">.</span><span class="n">SolutionMethod</span> <span class="o">=</span> <span class="n">HarmonicMethod</span><span class="o">.</span><span class="n">Full</span>
+</pre></div>
+</div>
+</section>
+<section id="apply-structural-damping-coefficient">
+<h2>Apply Structural Damping Coefficient<a class="headerlink" href="#apply-structural-damping-coefficient" title="Link to this heading">#</a></h2>
+<p>Structural damping coefficient is used to account for
+energy dissipation in the material during dynamic loading.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ANA_SETTING_HARM_RESP01</span><span class="o">.</span><span class="n">StructuralDampingCoefficient</span> <span class="o">=</span> <span class="mf">0.02</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h2>Apply Loads and Boundary Conditions<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>Apply Pressure</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">PRES_HARM_RESP01</span> <span class="o">=</span> <span class="n">HARM_RESP01</span><span class="o">.</span><span class="n">AddPressure</span><span class="p">()</span>
+<span class="n">PRES_HARM_RESP01</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_PRES</span>
+<span class="n">PRES_HARM_RESP01</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;20 [MPa]&quot;</span><span class="p">)]</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h2>Insert results<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<p>Insert results for the harmonic response analysis.
+The results include the total deformation, which is used to visualize
+the response of the system under harmonic loading conditions.
+The total deformation is calculated based on the harmonic response analysis..
+The results are stored in the solution object for further analysis and visualization.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">FRQ_RES_DEF_HARM_RESP01</span> <span class="o">=</span> <span class="n">SOLN_HARM_RESP01</span><span class="o">.</span><span class="n">AddDeformationFrequencyResponse</span><span class="p">()</span>
+<span class="n">FRQ_RES_DEF_HARM_RESP01</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_RESP_VERTEX</span>
+<span class="n">FRQ_RES_DEF_HARM_RESP01</span><span class="o">.</span><span class="n">NormalOrientation</span> <span class="o">=</span> <span class="n">NormalOrientationType</span><span class="o">.</span><span class="n">YAxis</span>
+
+<span class="n">SOLN_HARM_RESP01</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">TOT_DEF4_1</span> <span class="o">=</span> <span class="n">SOLN_HARM_RESP01</span><span class="o">.</span><span class="n">AddTotalDeformation</span><span class="p">()</span>
+<span class="n">TOT_DEF4_1</span><span class="o">.</span><span class="n">Frequency</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
+<span class="n">TOT_DEF4_1</span><span class="o">.</span><span class="n">Amplitude</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">TOT_DEF4_1</span><span class="o">.</span><span class="n">Name</span> <span class="o">=</span> <span class="s2">&quot;Total Deformation&quot;</span>
+<span class="n">TOT_DEF4_1</span><span class="o">.</span><span class="n">CreateParameter</span><span class="p">(</span><span class="s2">&quot;Maximum&quot;</span><span class="p">)</span>
+
+<span class="n">SOLN_HARM_RESP01</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">TOT_DEF4_2</span> <span class="o">=</span> <span class="n">SOLN_HARM_RESP01</span><span class="o">.</span><span class="n">AddTotalDeformation</span><span class="p">()</span>
+<span class="n">TOT_DEF4_2</span><span class="o">.</span><span class="n">Frequency</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mi">2500</span><span class="p">,</span> <span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
+<span class="n">TOT_DEF4_2</span><span class="o">.</span><span class="n">Amplitude</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">TOT_DEF4_2</span><span class="o">.</span><span class="n">Name</span> <span class="o">=</span> <span class="s2">&quot;Total Deformation 2&quot;</span>
+<span class="n">TOT_DEF4_2</span><span class="o">.</span><span class="n">CreateParameter</span><span class="p">(</span><span class="s2">&quot;Maximum&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="solve-full-harmonic-response-analysis">
+<h2>Solve Full Harmonic Response Analysis<a class="headerlink" href="#solve-full-harmonic-response-analysis" title="Link to this heading">#</a></h2>
+<p>Solve the full harmonic response analysis to obtain the frequency response of the system.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">SOLN_HARM_RESP01</span><span class="o">.</span><span class="n">Solve</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">SOLN_HARM_RESP01_SS</span> <span class="o">=</span> <span class="n">SOLN_HARM_RESP01</span><span class="o">.</span><span class="n">Status</span>
+</pre></div>
+</div>
+</section>
+<section id="post-process-results">
+<h2>Post-process results<a class="headerlink" href="#post-process-results" title="Link to this heading">#</a></h2>
+<p>Activate the results and set the view to isometric</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">TOT_DEF4_1</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">camera</span><span class="o">.</span><span class="n">SetFit</span><span class="p">()</span>
+<span class="n">camera</span><span class="o">.</span><span class="n">SetFit</span><span class="p">()</span>
+<span class="n">graphics</span><span class="o">.</span><span class="n">ExportImage</span><span class="p">(</span>
+    <span class="nb">str</span><span class="p">(</span><span class="n">output_path</span> <span class="o">/</span> <span class="s2">&quot;deform_frequency_response.png&quot;</span><span class="p">),</span>
+    <span class="n">image_export_format</span><span class="p">,</span>
+    <span class="n">settings_720p</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">display_image</span><span class="p">(</span><span class="s2">&quot;deform_frequency_response.png&quot;</span><span class="p">)</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">save_as</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">output_path</span> <span class="o">/</span> <span class="s2">&quot;final.mechdb&quot;</span><span class="p">),</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="c1"># Close the app</span>
+<span class="n">app</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># delete example file</span>
+<span class="n">delete_downloads</span><span class="p">()</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.601 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-02-technology-showcase-prestressed-modal-cyclic-symmetry-analysis-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/0b1b67d18728b4d25c2e3242d93acbe7/prestressed_modal_cyclic_symmetry_analysis.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">prestressed_modal_cyclic_symmetry_analysis.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/14bb4ceb4044ab0269e5da3aaf3bd86c/prestressed_modal_cyclic_symmetry_analysis.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">prestressed_modal_cyclic_symmetry_analysis.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/145d0d3647729053c25f3da19fb01ed9/prestressed_modal_cyclic_symmetry_analysis.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">prestressed_modal_cyclic_symmetry_analysis.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initialize-the-embedded-application">Initialize the embedded application</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-functions-to-set-camera-and-display-images">Create functions to set camera and display images</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configure-graphics-for-image-export">Configure graphics for image export</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-and-import-cdb-file">Download and Import CDB File</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#store-all-main-tree-nodes-as-variables">Store all main tree nodes as variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-and-select-nmm-units-system">Define and Select NMM Units System</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#materials-assignment">Materials Assignment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#coordinate-system-definition">Coordinate System Definition</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-named-selections">Add Named Selections</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-and-define-premeshed-cyclic-region">Add and Define Premeshed Cyclic Region</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-analysis">Define Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#insert-results">Insert results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solve-modal-analysis">Solve Modal Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-static-structural-analysis">Add Static Structural Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#apply-loads-and-boundary-conditions">Apply Loads and Boundary Conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-modal-to-perform-prestress-modal-analysis">Add Modal to perform prestress modal analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Insert results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solve-prestressed-modal-analysis">Solve Prestressed Modal Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-static-structural-to-perform-non-linear-static-analysis">Add Static Structural to perform Non-linear Static Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#turn-on-large-deflection-option">Turn on large deflection option</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Apply Loads and Boundary Conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Add modal to perform prestress modal analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Insert results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Solve Prestressed Modal Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-harmonic-response-analysis">Add Harmonic Response Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#specify-the-frequency-range-for-the-harmonic-response-analysis">Specify the frequency range for the harmonic response analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#specify-full-harmonic-response-analysis-method">Specify Full Harmonic Response Analysis Method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#apply-structural-damping-coefficient">Apply Structural Damping Coefficient</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Apply Loads and Boundary Conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Insert results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solve-full-harmonic-response-analysis">Solve Full Harmonic Response Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#post-process-results">Post-process results</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+<!-- If there is no fix edit button function, use the PyData edit-this-button-->
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../_static/search.json";
+</script>
+
+
+<script src="../../_static/js/search.js"></script>
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2025 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.4.4. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

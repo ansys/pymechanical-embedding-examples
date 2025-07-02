@@ -1,0 +1,351 @@
+:orphan:
+
+Examples
+=========
+
+Embedding examples for `PyMechanical <pymechanical_docs_>`_ are contained in this repository.
+These end-to-end examples show how you can use ``ansys-mechanical-core``.
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+Tips
+====
+
+This section showcases some of the useful functions that can be used
+in PyMechanical embedding workflow.
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The following example demonstrates how to visualize imported geometry in 3D.">
+
+.. only:: html
+
+  .. image:: /examples/00_tips/images/thumb/sphx_glr_tips_01_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_00_tips_tips_01.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">3D visualization</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The following example demonstrates how to export an image of the imported geometry and display it using matplotlib.">
+
+.. only:: html
+
+  .. image:: /examples/00_tips/images/thumb/sphx_glr_tips_02_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_00_tips_tips_02.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Export image</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The following example demonstrates how to print the heirarchial Mechanical project structure.">
+
+.. only:: html
+
+  .. image:: /examples/00_tips/images/thumb/sphx_glr_tips_03_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_00_tips_tips_03.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Project tree</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+Basic
+======
+
+This section demonstrates the basic capabilities of PyMechanical
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to insert a Static Structural analysis into a new Mechanical session and execute a sequence of Python scripting commands that define and solve a bolt-pretension analysis. Scripts then evaluate the following results: deformation, equivalent stresses, contact, and bolt.">
+
+.. only:: html
+
+  .. image:: /examples/01_basic/images/thumb/sphx_glr_bolt_pretension_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_01_basic_bolt_pretension.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Bolt pretension</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The following example demonstrates the use of the Contact Debonding featuring in Mechanical using the Cohesive Zone Material (CZM) method. This example displaces two two-dimensional parts on a double cantilever beam.">
+
+.. only:: html
+
+  .. image:: /examples/01_basic/images/thumb/sphx_glr_fracture_analysis_contact_debonding_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_01_basic_fracture_analysis_contact_debonding.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Fracture analysis - contact debonding</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example examines a harmonic acoustic analysis that uses surface velocity to determine the steady-state response of a structure and the surrounding fluid medium to loads and excitations that vary sinusoidally with time.">
+
+.. only:: html
+
+  .. image:: /examples/01_basic/images/thumb/sphx_glr_harmonic_acoustics_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_01_basic_harmonic_acoustics.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Harmonic acoustic analysis</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrate modal acoustic analysis that involves modeling both a structure and the surrounding fluid to analyze frequencies and standing wave patterns within the structure. This type of analysis is essential for applications such as Sonar, concert hall design, noise reduction in various settings, audio speaker design, and geophysical exploration.">
+
+.. only:: html
+
+  .. image:: /examples/01_basic/images/thumb/sphx_glr_modal_acoustics_analysis_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_01_basic_modal_acoustics_analysis.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Modal acoustics analysis</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example problem demonstrates the use of a simple steady-state thermal analysis to determine the temperatures, thermal gradients, heat flow rates, and heat fluxes that are caused by thermal loads that do not vary over time. A steady-state thermal analysis calculates the effects of steady thermal loads on a system or component, in this example, a long bar model.">
+
+.. only:: html
+
+  .. image:: /examples/01_basic/images/thumb/sphx_glr_steady_state_thermal_analysis_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_01_basic_steady_state_thermal_analysis.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Steady state thermal analysis</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates the structural topology optimization of a simple cantilever beam. The structural analysis is performed with basic constraints and load, which is then transferred to the topology optimization.">
+
+.. only:: html
+
+  .. image:: /examples/01_basic/images/thumb/sphx_glr_topology_optimization_cantilever_beam_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_01_basic_topology_optimization_cantilever_beam.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Topology optimization of a simple cantilever beam</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates a basic implementation of a valve in Python.">
+
+.. only:: html
+
+  .. image:: /examples/01_basic/images/thumb/sphx_glr_valve_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_01_basic_valve.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Basic valve implementation</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+Technology showcase
+====================
+
+Using technology showcase examples demonstrates embedding capabilities of PyMechanical.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates the inverse-solving analysis of a rotor fan blade with disk. The NASA Rotor 67 fan bladed disk is a subsystem of a turbo fan&#x27;s compressor set used in aerospace engine applications. This sector model, representing a challenging industrial example for which the detailed geometry and flow information is available in the public domain, consists of a disk and a fan blade with a sector angle of 16.364 degrees. The sector model represents the running condition or hot geometry of the blade. It is already optimized at the running condition under loading. The primary objective is to obtain the cold geometry (for manufacturing) from the given hot geometry using inverse solving.">
+
+.. only:: html
+
+  .. image:: /examples/02_technology_showcase/images/thumb/sphx_glr_Rotor_Blade_Inverse_solve_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_02_technology_showcase_Rotor_Blade_Inverse_solve.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Inverse-Solving analysis of a rotor fan blade with disk</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Using a Archard wear model, this example demonstrates contact sliding of a hemispherical ring on a flat ring to produce wear.">
+
+.. only:: html
+
+  .. image:: /examples/02_technology_showcase/images/thumb/sphx_glr_contact_wear_simulation_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_02_technology_showcase_contact_wear_simulation.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Contact Surface Wear Simulation</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates a nonlinear 3D analysis of a rubber boot seal to:">
+
+.. only:: html
+
+  .. image:: /examples/02_technology_showcase/images/thumb/sphx_glr_non_linear_analysis_rubber_boot_seal_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_02_technology_showcase_non_linear_analysis_rubber_boot_seal.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Nonlinear Analysis of a Rubber Boot Seal Model</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The impeller blade assembly in this example is a subsystem of a gas turbine engine used in aerospace applications. The model consists of a shroud and an impeller blade assembly with a sector angle of 27.692 degrees. The full model is composed of 13 primary blades and splitters located at a distance of 1 mm from the rigid wall at the start of the analysis.">
+
+.. only:: html
+
+  .. image:: /examples/02_technology_showcase/images/thumb/sphx_glr_prestressed_modal_cyclic_symmetry_analysis_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_02_technology_showcase_prestressed_modal_cyclic_symmetry_analysis.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Centrifugal Impeller Analysis Using Cyclic Symmetry and Linear Perturbation</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to insert a Static Structural analysis into a new Mechanical session and execute a sequence of Python scripting commands that define and solve a shape optimization analysis of bracket. Scripts then evaluate the following results: deformation and optimized shape.">
+
+.. only:: html
+
+  .. image:: /examples/02_technology_showcase/images/thumb/sphx_glr_shape_optimization_bracket_model_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_02_technology_showcase_shape_optimization_bracket_model.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Shape Optimization of a Bracket</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+   :includehidden:
+
+
+   /examples/00_tips/index.rst
+   /examples/01_basic/index.rst
+   /examples/02_technology_showcase/index.rst
+
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_
