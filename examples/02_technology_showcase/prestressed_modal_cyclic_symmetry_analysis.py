@@ -63,8 +63,8 @@ print(app)
 
 # set the number of cores to use for the solve process
 
-config = app.ExtAPI.Application.SolveConfigurations["My Computer"]
-config.SolveProcessSettings.MaxNumberOfCores = 1
+# config = app.ExtAPI.Application.SolveConfigurations["My Computer"]
+# config.SolveProcessSettings.MaxNumberOfCores = 1
 
 # %%
 # Create functions to set camera and display images
