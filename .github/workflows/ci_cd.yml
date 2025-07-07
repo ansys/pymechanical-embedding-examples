@@ -86,7 +86,7 @@ jobs:
           SPHINXOPTS: '-j auto -W --keep-going'
         run: |
           . /env/bin/activate
-          xvfb-run make -C doc linkcheck
+          xvfb-run mechanical-env make -C doc linkcheck
 
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v4
