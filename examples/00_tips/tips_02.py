@@ -43,10 +43,7 @@ from ansys.mechanical.core.examples import delete_downloads, download_file
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Create an instance of the App class
-app = App()
-
-# Update the global variables
-app.update_globals(globals())
+app = App(globals=globals())
 
 # Print the app to ensure it is working
 print(app)

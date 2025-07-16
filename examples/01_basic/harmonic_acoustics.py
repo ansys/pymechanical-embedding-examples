@@ -52,8 +52,7 @@ if TYPE_CHECKING:
 # Initialize the embedded application
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-app = App()
-app.update_globals(globals())
+app = App(globals=globals())
 print(app)
 
 # %%
