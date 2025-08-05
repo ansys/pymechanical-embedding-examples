@@ -59,8 +59,8 @@ from matplotlib.animation import FuncAnimation
 
 if TYPE_CHECKING:
     import Ansys
-    from Ansys.Mechanical.DataModel.Enums import *
     from Ansys.Core.Units import Quantity
+    from Ansys.Mechanical.DataModel.Enums import *
 
 # %%
 # Initialize the embedded application
@@ -240,7 +240,9 @@ static_structural_analysis = model.Analyses[0]
 stat_struct_soln = static_structural_analysis.Solution
 
 # Get the analysis settings for the static structural analysis
-analysis_settings: Ansys.ACT.Automation.Mechanical.AnalysisSettings.ANSYSAnalysisSettings = static_structural_analysis.Children[0]
+analysis_settings: (
+    Ansys.ACT.Automation.Mechanical.AnalysisSettings.ANSYSAnalysisSettings
+) = static_structural_analysis.Children[0]
 
 # %%
 # Store the named selections as variables
@@ -270,7 +272,9 @@ def set_material_and_dimension(
     surface_child_index, material, dimension=ShellBodyDimension.Two_D
 ):
     """Set the material and dimension for a given surface."""
-    surface: Ansys.ACT.Automation.Mechanical.Body = geometry.Children[surface_child_index].Children[0]
+    surface: Ansys.ACT.Automation.Mechanical.Body = geometry.Children[
+        surface_child_index
+    ].Children[0]
     surface.Material = material
     surface.Dimension = dimension
 
@@ -336,8 +340,10 @@ mesh.ElementSize = Quantity("1 [mm]")
 
 
 def add_edge_sizing_and_properties(
-    mesh : Ansys.ACT.Automation.Mechanical.MeshControls.Mesh,
-    location, divisions, sizing_type=SizingType.NumberOfDivisions
+    mesh: Ansys.ACT.Automation.Mechanical.MeshControls.Mesh,
+    location,
+    divisions,
+    sizing_type=SizingType.NumberOfDivisions,
 ):
     """Set the sizing properties for a given mesh.
 
@@ -495,7 +501,9 @@ app.ExtAPI.SelectionManager.ClearSelection()
 # Add contact pressure to the contact tool
 
 
-def add_contact_pressure(contact_tool : Ansys.ACT.Automation.Mechanical.PostContactTool, display_time):
+def add_contact_pressure(
+    contact_tool: Ansys.ACT.Automation.Mechanical.PostContactTool, display_time
+):
     """Add a contact pressure to the contact tool."""
     contact_pressure = contact_tool.AddPressure()
     contact_pressure.DisplayTime = Quantity(display_time)
