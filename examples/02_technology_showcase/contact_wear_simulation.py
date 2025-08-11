@@ -23,26 +23,246 @@
 """.. _ref_contact_wear_simulation:
 
 Contact Surface Wear Simulation
+===============================
+
+This example problem simulates wear at a contact surface. The wear occurs at the interface between a hemispherical ring rotating over a flat ring. Wear characteristics demonstrated include removal of material due to wear, changes in contact pressure and area due to wear, and a continuous decrease of the wear rate in steady-state conditions.
+
+This example is simulated using the Ansys Mechanical application.
+The following features and capabilities are highlighted:
+
+- Contact surface wear
+
+- Nonlinear mesh adaptivity based on a wear criterion
+
+Overview
+--------
+
++------------------------------+--------------------------------------------------------------+
+| Analysis Type(s)             | Static Structural Analysis                                   |
++------------------------------+--------------------------------------------------------------+
+| Element Type(s)              | 2-D Axisymmetric (PLANE182),                                 |
+|                              | 2-D Contact (CONTA172, TARGE169)                             |
++------------------------------+--------------------------------------------------------------+
+| Solver Type(s)               | Ansys Mechanical                                             |
++------------------------------+--------------------------------------------------------------+
+
+The following topics are available:
+
+- `1. Introduction`_
+- `2. Problem Description`_
+- `3. Material Properties`_
+- `4. Modeling and Meshing`_
+- `5. Load and Boundary Conditions`_
+- `6. Analysis and Solution Controls`_
+- `7. Recommendations`_
+- `8. Code`_
+
+1. Introduction
+---------------
+
+Wear is the progressive loss of material from the surface of a solid body when in contact with another body.
+The program approximates this loss of material by repositioning the contact nodes at the contacting surface.
+The new node locations are determined by a wear model which calculates how much and in what direction a contact node
+is to be moved to simulate wear based on the contact results. This example shows how to use the Archard wear model.
+Since wear involves material removal, the element quality of solid elements underlying the contact
+elements becomes progressively worse with increasing wear. Remeshing is required to successfully
+simulate large amounts of wear. This example demonstrates how nonlinear mesh adaptivity can be
+used to improve mesh quality when a model undergoes large amounts of wear.
+
+As an alternative to the generalized form of the Archard wear mode, you can define your own wear model
+via the userwear subroutine. The userwear subroutine is not covered in this example.
+
+2. Problem description
+------------------------
+
+A hemispherical ring of copper with radius = 30 mm rotates on a flat ring of steel with
+inner radius = 50 mm and outer radius = 150 mm.
+The hemispherical ring touches the flat ring at the center from the axis of rotation (at 100 mm).
+
+The hemispherical ring is subjected to a pressure load of 4000 N/mm2 and is rotating with
+a frequency of 100,000 revolutions/sec. Sliding of the hemispherical ring on the flat ring causes
+wear in the rings.
+
+.. figure:: ../../_static/technology_showcase/problem_contact_wear.png
+    :align: center
+    :alt: 2d_asymmetric_model
+    :figclass: align-center
+
+    **2D Axisymmetric Model of a Hemispherical Ring Rotating on a flat Ring**
+
+3. Material properties
+----------------------
+
+Linear elastic material behavior is assumed for both the copper ring and the steel ring.
+
++-----------------------+--------+-------+
+| Property              | Copper | Steel |
++=======================+========+=======+
+| Young’s Modulus (GPa) | 130    | 210   |
++-----------------------+--------+-------+
+| Poisson’s Ratio       | 0.3    | 0.3   |
++-----------------------+--------+-------+
+
+4. Modeling and meshing
+----------------------
+
+
+4.1 Geometry Details
+~~~~~~~~~~~~~~~~~~~~
+
+The rings are meshed with 2D axisymmetric elements (PLANE182 with KEYOPT(3) = 1).
+Frictionless contact is modeled between the two rings by overlaying the surfaces
+with contact and target elements (CONTA172 and TARGE169).
+
+4.2 Contact Region Details
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A global element size of 1 mm is used for meshing. Local mesh sizing is also defined.
+For the steel ring, Number of Divisions = 70 on the horizontal edges and
+Number of Divisions = 35 on the vertical edges. For the hemispherical copper ring,
+Number of Divisions = 60 on the curved edge and Number of Divisions = 40 on the flat edge.
+
+4.3 Modeling Wear
+~~~~~~~~~~~~~~~~~
+
+Workbench does not have an option for modeling the Archard wear model.
+Therefore, a command snippet is used to incorporate this model.
+
+In the first part of this command input, element key options are set to control certain contact behaviors.
+KEYOPT(5) = 1 is set to close the gap with an auto contact surface offset (CNOF).
+KEYOPT(10) = 2 is set to perform a contact stiffness update each iteration so that the actual elastic
+slip never exceeds the maximum allowable limit (SLTO) during the entire solution.
+
+Contact elements are defined on the surface undergoing wear. The Archard wear model is defined by the
+TB,WEAR,MATID,,,ARCD command, and the wear model is associated with the contact elements through the MATID (cid) specified on TB,WEAR.
+
+The Archard wear model is specified by inputting constants C1 through C4 on the TBDATA command.
+These constants represent the wear coefficient (K), material hardness (H), the contact pressure
+exponent (m), and the sliding velocity exponent (n).
+
+The wear coefficient K can sometimes be scaled to simplify modeling.
+As an example, consider this ring-on-ring problem in which the rings are rotating
+at constant speed. The only effect of this rotation/sliding at the contact surface is
+to produce wear (friction is absent). The wear coefficient K can be scaled such that the
+rotation is not explicitly modeled, but its effect is included in the computation of wear.
+This greatly reduces the simulation time and effort.
+
+More specifically, if a linear dependence of wear rate on the sliding velocity is assumed,
+the wear coefficient K can be scaled by the sliding velocity. In this example,
+sliding velocity is 2πN*R, where N = 100,000 revolutions/sec and R is the distance from
+the axis of rotation. Scaling K by 2πN*R results in the wear rate being linearly dependent
+upon the sliding velocity without explicitly modeling the sliding.
+The distance from the axis of rotation (R) is assumed to be constant for all points and
+is taken as 100 mm (the distance of the center of the ring from the axis of rotation).
+
+There are two approaches for modeling wear:
+
+- Wear on One Contact Surface (Asymmetric Contact)
+- Wear on Both Contact Surfaces (Symmetric Contact)
+
+This example only considers the first approach. Asymmetric contact is used to model wear in
+the hemispherical copper ring only. For this case, contact elements are defined on the copper
+ring while target elements are defined on the steel ring. The Archard wear model is defined
+as a material associated with the contact elements. The material data for wear is defined
+using TBDATA commands. The wear properties for the copper ring are as follows:
+
+Wear Properties for the Copper Ring
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
++----------------------+-------------------+-----------------------------------------------+
+| Property             | TBDATA Constant   | Value                                         |
++======================+===================+===============================================+
+| Wear Coefficient (K) | C1                | kcopper = 10e-13 * 2π * 1e5 * 100 (scaled by sliding velocity 2πN*R) |
++----------------------+-------------------+-----------------------------------------------+
+| Hardness (H)         | C2                | 1 MPa                                         |
++----------------------+-------------------+-----------------------------------------------+
+| Pressure exponent (n)| C3                | 1                                             |
++----------------------+-------------------+-----------------------------------------------+
+| Velocity Exponent (m)| C4                | 0                                             |
++----------------------+-------------------+-----------------------------------------------+
+
+To initiate wear after a steady state has been reached with respect to loading, TB,WEAR is used
+in conjunction with TBFIELD,TIME. The problem is simulated in two load steps. In the first load step,
+pressure is ramped to the desired level and wear is inactive. In the second load step, the pressure
+is held constant and wear is activated.
+
+4.4 Improving Mesh Quality During the Solution
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Modeling wear involves repositioning contact surface nodes to simulate the material removal process.
+As a result, the element quality of the solid elements underlying the contact elements can quickly deteriorate.
+This examples uses the Nonlinear Mesh Adaptivity feature to alleviate this problem when simulating large amounts of wear.
+
+A wear-based contact criterion triggers nonlinear mesh adaptivity whenever the mesh is distorted.
+The critical ratio between the amount of wear and the underlying solid element's height is user-defined.
+When the criterion is reached, nonlinear mesh adaptivity is triggered.
+
+Nonlinear mesh adaptivity requires the following steps:
+
+- Create a component that contains the contact elements that are undergoing wear.
+- Issue the NLADAPTIVE command to trigger adaptivity based on a wear criterion.
+
+The Mechanical application does not have an option for specifying the contact criterion for
+the Nonlinear Adaptive Region feature. Therefore, to implement nonlinear mesh adaptivity in this example, a command snippet is used.
+
+Adaptivity occurs whenever wear at any contact point exceeds 50% of the average height of the solid
+element underlying the contact element. Each time the criterion is reached, the analysis is stopped,
+the mesh quality is improved by morphing the mesh, history-dependent variables and boundary conditions
+are mapped, and the analysis is restarted with an improved mesh. This process is done automatically.
+
+5. Load and boundary conditions
 -------------------------------
 
-Using a Archard wear model, this example demonstrates contact sliding
-of a hemispherical ring on a flat ring to produce wear.
+The bottom of the flat steel ring is fixed. A remote point is inserted to define a rigid surface constraint
+between the nodes on the top surface of the hemispherical ring and a pilot node. The pilot node is constrained
+in the X direction and in rotation about the Z axis (using Remote Displacement scoped to Remote Point).
+The Remote Displacement behavior is set to Rigid.
 
-The model includes:
+5.1 Remote Displacement Details
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Hemispherical ring with a radius of 30 mm made of copper.
-- Flat ring with an inner radius of 50 mm and an outer radius of 150 mm made of steel.
+A remote force is applied on the remote point that is equivalent to a pressure of 4000 N/mm2.
+The equivalent pressure is ramped during the first load step from 0 to 4000 N/mm2 and is kept
+constant at 4000 N/mm2 during the second load step. Wear is activated in the second load step.
+Using the below formula, the calculated applied force is 150,796,320 N.
 
-The hemispherical ring is in contact with the flat ring at the center
-from the axis of rotation at 100 mm and is subjected to a
-1) pressure of 4000 N/mm2 and 2) a rotation with a frequency
-of 100,000 revolutions/sec.
+Fapplied = 4000 x pi x ((Uring_offset+Uring_R)2- (Uring_offset-Uring_R)2)
 
-The application evaluates total deformation and normal stress results,
-in loading direction, prior to and following wear. In addition,
-contact pressure prior to wear is evaluated.
+where: Uring_R = 30 mm & Uring_offset = 100 mm
+
+6. Analysis and solution controls
+---------------------------------
+
+A nonlinear static analysis is performed in two load steps. Geometric nonlinearity is included in the analysis
+(Large Deflection: On), and automatic time increments are used.
+
+The repositioning of contact nodes during wear can result in changing contact status.
+If the wear increment is too large, all contact elements may go from a closed status to an open status,
+resulting in rigid body motion. To prevent this, a very small-time increment is used so that the wear increment
+is also small and changes in contact status are minimized.
+
+7. Recommendations
+------------------
+
+When performing wear simulations, consider the following recommendations:
+
+- Use one of the following contact algorithms: augmented Lagrangian or penalty function (KEYOPT(2) = 0 or 1).
+  Modeling wear with the pure Lagrangian contact algorithm can result in convergence problems and is not recommended.
+- Use very small substeps so that the wear increment is small. A large wear increment can abruptly change
+  the contact status and cause convergence difficulties.
+- In general, you should use asymmetric contact to model wear on only one side of the contact interface.
+  However, you can use symmetric contact if wear is desired on both sides of the interface. In this case,
+  define contact elements on both sides of the interface and use the option for the nodal-stress-based wear
+  calculation (C5 of Archard wear model = 1 on TBDATA) to achieve better results.
+- Simulating a large amount of wear can result in severe mesh distortions. In such cases, use the wear-based
+  nonlinear adaptivity criterion to improve the mesh quality via mesh morphing.
+
+8. Code
+-------
+
+The following code demonstrates how to set up a contact wear simulation in Ansys Mechanical using PyMechanical.
+
 """
-
 # %%
 # Import the necessary libraries
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -59,8 +279,6 @@ from matplotlib.animation import FuncAnimation
 
 if TYPE_CHECKING:
     import Ansys
-    from Ansys.Core.Units import Quantity
-    from Ansys.Mechanical.DataModel.Enums import *
 
 # %%
 # Initialize the embedded application
@@ -78,9 +296,9 @@ output_path = Path.cwd() / "out"
 
 
 def set_camera_and_display_image(
-    camera: Ansys.ACT.Common.Graphics.MechanicalCameraWrapper,
-    graphics: Ansys.ACT.Common.Graphics.MechanicalGraphicsWrapper,
-    graphics_image_export_settings: Ansys.Mechanical.Graphics.GraphicsImageExportSettings,
+    camera,
+    graphics,
+    graphics_image_export_settings,
     image_output_path: Path,
     image_name: str,
 ) -> None:
@@ -240,9 +458,7 @@ static_structural_analysis = model.Analyses[0]
 stat_struct_soln = static_structural_analysis.Solution
 
 # Get the analysis settings for the static structural analysis
-analysis_settings: (
-    Ansys.ACT.Automation.Mechanical.AnalysisSettings.ANSYSAnalysisSettings
-) = static_structural_analysis.Children[0]
+analysis_settings = static_structural_analysis.Children[0]
 
 # %%
 # Store the named selections as variables
@@ -272,9 +488,7 @@ def set_material_and_dimension(
     surface_child_index, material, dimension=ShellBodyDimension.Two_D
 ):
     """Set the material and dimension for a given surface."""
-    surface: Ansys.ACT.Automation.Mechanical.Body = geometry.Children[
-        surface_child_index
-    ].Children[0]
+    surface = geometry.Children[surface_child_index].Children[0]
     surface.Material = material
     surface.Dimension = dimension
 
@@ -340,10 +554,7 @@ mesh.ElementSize = Quantity("1 [mm]")
 
 
 def add_edge_sizing_and_properties(
-    mesh: Ansys.ACT.Automation.Mechanical.MeshControls.Mesh,
-    location,
-    divisions,
-    sizing_type=SizingType.NumberOfDivisions,
+    mesh, location, divisions, sizing_type=SizingType.NumberOfDivisions
 ):
     """Set the sizing properties for a given mesh.
 
@@ -466,7 +677,7 @@ set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh
 
 
 def set_properties_for_result(
-    result: Ansys.ACT.Automation.Mechanical.Results.StressResults.StressResult,
+    result,
     display_time,
     orientation_type=NormalOrientationType.YAxis,
     display_option=ResultAveragingType.Unaveraged,
@@ -501,9 +712,7 @@ app.ExtAPI.SelectionManager.ClearSelection()
 # Add contact pressure to the contact tool
 
 
-def add_contact_pressure(
-    contact_tool: Ansys.ACT.Automation.Mechanical.PostContactTool, display_time
-):
+def add_contact_pressure(contact_tool, display_time):
     """Add a contact pressure to the contact tool."""
     contact_pressure = contact_tool.AddPressure()
     contact_pressure.DisplayTime = Quantity(display_time)
