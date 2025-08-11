@@ -25,7 +25,10 @@
 Contact Surface Wear Simulation
 ===============================
 
-This example problem simulates wear at a contact surface. The wear occurs at the interface between a hemispherical ring rotating over a flat ring. Wear characteristics demonstrated include removal of material due to wear, changes in contact pressure and area due to wear, and a continuous decrease of the wear rate in steady-state conditions.
+This example problem simulates wear at a contact surface. The wear occurs at
+the interface between a hemispherical ring rotating over a flat ring. Wear characteristics
+demonstrated include removal of material due to wear, changes in contact pressure and
+area due to wear, and a continuous decrease of the wear rate in steady-state conditions.
 
 This example is simulated using the Ansys Mechanical application.
 The following features and capabilities are highlighted:
