@@ -60,7 +60,7 @@ jobs:
         run: |
           apt update
           apt install --reinstall ca-certificates
-          apt install lsb-release xvfb software-properties-common make -y
+          apt install lsb-release xvfb software-properties-common make git -y
           add-apt-repository ppa:deadsnakes/ppa -y
           apt install -y python${{ env.MAIN_PYTHON_VERSION }} python${{ env.MAIN_PYTHON_VERSION }}-venv
           python${{ env.MAIN_PYTHON_VERSION }} -m venv /env
@@ -70,6 +70,7 @@ jobs:
           . /env/bin/activate
           pip install --upgrade pip
           pip install -r requirements/requirements_doc.txt
+          pip install git+https://github.com/ansys/pymechanical.git@feat/add-core-selection
 
       - name: Build docs
         env:
@@ -77,6 +78,7 @@ jobs:
           LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
           ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
           ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
+          NUM_CORES: 1
         run: |
           . /env/bin/activate
           xvfb-run mechanical-env make -C doc html
