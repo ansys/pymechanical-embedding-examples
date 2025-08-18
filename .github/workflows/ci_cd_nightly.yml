@@ -77,7 +77,7 @@ jobs:
       options: --entrypoint /bin/bash
     steps:
       - name: Install Git and checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
         run: |
@@ -117,7 +117,7 @@ jobs:
     needs: [ 'nightly-doc-build', 'display-docker-info']
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Microsoft Teams Notification
         uses: jdcargile/ms-teams-notification@v1.4
         with:
