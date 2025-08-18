@@ -59,6 +59,8 @@ from matplotlib.animation import FuncAnimation
 
 if TYPE_CHECKING:
     import Ansys
+    from Ansys.Core.Units import Quantity
+    from Ansys.Mechanical.DataModel.Enums import *
 
 # %%
 # Initialize the embedded application
@@ -76,9 +78,9 @@ output_path = Path.cwd() / "out"
 
 
 def set_camera_and_display_image(
-    camera,
-    graphics,
-    graphics_image_export_settings,
+    camera: Ansys.ACT.Common.Graphics.MechanicalCameraWrapper,
+    graphics: Ansys.ACT.Common.Graphics.MechanicalGraphicsWrapper,
+    graphics_image_export_settings: Ansys.Mechanical.Graphics.GraphicsImageExportSettings,
     image_output_path: Path,
     image_name: str,
 ) -> None:
@@ -238,7 +240,9 @@ static_structural_analysis = model.Analyses[0]
 stat_struct_soln = static_structural_analysis.Solution
 
 # Get the analysis settings for the static structural analysis
-analysis_settings = static_structural_analysis.Children[0]
+analysis_settings: (
+    Ansys.ACT.Automation.Mechanical.AnalysisSettings.ANSYSAnalysisSettings
+) = static_structural_analysis.Children[0]
 
 # %%
 # Store the named selections as variables
@@ -268,7 +272,9 @@ def set_material_and_dimension(
     surface_child_index, material, dimension=ShellBodyDimension.Two_D
 ):
     """Set the material and dimension for a given surface."""
-    surface = geometry.Children[surface_child_index].Children[0]
+    surface: Ansys.ACT.Automation.Mechanical.Body = geometry.Children[
+        surface_child_index
+    ].Children[0]
     surface.Material = material
     surface.Dimension = dimension
 
@@ -334,7 +340,10 @@ mesh.ElementSize = Quantity("1 [mm]")
 
 
 def add_edge_sizing_and_properties(
-    mesh, location, divisions, sizing_type=SizingType.NumberOfDivisions
+    mesh: Ansys.ACT.Automation.Mechanical.MeshControls.Mesh,
+    location,
+    divisions,
+    sizing_type=SizingType.NumberOfDivisions,
 ):
     """Set the sizing properties for a given mesh.
 
@@ -457,7 +466,7 @@ set_camera_and_display_image(camera, graphics, settings_720p, output_path, "mesh
 
 
 def set_properties_for_result(
-    result,
+    result: Ansys.ACT.Automation.Mechanical.Results.StressResults.StressResult,
     display_time,
     orientation_type=NormalOrientationType.YAxis,
     display_option=ResultAveragingType.Unaveraged,
@@ -492,7 +501,9 @@ app.ExtAPI.SelectionManager.ClearSelection()
 # Add contact pressure to the contact tool
 
 
-def add_contact_pressure(contact_tool, display_time):
+def add_contact_pressure(
+    contact_tool: Ansys.ACT.Automation.Mechanical.PostContactTool, display_time
+):
     """Add a contact pressure to the contact tool."""
     contact_pressure = contact_tool.AddPressure()
     contact_pressure.DisplayTime = Quantity(display_time)
