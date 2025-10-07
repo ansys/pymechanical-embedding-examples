@@ -58,7 +58,7 @@ if TYPE_CHECKING:
 # Initialize the embedded application
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-app = App(globals=globals(), version=251)
+app = App(globals=globals())
 print(app)
 
 # set the number of cores to use for the solve process
