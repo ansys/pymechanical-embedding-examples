@@ -80,19 +80,19 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Set up Python
+        shell: bash
         run: |
           apt update
-          apt install --reinstall ca-certificates
-          apt install lsb-release xvfb software-properties-common make -y
-          add-apt-repository ppa:deadsnakes/ppa -y
-          apt install -y python${{ env.MAIN_PYTHON_VERSION }} python${{ env.MAIN_PYTHON_VERSION }}-venv
-          python${{ env.MAIN_PYTHON_VERSION }} -m venv /env
-
+          apt install lsb-release xvfb git curl make -y
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+          uv python install python${{ env.MAIN_PYTHON_VERSION }}
+          uv venv /env
       - name: Install Python requirements
         run: |
           . /env/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements/requirements_doc.txt
+          uv pip install --upgrade pip
+          uv pip install -r requirements/requirements_doc.txt
 
       - name: Build docs
         env:
