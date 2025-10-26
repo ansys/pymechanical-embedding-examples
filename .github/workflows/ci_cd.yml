@@ -44,7 +44,7 @@ jobs:
 
   doc-build:
     name: Documentation building
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-22.04-16core
     timeout-minutes: 60
     container:
       image: ghcr.io/ansys/mechanical:26.1.0
