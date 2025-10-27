@@ -44,10 +44,10 @@ jobs:
 
   doc-build:
     name: Documentation building
-    runs-on: ubuntu-22.04-16core
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     container:
-      image: ghcr.io/ansys/mechanical:26.1.0
+      image: ubuntu:22.04
       options: --entrypoint /bin/bash
     needs: [style, doc-style]
 
