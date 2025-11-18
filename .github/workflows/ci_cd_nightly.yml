@@ -38,7 +38,7 @@ jobs:
 
   display-docker-info:
     name: Display Mechanical Image info
-    runs-on: ubuntu-latest
+    runs-on: public-ubuntu-latest-8-cores
     needs: ['saving-image-versions']
     outputs:
       docker_info: ${{ steps.capture_info.outputs.docker_info }}
