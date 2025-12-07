@@ -12,4 +12,5 @@
 * [Revathy Venugopal](https://github.com/Revathyvenugopal162)
 * [Roberto Pastor Muela](https://github.com/RobPasMue)
 * [samigithub2022](https://github.com/samigithub2022)
+* [Sébastien Morais](https://github.com/SMoraisAnsys)
 * [Vikas Namdeo](https://github.com/vnamdeo)
