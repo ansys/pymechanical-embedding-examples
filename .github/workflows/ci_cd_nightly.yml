@@ -6,9 +6,9 @@ on:
     - cron: "0 3 * * *"
 
 env:
-  MAIN_PYTHON_VERSION: '3.11'
-  DEV_MAJOR_REV: '25'
-  DEV_MINOR_REV: '2'
+  MAIN_PYTHON_VERSION: '3.12'
+  DEV_MAJOR_REV: '26'
+  DEV_MINOR_REV: '1'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -38,7 +38,7 @@ jobs:
 
   display-docker-info:
     name: Display Mechanical Image info
-    runs-on: ubuntu-latest
+    runs-on: public-ubuntu-latest-8-cores
     needs: ['saving-image-versions']
     outputs:
       docker_info: ${{ steps.capture_info.outputs.docker_info }}
@@ -77,22 +77,22 @@ jobs:
       options: --entrypoint /bin/bash
     steps:
       - name: Install Git and checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
+        shell: bash
         run: |
           apt update
-          apt install --reinstall ca-certificates
-          apt install lsb-release xvfb software-properties-common make -y
-          add-apt-repository ppa:deadsnakes/ppa -y
-          apt install -y python${{ env.MAIN_PYTHON_VERSION }} python${{ env.MAIN_PYTHON_VERSION }}-venv
-          python${{ env.MAIN_PYTHON_VERSION }} -m venv /env
-
+          apt install lsb-release xvfb git curl make -y
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+          uv python install python${{ env.MAIN_PYTHON_VERSION }}
+          uv venv /env
       - name: Install Python requirements
         run: |
           . /env/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements/requirements_doc.txt
+          uv pip install --upgrade pip
+          uv pip install -r requirements/requirements_doc.txt
 
       - name: Build docs
         env:
@@ -102,21 +102,10 @@ jobs:
           ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
         run: |
           . /env/bin/activate
-          xvfb-run mechanical-env make -C doc html > doc_build_output.txt 2>&1 || true
-          cat doc_build_output.txt
-          #
-          # Check if "build succeeded" string is present in doc_build_output.txt
-          #
-          if grep -q "build succeeded" doc_build_output.txt; then
-            echo "Documentation building succeeded"
-            exit 0
-          else
-            echo "Documentation building failed"
-            exit 1
-          fi
+          xvfb-run mechanical-env make -C doc html
 
       - name: Upload HTML Documentation
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: documentation-html
           path: doc/_build/html
@@ -128,7 +117,7 @@ jobs:
     needs: [ 'nightly-doc-build', 'display-docker-info']
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Microsoft Teams Notification
         uses: jdcargile/ms-teams-notification@v1.4
         with:

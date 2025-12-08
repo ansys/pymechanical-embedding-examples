@@ -10,7 +10,7 @@ on:
       - main
 
 env:
-  MAIN_PYTHON_VERSION: '3.11'
+  MAIN_PYTHON_VERSION: '3.12'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys code style checks
-        uses: ansys/actions/code-style@v9
+        uses: ansys/actions/code-style@v10
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           use-python-cache: false
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@v9
+        uses: ansys/actions/doc-style@v10
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -47,29 +47,29 @@ jobs:
     runs-on: public-ubuntu-latest-8-cores
     timeout-minutes: 60
     container:
-      image: ghcr.io/ansys/mechanical:25.1.0
+      image: ghcr.io/ansys/mechanical:25.2.0
       options: --entrypoint /bin/bash
     needs: [style, doc-style]
 
     steps:
 
       - name: Install Git and checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
+        shell: bash
         run: |
           apt update
-          apt install --reinstall ca-certificates
-          apt install lsb-release xvfb software-properties-common make -y
-          add-apt-repository ppa:deadsnakes/ppa -y
-          apt install -y python${{ env.MAIN_PYTHON_VERSION }} python${{ env.MAIN_PYTHON_VERSION }}-venv
-          python${{ env.MAIN_PYTHON_VERSION }} -m venv /env
-
+          apt install lsb-release xvfb git curl make -y
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+          uv python install python${{ env.MAIN_PYTHON_VERSION }}
+          uv venv /env
       - name: Install Python requirements
         run: |
           . /env/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements/requirements_doc.txt
+          uv pip install --upgrade pip
+          uv pip install -r requirements/requirements_doc.txt
 
       - name: Build docs
         env:
@@ -79,35 +79,17 @@ jobs:
           ANSYS_WORKBENCH_LOGGING_FILTER_LEVEL: 0
         run: |
           . /env/bin/activate
-          . /env/bin/activate
-          xvfb-run mechanical-env make -C doc html > doc_build_output.txt 2>&1 || true
-          cat doc_build_output.txt
-          #
-          # Check if "build succeeded" string is present in doc_build_output.txt
-          #
-          if grep -q "build succeeded" doc_build_output.txt; then
-            echo "Documentation building succeeded"
-            exit 0
-          else
-            echo "Documentation building failed"
-            exit 1
-          fi
+          xvfb-run mechanical-env make -C doc html
+
       - name: Link check
         env:
           SPHINXOPTS: '-j auto -W --keep-going'
         run: |
           . /env/bin/activate
-          xvfb-run make -C doc linkcheck > doc_linkcheck_output.txt 2>&1 || true
-          cat doc_linkcheck_output.txt
-          if grep -q "build succeeded" doc_build_output.txt; then
-            echo "LinkCheck  succeeded"
-            exit 0
-          else
-            echo "LinkCheck failed"
-            exit 1
-          fi
+          xvfb-run make -C doc linkcheck
+
       - name: Upload HTML Documentation
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: documentation-html
           path: doc/_build/html
@@ -121,10 +103,10 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: documentation-html
           path: documentation-html
