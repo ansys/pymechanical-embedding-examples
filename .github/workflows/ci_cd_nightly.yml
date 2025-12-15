@@ -105,7 +105,7 @@ jobs:
           xvfb-run mechanical-env make -C doc html
 
       - name: Upload HTML Documentation
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: documentation-html
           path: doc/_build/html
