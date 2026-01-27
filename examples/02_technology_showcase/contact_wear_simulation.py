@@ -173,7 +173,7 @@ camera.Rotate(180, CameraAxisType.ScreenY)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Download the geometry and material files from the specified paths
-geometry_path = download_file("example_07_td43_wear.agdb", "pymechanical", "00_basic")
+geometry_path = download_file("example_07_td43_wear.pmdb", "pymechanical", "00_basic")
 mat1_path = download_file("example_07_Mat_Copper.xml", "pymechanical", "00_basic")
 mat2_path = download_file("example_07_Mat_Steel.xml", "pymechanical", "00_basic")
 
