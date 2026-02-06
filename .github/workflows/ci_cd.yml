@@ -47,7 +47,7 @@ jobs:
     runs-on: public-ubuntu-latest-8-cores
     timeout-minutes: 60
     container:
-      image: ghcr.io/ansys/mechanical:25.2.0
+      image: ghcr.io/ansys/mechanical:26.1.0
       options: --entrypoint /bin/bash
     needs: [style, doc-style]
 
@@ -86,13 +86,20 @@ jobs:
           SPHINXOPTS: '-j auto -W --keep-going'
         run: |
           . /env/bin/activate
-          xvfb-run make -C doc linkcheck
+          xvfb-run mechanical-env make -C doc linkcheck
 
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v6
         with:
           name: documentation-html
           path: doc/_build/html
+          retention-days: 7
+
+      - name: Upload examples
+        uses: actions/upload-artifact@v4
+        with:
+          name: examples-out
+          path: examples/02_technology_showcase
           retention-days: 7
 
   doc-deploy:
