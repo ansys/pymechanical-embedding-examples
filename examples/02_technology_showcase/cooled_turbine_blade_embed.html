@@ -1,0 +1,1256 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Thermal-Stress Analysis of a Cooled Turbine Blade &#8212; PyMechanical Embedding Examples</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../_static/documentation_options.js?v=e7fb764e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/thebelab-helper.js"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/02_technology_showcase/cooled_turbine_blade_embed';</script>
+    <link rel="icon" href="../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Nonlinear Analysis of a Rubber Boot Seal Model" href="non_linear_analysis_rubber_boot_seal.html" />
+    <link rel="prev" title="Contact Surface Wear Simulation" href="contact_wear_simulation.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.dev0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyMechanical Embedding Examples - Home"/>
+    <img src="../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyMechanical Embedding Examples - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="PyMechanical Embedding Examples home">Home</a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Technology showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="PyMechanical Embedding Examples home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="PyMechanical Embedding Examples home">Home</a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Technology showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="PyMechanical Embedding Examples home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Rotor_Blade_Inverse_solve.html">Inverse-Solving analysis of a rotor fan blade with disk</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact_wear_simulation.html">Contact Surface Wear Simulation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Thermal-Stress Analysis of a Cooled Turbine Blade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="non_linear_analysis_rubber_boot_seal.html">Nonlinear Analysis of a Rubber Boot Seal Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shape_optimization_bracket_model.html">Shape Optimization of a Bracket</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+       
+    <li class="breadcrumb-item">
+      <a href="https://mechanical.docs.pyansys.com/" class="nav-link">PyMechanical</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Technology showcase</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Thermal-Stress Analysis of a Cooled Turbine Blade</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-examples-02-technology-showcase-cooled-turbine-blade-embed-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="thermal-stress-analysis-of-a-cooled-turbine-blade">
+<span id="ref-example-td-006"></span><span id="sphx-glr-examples-02-technology-showcase-cooled-turbine-blade-embed-py"></span><h1>Thermal-Stress Analysis of a Cooled Turbine Blade<a class="headerlink" href="#thermal-stress-analysis-of-a-cooled-turbine-blade" title="Link to this heading">#</a></h1>
+<p>This example demonstrate 3D thermal-stress analysis of a cooled turbine
+Blade. Convection, mass flow rate, temperatures are applied to Thermal
+fluid bodies. Adiabatic surfaces are fixed. Thermal stress analysis is
+solved and post-process temperature distribution and equivalent von-mises
+stress for solid region.</p>
+<section id="import-necessary-libraries">
+<h2>Import necessary libraries<a class="headerlink" href="#import-necessary-libraries" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.mechanical.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">App</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.mechanical.core.embedding</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddinConfiguration</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.mechanical.core.examples</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete_downloads</span><span class="p">,</span> <span class="n">download_file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">image</span> <span class="k">as</span> <span class="n">mpimg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+</pre></div>
+</div>
+<p>Embed mechanical and set global variables</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">config</span> <span class="o">=</span> <span class="n">AddinConfiguration</span><span class="p">(</span><span class="s2">&quot;Mechanical&quot;</span><span class="p">)</span>
+<span class="c1"># config = AddinConfiguration(&quot;WorkBench&quot;)</span>
+<span class="n">config</span><span class="o">.</span><span class="n">no_act_addins</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">update_globals</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a> <span class="o">=</span> <a href="https://docs.python.org/dev/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/dev/library/os.html#os.getcwd" title="os.getcwd" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span></a><span class="p">(),</span> <span class="s2">&quot;out&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">display_image</span><span class="p">(</span><span class="n">image_name</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><a href="https://docs.python.org/dev/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a><span class="p">,</span> <span class="n">image_name</span><span class="p">)))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Ansys Mechanical [Ansys Mechanical Enterprise]
+Product Version:252
+Software build date: 06/13/2025 11:25:56
+</pre></div>
+</div>
+</section>
+<section id="configure-graphics-for-image-export">
+<h2>Configure graphics for image export<a class="headerlink" href="#configure-graphics-for-image-export" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Graphics</span><span class="o">.</span><span class="n">Camera</span><span class="o">.</span><span class="n">SetSpecificViewOrientation</span><span class="p">(</span><span class="n">ViewOrientationType</span><span class="o">.</span><span class="n">Iso</span><span class="p">)</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">Camera</span><span class="o">.</span><span class="n">SetFit</span><span class="p">()</span>
+<span class="n">image_export_format</span> <span class="o">=</span> <span class="n">GraphicsImageExportFormat</span><span class="o">.</span><span class="n">PNG</span>
+<span class="n">settings_720p</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">GraphicsImageExportSettings</span><span class="p">()</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Resolution</span> <span class="o">=</span> <span class="n">GraphicsResolutionType</span><span class="o">.</span><span class="n">EnhancedResolution</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Background</span> <span class="o">=</span> <span class="n">GraphicsBackgroundType</span><span class="o">.</span><span class="n">White</span>
+<a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">settings_720p</span><span class="o">.</span><span class="n">Width</span></a> <span class="o">=</span> <span class="mi">1280</span>
+<a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">settings_720p</span><span class="o">.</span><span class="n">Height</span></a> <span class="o">=</span> <span class="mi">720</span>
+<a href="https://docs.python.org/dev/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">settings_720p</span><span class="o">.</span><span class="n">CurrentGraphicsDisplay</span></a> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">Camera</span><span class="o">.</span><span class="n">Rotate</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="n">CameraAxisType</span><span class="o">.</span><span class="n">ScreenY</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="download-and-open-mechdat-file">
+<h2>Download and open MECHDAT file<a class="headerlink" href="#download-and-open-mechdat-file" title="Link to this heading">#</a></h2>
+<p>Open the mechdat file</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mechdat_filepath</span></a> <span class="o">=</span> <span class="n">download_file</span><span class="p">(</span>
+    <span class="s2">&quot;Cooled_Turbine_Blade_Meshed.mechdat&quot;</span><span class="p">,</span> <span class="s2">&quot;pymechanical&quot;</span><span class="p">,</span> <span class="s2">&quot;embedding&quot;</span>
+<span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mechdat_filepath</span></a><span class="p">)</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Static Scene</label><div class="sd-tab-content docutils">
+<img src="../../_images/sphx_glr_cooled_turbine_blade_embed_001.png" srcset="../../_images/sphx_glr_cooled_turbine_blade_embed_001.png" alt="cooled turbine blade embed" class = "sphx-glr-single-img"/></div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Interactive Scene</label><div class="sd-tab-content docutils">
+<iframe src='../../_static/static_viewer.html?fileURL=../_images/examples/02_technology_showcase/images/sphx_glr_cooled_turbine_blade_embed_001.vtksz' width='100%%' height='400px' frameborder='0'></iframe></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[]
+</pre></div>
+</div>
+</section>
+<section id="define-unit-system">
+<h2>Define Unit System<a class="headerlink" href="#define-unit-system" title="Link to this heading">#</a></h2>
+<p>Specify unit system</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ExtAPI</span><span class="o">.</span><span class="n">Application</span><span class="o">.</span><span class="n">ActiveUnitSystem</span> <span class="o">=</span> <span class="n">MechanicalUnitSystem</span><span class="o">.</span><span class="n">StandardMKS</span>
+<span class="n">ExtAPI</span><span class="o">.</span><span class="n">Application</span><span class="o">.</span><span class="n">ActiveMetricTemperatureUnit</span> <span class="o">=</span> <span class="n">MetricTemperatureUnitType</span><span class="o">.</span><span class="n">Kelvin</span>
+</pre></div>
+</div>
+</section>
+<section id="define-python-variables">
+<h2>Define python variables<a class="headerlink" href="#define-python-variables" title="Link to this heading">#</a></h2>
+<p>Store python variables</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">GEOM</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Geometry</span>
+<span class="n">CS_GRP</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">CoordinateSystems</span>
+<span class="n">MSH</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">Mesh</span>
+</pre></div>
+</div>
+</section>
+<section id="define-named-selections">
+<h2>Define Named Selections<a class="headerlink" href="#define-named-selections" title="Link to this heading">#</a></h2>
+<p>Specify variables for named selection objects</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">NS_Passage1</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Passage 1&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Passage2</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Passage 2&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Passage3</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Passage 3&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Passage4</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Passage 4&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Passage5</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Passage 5&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Passage6</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Passage 6&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Passage7</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Passage 7&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Passage8</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Passage 8&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Passage9</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Passage 9&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Passage10</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Passage 10&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Hole1</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Hole 1&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Hole2</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Hole 2&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Hole3</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Hole 3&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Hole4</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Hole 4&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Hole5</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Hole 5&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Hole6</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Hole 6&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Hole7</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Hole 7&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Hole8</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Hole 8&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Hole9</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Hole 9&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Hole10</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Hole 10&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Inlet1</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Inlet 1&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Inlet2</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Inlet 2&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Inlet3</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Inlet 3&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Inlet4</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Inlet 4&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Inlet5</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Inlet 5&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Inlet6</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Inlet 6&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Inlet7</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Inlet 7&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Inlet8</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Inlet 8&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Inlet9</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Inlet 9&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Inlet10</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Inlet 10&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Path1</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Path1&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Path2</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Path2&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Faces4</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Faces4&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Face1</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Face1&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Face2</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Face2&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Body1</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Body1&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">NS_Bodies10</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">x</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">GetChildren</span><span class="p">[</span><span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">NamedSelection</span><span class="p">](</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">Name</span> <span class="o">==</span> <span class="s2">&quot;Bodies10&quot;</span>
+<span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="material-assignment">
+<h2>Material Assignment<a class="headerlink" href="#material-assignment" title="Link to this heading">#</a></h2>
+<p>Assign materials to blade and fluid bodies and model type for line bodies</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">GEOM</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;Blade&quot;</span>
+<span class="k">for</span> <a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
+    <span class="n">GEOM</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">]</span><span class="o">.</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;Fluid&quot;</span>
+    <span class="n">GEOM</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">]</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ModelType</span> <span class="o">=</span> <span class="n">PrototypeModelType</span><span class="o">.</span><span class="n">ModelPhysicsTypeFluid</span>
+    <span class="n">GEOM</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">]</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span>
+        <span class="mi">0</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">FluidDiscretization</span> <span class="o">=</span> <span class="n">FluidDiscretizationType</span><span class="o">.</span><span class="n">FluidUpwindExponential</span>
+</pre></div>
+</div>
+</section>
+<section id="define-coordinate-systems-and-paths">
+<h2>Define coordinate systems and paths<a class="headerlink" href="#define-coordinate-systems-and-paths" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">LCS01</span> <span class="o">=</span> <span class="n">CS_GRP</span><span class="o">.</span><span class="n">AddCoordinateSystem</span><span class="p">()</span>
+<span class="n">LCS01</span><span class="o">.</span><span class="n">OriginLocation</span> <span class="o">=</span> <span class="n">NS_Path1</span>
+
+<span class="n">LCS02</span> <span class="o">=</span> <span class="n">CS_GRP</span><span class="o">.</span><span class="n">AddCoordinateSystem</span><span class="p">()</span>
+<span class="n">LCS02</span><span class="o">.</span><span class="n">OriginLocation</span> <span class="o">=</span> <span class="n">NS_Path2</span>
+
+<span class="n">CONST_GEOM</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">AddConstructionGeometry</span><span class="p">()</span>
+<span class="n">PATH01</span> <span class="o">=</span> <span class="n">CONST_GEOM</span><span class="o">.</span><span class="n">AddPath</span><span class="p">()</span>
+<span class="n">PATH01</span><span class="o">.</span><span class="n">PathType</span> <span class="o">=</span> <span class="n">PathScopingType</span><span class="o">.</span><span class="n">Edge</span>
+<span class="n">PATH01</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Passage1</span>
+
+<span class="n">PATH02</span> <span class="o">=</span> <span class="n">CONST_GEOM</span><span class="o">.</span><span class="n">AddPath</span><span class="p">()</span>
+<span class="n">PATH02</span><span class="o">.</span><span class="n">PathType</span> <span class="o">=</span> <span class="n">PathScopingType</span><span class="o">.</span><span class="n">Points</span>
+<span class="n">PATH02</span><span class="o">.</span><span class="n">StartCoordinateSystem</span> <span class="o">=</span> <span class="n">LCS01</span>
+<span class="n">PATH02</span><span class="o">.</span><span class="n">EndCoordinateSystem</span> <span class="o">=</span> <span class="n">LCS02</span>
+</pre></div>
+</div>
+</section>
+<section id="define-analysis">
+<h2>Define Analysis<a class="headerlink" href="#define-analysis" title="Link to this heading">#</a></h2>
+<p>Add Steady-state thermal analysis</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">STAT_THERM</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">AddSteadyStateThermalAnalysis</span><span class="p">()</span>
+<span class="n">STAT_THERM_SOLN</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">Solution</span>
+</pre></div>
+</div>
+</section>
+<section id="define-loads-and-boundary-conditions">
+<h2>Define Loads and Boundary Conditions<a class="headerlink" href="#define-loads-and-boundary-conditions" title="Link to this heading">#</a></h2>
+<p>Setup loads and supports in steady-state thermal analysis</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">CONV01</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddConvection</span><span class="p">()</span>
+<span class="n">CONV01</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Hole1</span>
+<span class="n">CONV01</span><span class="o">.</span><span class="n">FilmCoefficient</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;295430 [W m^-1 m^-1 K^-1]&quot;</span><span class="p">)]</span>
+<span class="n">CONV01</span><span class="o">.</span><span class="n">HasFluidFlow</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CONV01</span><span class="o">.</span><span class="n">FluidFlowSelection</span> <span class="o">=</span> <span class="n">NS_Passage1</span>
+
+<span class="n">CONV02</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddConvection</span><span class="p">()</span>
+<span class="n">CONV02</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Hole2</span>
+<span class="n">CONV02</span><span class="o">.</span><span class="n">FilmCoefficient</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;296290 [W m^-1 m^-1 K^-1]&quot;</span><span class="p">)]</span>
+<span class="n">CONV02</span><span class="o">.</span><span class="n">HasFluidFlow</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CONV02</span><span class="o">.</span><span class="n">FluidFlowSelection</span> <span class="o">=</span> <span class="n">NS_Passage2</span>
+
+<span class="n">CONV03</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddConvection</span><span class="p">()</span>
+<span class="n">CONV03</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Hole3</span>
+<span class="n">CONV03</span><span class="o">.</span><span class="n">FilmCoefficient</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;300760 [W m^-1 m^-1 K^-1]&quot;</span><span class="p">)]</span>
+<span class="n">CONV03</span><span class="o">.</span><span class="n">HasFluidFlow</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CONV03</span><span class="o">.</span><span class="n">FluidFlowSelection</span> <span class="o">=</span> <span class="n">NS_Passage3</span>
+
+<span class="n">CONV04</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddConvection</span><span class="p">()</span>
+<span class="n">CONV04</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Hole4</span>
+<span class="n">CONV04</span><span class="o">.</span><span class="n">FilmCoefficient</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;314160 [W m^-1 m^-1 K^-1]&quot;</span><span class="p">)]</span>
+<span class="n">CONV04</span><span class="o">.</span><span class="n">HasFluidFlow</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CONV04</span><span class="o">.</span><span class="n">FluidFlowSelection</span> <span class="o">=</span> <span class="n">NS_Passage4</span>
+
+<span class="n">CONV05</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddConvection</span><span class="p">()</span>
+<span class="n">CONV05</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Hole5</span>
+<span class="n">CONV05</span><span class="o">.</span><span class="n">FilmCoefficient</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;314950 [W m^-1 m^-1 K^-1]&quot;</span><span class="p">)]</span>
+<span class="n">CONV05</span><span class="o">.</span><span class="n">HasFluidFlow</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CONV05</span><span class="o">.</span><span class="n">FluidFlowSelection</span> <span class="o">=</span> <span class="n">NS_Passage5</span>
+
+<span class="n">CONV06</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddConvection</span><span class="p">()</span>
+<span class="n">CONV06</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Hole6</span>
+<span class="n">CONV06</span><span class="o">.</span><span class="n">FilmCoefficient</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;301990 [W m^-1 m^-1 K^-1]&quot;</span><span class="p">)]</span>
+<span class="n">CONV06</span><span class="o">.</span><span class="n">HasFluidFlow</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CONV06</span><span class="o">.</span><span class="n">FluidFlowSelection</span> <span class="o">=</span> <span class="n">NS_Passage6</span>
+
+<span class="n">CONV07</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddConvection</span><span class="p">()</span>
+<span class="n">CONV07</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Hole7</span>
+<span class="n">CONV07</span><span class="o">.</span><span class="n">FilmCoefficient</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;302470 [W m^-1 m^-1 K^-1]&quot;</span><span class="p">)]</span>
+<span class="n">CONV07</span><span class="o">.</span><span class="n">HasFluidFlow</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CONV07</span><span class="o">.</span><span class="n">FluidFlowSelection</span> <span class="o">=</span> <span class="n">NS_Passage7</span>
+
+<span class="n">CONV08</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddConvection</span><span class="p">()</span>
+<span class="n">CONV08</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Hole8</span>
+<span class="n">CONV08</span><span class="o">.</span><span class="n">FilmCoefficient</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;443430 [W m^-1 m^-1 K^-1]&quot;</span><span class="p">)]</span>
+<span class="n">CONV08</span><span class="o">.</span><span class="n">HasFluidFlow</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CONV08</span><span class="o">.</span><span class="n">FluidFlowSelection</span> <span class="o">=</span> <span class="n">NS_Passage8</span>
+
+<span class="n">CONV09</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddConvection</span><span class="p">()</span>
+<span class="n">CONV09</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Hole9</span>
+<span class="n">CONV09</span><span class="o">.</span><span class="n">FilmCoefficient</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;285270 [W m^-1 m^-1 K^-1]&quot;</span><span class="p">)]</span>
+<span class="n">CONV09</span><span class="o">.</span><span class="n">HasFluidFlow</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CONV09</span><span class="o">.</span><span class="n">FluidFlowSelection</span> <span class="o">=</span> <span class="n">NS_Passage9</span>
+
+<span class="n">CONV010</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddConvection</span><span class="p">()</span>
+<span class="n">CONV010</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Hole10</span>
+<span class="n">CONV010</span><span class="o">.</span><span class="n">FilmCoefficient</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;895860 [W m^-1 m^-1 K^-1]&quot;</span><span class="p">)]</span>
+<span class="n">CONV010</span><span class="o">.</span><span class="n">HasFluidFlow</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">CONV010</span><span class="o">.</span><span class="n">FluidFlowSelection</span> <span class="o">=</span> <span class="n">NS_Passage10</span>
+
+<span class="n">MFLOW_RT01</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddMassFlowRate</span><span class="p">()</span>
+<span class="n">MFLOW_RT01</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Passage1</span>
+<span class="n">MFLOW_RT01</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[kg sec^-1]&quot;</span><span class="p">),</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;-0.0228[kg sec^-1]&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">MFLOW_RT02</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddMassFlowRate</span><span class="p">()</span>
+<span class="n">MFLOW_RT02</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Passage2</span>
+<span class="n">MFLOW_RT02</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[kg sec^-1]&quot;</span><span class="p">),</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;-0.0239[kg sec^-1]&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">MFLOW_RT03</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddMassFlowRate</span><span class="p">()</span>
+<span class="n">MFLOW_RT03</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Passage3</span>
+<span class="n">MFLOW_RT03</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[kg sec^-1]&quot;</span><span class="p">),</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;-0.0228[kg sec^-1]&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">MFLOW_RT04</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddMassFlowRate</span><span class="p">()</span>
+<span class="n">MFLOW_RT04</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Passage4</span>
+<span class="n">MFLOW_RT04</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[kg sec^-1]&quot;</span><span class="p">),</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;-0.0243[kg sec^-1]&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">MFLOW_RT05</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddMassFlowRate</span><span class="p">()</span>
+<span class="n">MFLOW_RT05</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Passage5</span>
+<span class="n">MFLOW_RT05</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[kg sec^-1]&quot;</span><span class="p">),</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;-0.0239[kg sec^-1]&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">MFLOW_RT06</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddMassFlowRate</span><span class="p">()</span>
+<span class="n">MFLOW_RT06</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Passage6</span>
+<span class="n">MFLOW_RT06</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[kg sec^-1]&quot;</span><span class="p">),</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;-0.0242[kg sec^-1]&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">MFLOW_RT07</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddMassFlowRate</span><span class="p">()</span>
+<span class="n">MFLOW_RT07</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Passage7</span>
+<span class="n">MFLOW_RT07</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[kg sec^-1]&quot;</span><span class="p">),</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;-0.0232[kg sec^-1]&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">MFLOW_RT08</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddMassFlowRate</span><span class="p">()</span>
+<span class="n">MFLOW_RT08</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Passage8</span>
+<span class="n">MFLOW_RT08</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[kg sec^-1]&quot;</span><span class="p">),</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;-0.00799[kg sec^-1]&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">MFLOW_RT09</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddMassFlowRate</span><span class="p">()</span>
+<span class="n">MFLOW_RT09</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Passage9</span>
+<span class="n">MFLOW_RT09</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[kg sec^-1]&quot;</span><span class="p">),</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;-0.00499[kg sec^-1]&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">MFLOW_RT10</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddMassFlowRate</span><span class="p">()</span>
+<span class="n">MFLOW_RT10</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Passage10</span>
+<span class="n">MFLOW_RT10</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[kg sec^-1]&quot;</span><span class="p">),</span>
+    <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;-0.00253[kg sec^-1]&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">TEMP01</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP01</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Inlet1</span>
+<span class="n">TEMP01</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[K]&quot;</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;348.83[K]&quot;</span><span class="p">)]</span>
+
+<span class="n">TEMP02</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP02</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Inlet2</span>
+<span class="n">TEMP02</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[K]&quot;</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;349.32[K]&quot;</span><span class="p">)]</span>
+
+<span class="n">TEMP03</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP03</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Inlet3</span>
+<span class="n">TEMP03</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[K]&quot;</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;339.49[K]&quot;</span><span class="p">)]</span>
+
+<span class="n">TEMP04</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP04</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Inlet4</span>
+<span class="n">TEMP04</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[K]&quot;</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;342.3[K]&quot;</span><span class="p">)]</span>
+
+<span class="n">TEMP05</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP05</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Inlet5</span>
+<span class="n">TEMP05</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[K]&quot;</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;333.99[K]&quot;</span><span class="p">)]</span>
+
+<span class="n">TEMP06</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP06</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Inlet6</span>
+<span class="n">TEMP06</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[K]&quot;</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;364.95[K]&quot;</span><span class="p">)]</span>
+
+<span class="n">TEMP07</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP07</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Inlet7</span>
+<span class="n">TEMP07</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[K]&quot;</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;343.37[K]&quot;</span><span class="p">)]</span>
+
+<span class="n">TEMP08</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP08</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Inlet8</span>
+<span class="n">TEMP08</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[K]&quot;</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;365.41[K]&quot;</span><span class="p">)]</span>
+
+<span class="n">TEMP09</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP09</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Inlet9</span>
+<span class="n">TEMP09</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[K]&quot;</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;408.78[K]&quot;</span><span class="p">)]</span>
+
+<span class="n">TEMP10</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP10</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Inlet10</span>
+<span class="n">TEMP10</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[K]&quot;</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;453.18[K]&quot;</span><span class="p">)]</span>
+
+<span class="n">TEMP11</span> <span class="o">=</span> <span class="n">STAT_THERM</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP11</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Faces4</span>
+<span class="n">TEMP11</span><span class="o">.</span><span class="n">Magnitude</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[K]&quot;</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;568[K]&quot;</span><span class="p">)]</span>
+</pre></div>
+</div>
+</section>
+<section id="insert-results">
+<h2>Insert results<a class="headerlink" href="#insert-results" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">TEMP_RST01</span> <span class="o">=</span> <span class="n">STAT_THERM_SOLN</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP_RST01</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Body1</span>
+<span class="n">TEMP_RST02</span> <span class="o">=</span> <span class="n">STAT_THERM_SOLN</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP_RST02</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Bodies10</span>
+<span class="n">TEMP_RST03</span> <span class="o">=</span> <span class="n">STAT_THERM_SOLN</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP_RST03</span><span class="o">.</span><span class="n">ScopingMethod</span> <span class="o">=</span> <span class="n">GeometryDefineByType</span><span class="o">.</span><span class="n">ResultFileItem</span>
+<span class="n">TEMP_RST03</span><span class="o">.</span><span class="n">ItemType</span> <span class="o">=</span> <span class="n">ResultFileItemType</span><span class="o">.</span><span class="n">ElementNameIDs</span>
+<span class="n">TEMP_RST03</span><span class="o">.</span><span class="n">SolverComponentIDs</span> <span class="o">=</span> <span class="s2">&quot;SURF152&quot;</span>
+<span class="n">TEMP_RST04</span> <span class="o">=</span> <span class="n">STAT_THERM_SOLN</span><span class="o">.</span><span class="n">AddTemperature</span><span class="p">()</span>
+<span class="n">TEMP_RST04</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">PATH01</span>
+</pre></div>
+</div>
+</section>
+<section id="solve">
+<h2>Solve<a class="headerlink" href="#solve" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">STAT_THERM_SOLN</span><span class="o">.</span><span class="n">Solve</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">STAT_THERM_SS</span> <span class="o">=</span> <span class="n">STAT_THERM_SOLN</span><span class="o">.</span><span class="n">Status</span>
+</pre></div>
+</div>
+</section>
+<section id="messages">
+<h2>Messages<a class="headerlink" href="#messages" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Messages</span> <span class="o">=</span> <span class="n">ExtAPI</span><span class="o">.</span><span class="n">Application</span><span class="o">.</span><span class="n">Messages</span>
+<span class="k">if</span> <span class="n">Messages</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">Messages</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">Severity</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">message</span><span class="o">.</span><span class="n">DisplayString</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No [Info]/[Warning]/[Error] Messages&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[Info] The requested license was received from the License Manager after 36 seconds.
+</pre></div>
+</div>
+</section>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Link to this heading">#</a></h2>
+<p>Temperature Plots</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Tree</span><span class="o">.</span><span class="n">Activate</span><span class="p">([</span><span class="n">TEMP_RST01</span><span class="p">])</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">Camera</span><span class="o">.</span><span class="n">SetFit</span><span class="p">()</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">ExportImage</span><span class="p">(</span>
+    <a href="https://docs.python.org/dev/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a><span class="p">,</span> <span class="s2">&quot;temperature_turbine.png&quot;</span><span class="p">),</span> <span class="n">image_export_format</span><span class="p">,</span> <span class="n">settings_720p</span>
+<span class="p">)</span>
+<span class="n">display_image</span><span class="p">(</span><span class="s2">&quot;temperature_turbine.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_cooled_turbine_blade_embed_002.png" srcset="../../_images/sphx_glr_cooled_turbine_blade_embed_002.png" alt="cooled turbine blade embed" class = "sphx-glr-single-img"/></section>
+<section id="id1">
+<h2>Define Analysis<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>Add static structural analysis</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">STAT_STRUC</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">AddStaticStructuralAnalysis</span><span class="p">()</span>
+<span class="n">STAT_STRUC</span><span class="o">.</span><span class="n">ImportLoad</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">STAT_STRUC_SOLN</span> <span class="o">=</span> <span class="n">STAT_STRUC</span><span class="o">.</span><span class="n">Solution</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2>Define Loads and Boundary Conditions<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>Setup loads and supports in static analysis</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">FIX_SUP01</span> <span class="o">=</span> <span class="n">STAT_STRUC</span><span class="o">.</span><span class="n">AddFixedSupport</span><span class="p">()</span>
+<span class="n">FIX_SUP01</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Face1</span>
+
+<span class="n">FIX_SUP02</span> <span class="o">=</span> <span class="n">STAT_STRUC</span><span class="o">.</span><span class="n">AddFixedSupport</span><span class="p">()</span>
+<span class="n">FIX_SUP02</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Face2</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>Insert results<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">EQV_STRS01</span> <span class="o">=</span> <span class="n">STAT_STRUC_SOLN</span><span class="o">.</span><span class="n">AddEquivalentStress</span><span class="p">()</span>
+<span class="n">EQV_STRS01</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">NS_Body1</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h2>Solve<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">STAT_STRUC_SOLN</span><span class="o">.</span><span class="n">Solve</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">STAT_STRUC_SS</span> <span class="o">=</span> <span class="n">STAT_STRUC_SOLN</span><span class="o">.</span><span class="n">Status</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h2>Messages<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Messages</span> <span class="o">=</span> <span class="n">ExtAPI</span><span class="o">.</span><span class="n">Application</span><span class="o">.</span><span class="n">Messages</span>
+<span class="k">if</span> <span class="n">Messages</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">Messages</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">Severity</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">message</span><span class="o">.</span><span class="n">DisplayString</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No [Info]/[Warning]/[Error] Messages&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[Warning] Thermal Fluid Line bodies are not included in non-thermal solution.
+[Warning] Not all Named Selections were successfully written because one or more names are not valid for the solver
+[Info] The Imported Body Temperature load will set the Program Controlled Tabular Loading option to Off when Mapped Data property is set to Input file, and the specified analysis time values match the step end times.
+[Info] The requested license was received from the License Manager after 36 seconds.
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h2>Results<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>Equivalent Stress Plots</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Tree</span><span class="o">.</span><span class="n">Activate</span><span class="p">([</span><span class="n">EQV_STRS01</span><span class="p">])</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">Camera</span><span class="o">.</span><span class="n">SetFit</span><span class="p">()</span>
+<span class="n">Graphics</span><span class="o">.</span><span class="n">ExportImage</span><span class="p">(</span>
+    <a href="https://docs.python.org/dev/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a><span class="p">,</span> <span class="s2">&quot;equivalent_stess_turbine.png&quot;</span><span class="p">),</span>
+    <span class="n">image_export_format</span><span class="p">,</span>
+    <span class="n">settings_720p</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">display_image</span><span class="p">(</span><span class="s2">&quot;equivalent_stess_turbine.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_cooled_turbine_blade_embed_003.png" srcset="../../_images/sphx_glr_cooled_turbine_blade_embed_003.png" alt="cooled turbine blade embed" class = "sphx-glr-single-img"/></section>
+<section id="cleanup">
+<h2>Cleanup<a class="headerlink" href="#cleanup" title="Link to this heading">#</a></h2>
+<p>Save project</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><a href="https://docs.python.org/dev/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a><span class="p">,</span> <span class="s2">&quot;cooled_turbine.mechdat&quot;</span><span class="p">))</span>
+<span class="n">app</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Delete example file</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">delete_downloads</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 26.843 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-02-technology-showcase-cooled-turbine-blade-embed-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/8a95f800215fc667e6ea2d34e11d7114/cooled_turbine_blade_embed.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cooled_turbine_blade_embed.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/a576e3021705ea47850127a20382dc8d/cooled_turbine_blade_embed.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">cooled_turbine_blade_embed.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/3c8b58573a2e4f6009ec9ef76a788b88/cooled_turbine_blade_embed.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">cooled_turbine_blade_embed.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-necessary-libraries">Import necessary libraries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configure-graphics-for-image-export">Configure graphics for image export</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-and-open-mechdat-file">Download and open MECHDAT file</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-unit-system">Define Unit System</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-python-variables">Define python variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-named-selections">Define Named Selections</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#material-assignment">Material Assignment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-coordinate-systems-and-paths">Define coordinate systems and paths</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-analysis">Define Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-loads-and-boundary-conditions">Define Loads and Boundary Conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#insert-results">Insert results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solve">Solve</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#messages">Messages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Define Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Define Loads and Boundary Conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Insert results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Solve</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Messages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cleanup">Cleanup</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+<!-- If there is no fix edit button function, use the PyData edit-this-button-->
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.4. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

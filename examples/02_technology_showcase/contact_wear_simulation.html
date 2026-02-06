@@ -1,0 +1,1248 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Contact Surface Wear Simulation &#8212; PyMechanical Embedding Examples</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../_static/documentation_options.js?v=e7fb764e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/thebelab-helper.js"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/02_technology_showcase/contact_wear_simulation';</script>
+    <link rel="icon" href="../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Thermal-Stress Analysis of a Cooled Turbine Blade" href="cooled_turbine_blade_embed.html" />
+    <link rel="prev" title="Inverse-Solving analysis of a rotor fan blade with disk" href="Rotor_Blade_Inverse_solve.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.dev0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyMechanical Embedding Examples - Home"/>
+    <img src="../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyMechanical Embedding Examples - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="PyMechanical Embedding Examples home">Home</a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Technology showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="PyMechanical Embedding Examples home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="PyMechanical Embedding Examples home">Home</a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Technology showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="PyMechanical Embedding Examples home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pymechanical-embedding-examples/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Rotor_Blade_Inverse_solve.html">Inverse-Solving analysis of a rotor fan blade with disk</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Contact Surface Wear Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cooled_turbine_blade_embed.html">Thermal-Stress Analysis of a Cooled Turbine Blade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="non_linear_analysis_rubber_boot_seal.html">Nonlinear Analysis of a Rubber Boot Seal Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shape_optimization_bracket_model.html">Shape Optimization of a Bracket</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+       
+    <li class="breadcrumb-item">
+      <a href="https://mechanical.docs.pyansys.com/" class="nav-link">PyMechanical</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Technology showcase</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Contact Surface Wear Simulation</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-examples-02-technology-showcase-contact-wear-simulation-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="contact-surface-wear-simulation">
+<span id="ref-contact-wear-simulation"></span><span id="sphx-glr-examples-02-technology-showcase-contact-wear-simulation-py"></span><h1>Contact Surface Wear Simulation<a class="headerlink" href="#contact-surface-wear-simulation" title="Link to this heading">#</a></h1>
+<p>Using a Archard wear model, this example demonstrates contact sliding
+of a hemispherical ring on a flat ring to produce wear.</p>
+<p>The model includes:</p>
+<ul class="simple">
+<li><p>Hemispherical ring with a radius of 30 mm made of copper.</p></li>
+<li><p>Flat ring with an inner radius of 50 mm and an outer radius of 150 mm made of steel.</p></li>
+</ul>
+<p>The hemispherical ring is in contact with the flat ring at the center
+from the axis of rotation at 100 mm and is subjected to a
+1) pressure of 4000 N/mm2 and 2) a rotation with a frequency
+of 100,000 revolutions/sec.</p>
+<p>The application evaluates total deformation and normal stress results,
+in loading direction, prior to and following wear. In addition,
+contact pressure prior to wear is evaluated.</p>
+<section id="import-the-necessary-libraries">
+<h2>Import the necessary libraries<a class="headerlink" href="#import-the-necessary-libraries" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/dev/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/dev/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">TYPE_CHECKING</span></a>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.mechanical.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">App</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.mechanical.core.examples</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete_downloads</span><span class="p">,</span> <span class="n">download_file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">image</span> <span class="k">as</span> <span class="n">mpimg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.animation</span><span class="w"> </span><span class="kn">import</span> <span class="n">FuncAnimation</span>
+
+<span class="k">if</span> <a href="https://docs.python.org/dev/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">TYPE_CHECKING</span></a><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">Ansys</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">Ansys.Core.Units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">Ansys.Mechanical.DataModel.Enums</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</section>
+<section id="initialize-the-embedded-application">
+<h2>Initialize the embedded application<a class="headerlink" href="#initialize-the-embedded-application" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="nb">globals</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Ansys Mechanical [Ansys Mechanical Enterprise]
+Product Version:252
+Software build date: 06/13/2025 11:25:56
+</pre></div>
+</div>
+</section>
+<section id="create-functions-to-set-camera-and-display-images">
+<h2>Create functions to set camera and display images<a class="headerlink" href="#create-functions-to-set-camera-and-display-images" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set the path for the output files (images, gifs, mechdat)</span>
+<a href="https://docs.python.org/dev/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/dev/library/pathlib.html#pathlib.Path.cwd" title="pathlib.Path.cwd" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-method"><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span></a><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;out&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">set_camera_and_display_image</span><span class="p">(</span>
+    <span class="n">camera</span><span class="p">:</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Common</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">MechanicalCameraWrapper</span><span class="p">,</span>
+    <span class="n">graphics</span><span class="p">:</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Common</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">MechanicalGraphicsWrapper</span><span class="p">,</span>
+    <span class="n">graphics_image_export_settings</span><span class="p">:</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">GraphicsImageExportSettings</span><span class="p">,</span>
+    <span class="n">image_output_path</span><span class="p">:</span> <a href="https://docs.python.org/dev/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a><span class="p">,</span>
+    <span class="n">image_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the camera to fit the model and display the image.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    camera : Ansys.ACT.Common.Graphics.MechanicalCameraWrapper</span>
+<span class="sd">        The camera object to set the view.</span>
+<span class="sd">    graphics : Ansys.ACT.Common.Graphics.MechanicalGraphicsWrapper</span>
+<span class="sd">        The graphics object to export the image.</span>
+<span class="sd">    graphics_image_export_settings : Ansys.Mechanical.Graphics.GraphicsImageExportSettings</span>
+<span class="sd">        The settings for exporting the image.</span>
+<span class="sd">    image_output_path : Path</span>
+<span class="sd">        The path to save the exported image.</span>
+<span class="sd">    image_name : str</span>
+<span class="sd">        The name of the exported image file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Set the camera to fit the mesh</span>
+    <span class="n">camera</span><span class="o">.</span><span class="n">SetFit</span><span class="p">()</span>
+    <span class="c1"># Export the mesh image with the specified settings</span>
+    <span class="n">image_path</span> <span class="o">=</span> <span class="n">image_output_path</span> <span class="o">/</span> <span class="n">image_name</span>
+    <span class="n">graphics</span><span class="o">.</span><span class="n">ExportImage</span><span class="p">(</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">image_path</span><span class="p">),</span> <span class="n">image_export_format</span><span class="p">,</span> <span class="n">graphics_image_export_settings</span>
+    <span class="p">)</span>
+    <span class="c1"># Display the exported mesh image</span>
+    <span class="n">display_image</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">display_image</span><span class="p">(</span>
+    <span class="n">image_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">pyplot_figsize_coordinates</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span>
+    <span class="n">plot_xticks</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+    <span class="n">plot_yticks</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+    <span class="n">plot_axis</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;off&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Display the image with the specified parameters.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image_path : str</span>
+<span class="sd">        The path to the image file to display.</span>
+<span class="sd">    pyplot_figsize_coordinates : tuple</span>
+<span class="sd">        The size of the figure in inches (width, height).</span>
+<span class="sd">    plot_xticks : list</span>
+<span class="sd">        The x-ticks to display on the plot.</span>
+<span class="sd">    plot_yticks : list</span>
+<span class="sd">        The y-ticks to display on the plot.</span>
+<span class="sd">    plot_axis : str</span>
+<span class="sd">        The axis visibility setting (&#39;on&#39; or &#39;off&#39;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Set the figure size based on the coordinates specified</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">pyplot_figsize_coordinates</span><span class="p">)</span>
+    <span class="c1"># Read the image from the file into an array</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">image_path</span><span class="p">))</span>
+    <span class="c1"># Get or set the current tick locations and labels of the x-axis</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">plot_xticks</span><span class="p">)</span>
+    <span class="c1"># Get or set the current tick locations and labels of the y-axis</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">plot_yticks</span><span class="p">)</span>
+    <span class="c1"># Turn off the axis</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">plot_axis</span><span class="p">)</span>
+    <span class="c1"># Display the figure</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="configure-graphics-for-image-export">
+<h2>Configure graphics for image export<a class="headerlink" href="#configure-graphics-for-image-export" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">graphics</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">Graphics</span>
+<span class="n">camera</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">Camera</span>
+
+<span class="c1"># Set the camera orientation to the front view</span>
+<span class="n">camera</span><span class="o">.</span><span class="n">SetSpecificViewOrientation</span><span class="p">(</span><span class="n">ViewOrientationType</span><span class="o">.</span><span class="n">Front</span><span class="p">)</span>
+
+<span class="c1"># Set the image export format and settings</span>
+<span class="n">image_export_format</span> <span class="o">=</span> <span class="n">GraphicsImageExportFormat</span><span class="o">.</span><span class="n">PNG</span>
+<span class="n">settings_720p</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">GraphicsImageExportSettings</span><span class="p">()</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Resolution</span> <span class="o">=</span> <span class="n">GraphicsResolutionType</span><span class="o">.</span><span class="n">EnhancedResolution</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">Background</span> <span class="o">=</span> <span class="n">GraphicsBackgroundType</span><span class="o">.</span><span class="n">White</span>
+<a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">settings_720p</span><span class="o">.</span><span class="n">Width</span></a> <span class="o">=</span> <span class="mi">1280</span>
+<a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">settings_720p</span><span class="o">.</span><span class="n">Height</span></a> <span class="o">=</span> <span class="mi">720</span>
+<span class="n">settings_720p</span><span class="o">.</span><span class="n">CurrentGraphicsDisplay</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Rotate the camera on the y-axis</span>
+<span class="n">camera</span><span class="o">.</span><span class="n">Rotate</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="n">CameraAxisType</span><span class="o">.</span><span class="n">ScreenY</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="download-the-geometry-and-material-files">
+<h2>Download the geometry and material files<a class="headerlink" href="#download-the-geometry-and-material-files" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download the geometry and material files from the specified paths</span>
+<a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geometry_path</span></a> <span class="o">=</span> <span class="n">download_file</span><span class="p">(</span><span class="s2">&quot;example_07_td43_wear.agdb&quot;</span><span class="p">,</span> <span class="s2">&quot;pymechanical&quot;</span><span class="p">,</span> <span class="s2">&quot;00_basic&quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mat1_path</span></a> <span class="o">=</span> <span class="n">download_file</span><span class="p">(</span><span class="s2">&quot;example_07_Mat_Copper.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;pymechanical&quot;</span><span class="p">,</span> <span class="s2">&quot;00_basic&quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mat2_path</span></a> <span class="o">=</span> <span class="n">download_file</span><span class="p">(</span><span class="s2">&quot;example_07_Mat_Steel.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;pymechanical&quot;</span><span class="p">,</span> <span class="s2">&quot;00_basic&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="import-the-geometry">
+<h2>Import the geometry<a class="headerlink" href="#import-the-geometry" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">Model</span>
+
+<span class="c1"># Add a geometry import to the geometry import group</span>
+<span class="n">geometry_import</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">GeometryImportGroup</span><span class="o">.</span><span class="n">AddGeometryImport</span><span class="p">()</span>
+
+<span class="c1"># Set the geometry import settings</span>
+<span class="n">geometry_import_format</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Enums</span><span class="o">.</span><span class="n">GeometryImportPreference</span><span class="o">.</span><span class="n">Format</span><span class="o">.</span><span class="n">Automatic</span>
+<span class="p">)</span>
+<span class="n">geometry_import_preferences</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">Utilities</span><span class="o">.</span><span class="n">GeometryImportPreferences</span><span class="p">()</span>
+<a href="https://docs.python.org/dev/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geometry_import_preferences</span><span class="o">.</span><span class="n">ProcessNamedSelections</span></a> <span class="o">=</span> <span class="kc">True</span>
+<a href="https://docs.python.org/dev/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geometry_import_preferences</span><span class="o">.</span><span class="n">ProcessCoordinateSystems</span></a> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># Import the geometry using the specified settings</span>
+<span class="n">geometry_import</span><span class="o">.</span><span class="n">Import</span><span class="p">(</span>
+    <a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geometry_path</span></a><span class="p">,</span> <span class="n">geometry_import_format</span><span class="p">,</span> <span class="n">geometry_import_preferences</span>
+<span class="p">)</span>
+
+<span class="c1"># Visualize the model in 3D</span>
+<span class="n">app</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Static Scene</label><div class="sd-tab-content docutils">
+<img src="../../_images/sphx_glr_contact_wear_simulation_001.png" srcset="../../_images/sphx_glr_contact_wear_simulation_001.png" alt="contact wear simulation" class = "sphx-glr-single-img"/></div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Interactive Scene</label><div class="sd-tab-content docutils">
+<iframe src='../../_static/static_viewer.html?fileURL=../_images/examples/02_technology_showcase/images/sphx_glr_contact_wear_simulation_001.vtksz' width='100%%' height='400px' frameborder='0'></iframe></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[]
+</pre></div>
+</div>
+</section>
+<section id="import-the-materials">
+<h2>Import the materials<a class="headerlink" href="#import-the-materials" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the materials for the model</span>
+<span class="n">materials</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Materials</span>
+
+<span class="c1"># Import the copper and steel materials</span>
+<span class="n">materials</span><span class="o">.</span><span class="n">Import</span><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mat1_path</span></a><span class="p">)</span>
+<span class="n">materials</span><span class="o">.</span><span class="n">Import</span><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mat2_path</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;System.Collections.Generic.List[Material] object at 0x7f7f6e299380&gt;
+</pre></div>
+</div>
+</section>
+<section id="set-up-the-analysis">
+<h2>Set up the analysis<a class="headerlink" href="#set-up-the-analysis" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set up the unit system</span>
+<span class="n">app</span><span class="o">.</span><span class="n">ExtAPI</span><span class="o">.</span><span class="n">Application</span><span class="o">.</span><span class="n">ActiveUnitSystem</span> <span class="o">=</span> <span class="n">MechanicalUnitSystem</span><span class="o">.</span><span class="n">StandardNMM</span>
+</pre></div>
+</div>
+<p>Store all main tree nodes as variables</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Geometry</span>
+<span class="n">coordinate_systems</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">CoordinateSystems</span>
+<span class="n">connections</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Connections</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Mesh</span>
+<span class="n">named_selections</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">NamedSelections</span>
+</pre></div>
+</div>
+<p>Add the static structural analysis</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">AddStaticStructuralAnalysis</span><span class="p">()</span>
+<span class="n">static_structural_analysis</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">Analyses</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Store the static structural analysis solution</span>
+<span class="n">stat_struct_soln</span> <span class="o">=</span> <span class="n">static_structural_analysis</span><span class="o">.</span><span class="n">Solution</span>
+
+<span class="c1"># Get the analysis settings for the static structural analysis</span>
+<span class="n">analysis_settings</span><span class="p">:</span> <span class="p">(</span>
+    <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">AnalysisSettings</span><span class="o">.</span><span class="n">ANSYSAnalysisSettings</span>
+<span class="p">)</span> <span class="o">=</span> <span class="n">static_structural_analysis</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Store the named selections as variables</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_named_selection</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the named selection by name.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">GetObjectsByName</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="n">curve_named_selection</span> <span class="o">=</span> <span class="n">get_named_selection</span><span class="p">(</span><span class="s2">&quot;curve&quot;</span><span class="p">)</span>
+<span class="n">dia_named_selection</span> <span class="o">=</span> <span class="n">get_named_selection</span><span class="p">(</span><span class="s2">&quot;dia&quot;</span><span class="p">)</span>
+<span class="n">ver_edge1</span> <span class="o">=</span> <span class="n">get_named_selection</span><span class="p">(</span><span class="s2">&quot;v1&quot;</span><span class="p">)</span>
+<span class="n">ver_edge2</span> <span class="o">=</span> <span class="n">get_named_selection</span><span class="p">(</span><span class="s2">&quot;v2&quot;</span><span class="p">)</span>
+<span class="n">hor_edge1</span> <span class="o">=</span> <span class="n">get_named_selection</span><span class="p">(</span><span class="s2">&quot;h1&quot;</span><span class="p">)</span>
+<span class="n">hor_edge2</span> <span class="o">=</span> <span class="n">get_named_selection</span><span class="p">(</span><span class="s2">&quot;h2&quot;</span><span class="p">)</span>
+<span class="n">all_bodies_named_selection</span> <span class="o">=</span> <span class="n">get_named_selection</span><span class="p">(</span><span class="s2">&quot;all_bodies&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Assign material to the bodies</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set the model&#39;s 2D behavior to axi-symmetric</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">Model2DBehavior</span> <span class="o">=</span> <span class="n">Model2DBehavior</span><span class="o">.</span><span class="n">AxiSymmetric</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">set_material_and_dimension</span><span class="p">(</span>
+    <span class="n">surface_child_index</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="n">ShellBodyDimension</span><span class="o">.</span><span class="n">Two_D</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the material and dimension for a given surface.&quot;&quot;&quot;</span>
+    <span class="n">surface</span><span class="p">:</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">Body</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span>
+        <span class="n">surface_child_index</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">surface</span><span class="o">.</span><span class="n">Material</span> <span class="o">=</span> <span class="n">material</span>
+    <span class="n">surface</span><span class="o">.</span><span class="n">Dimension</span> <span class="o">=</span> <span class="n">dimension</span>
+
+
+<span class="c1"># Set the material and dimensions for the surface</span>
+<span class="n">set_material_and_dimension</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Steel&quot;</span><span class="p">)</span>
+<span class="n">set_material_and_dimension</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Copper&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Configure settings for the contact region</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add a contact region between the hemispherical ring and the flat ring</span>
+<span class="n">contact_region</span> <span class="o">=</span> <span class="n">connections</span><span class="o">.</span><span class="n">AddContactRegion</span><span class="p">()</span>
+<span class="c1"># Set the source and target locations for the contact region</span>
+<span class="n">contact_region</span><span class="o">.</span><span class="n">SourceLocation</span> <span class="o">=</span> <span class="n">named_selections</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">contact_region</span><span class="o">.</span><span class="n">TargetLocation</span> <span class="o">=</span> <span class="n">named_selections</span><span class="o">.</span><span class="n">Children</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="c1"># Set contact region properties</span>
+<span class="n">contact_region</span><span class="o">.</span><span class="n">ContactType</span> <span class="o">=</span> <span class="n">ContactType</span><span class="o">.</span><span class="n">Frictionless</span>
+<span class="n">contact_region</span><span class="o">.</span><span class="n">Behavior</span> <span class="o">=</span> <span class="n">ContactBehavior</span><span class="o">.</span><span class="n">Asymmetric</span>
+<span class="n">contact_region</span><span class="o">.</span><span class="n">ContactFormulation</span> <span class="o">=</span> <span class="n">ContactFormulation</span><span class="o">.</span><span class="n">AugmentedLagrange</span>
+<span class="n">contact_region</span><span class="o">.</span><span class="n">DetectionMethod</span> <span class="o">=</span> <span class="n">ContactDetectionPoint</span><span class="o">.</span><span class="n">NodalNormalToTarget</span>
+</pre></div>
+</div>
+<p>Add a command snippet to use Archard Wear Model</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">archard_wear_model</span></a> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;keyo,cid,5,1</span>
+<span class="s2">keyo,cid,10,2</span>
+<span class="s2">pi=acos(-1)</span>
+<span class="s2">slide_velocity=1e5</span>
+<span class="s2">Uring_offset=100</span>
+<span class="s2">kcopper=10e-13*slide_velocity*2*pi*Uring_offset</span>
+<span class="s2">TB,WEAR,cid,,,ARCD</span>
+<span class="s2">TBFIELD,TIME,0</span>
+<span class="s2">TBDATA,1,0,1,1,0,0</span>
+<span class="s2">TBFIELD,TIME,1</span>
+<span class="s2">TBDATA,1,0,1,1,0,0</span>
+<span class="s2">TBFIELD,TIME,1.01</span>
+<span class="s2">TBDATA,1,kcopper,1,1,0,0</span>
+<span class="s2">TBFIELD,TIME,4</span>
+<span class="s2">TBDATA,1,kcopper,1,1,0,0&quot;&quot;&quot;</span>
+<span class="n">cmd1</span> <span class="o">=</span> <span class="n">contact_region</span><span class="o">.</span><span class="n">AddCommandSnippet</span><span class="p">()</span>
+<span class="n">cmd1</span><span class="o">.</span><span class="n">AppendText</span><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">archard_wear_model</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p>Insert a remote point</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add a remote point to the model</span>
+<span class="n">remote_point</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">AddRemotePoint</span><span class="p">()</span>
+<span class="c1"># Set the remote point location to the center of the hemispherical ring</span>
+<span class="n">remote_point</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">dia_named_selection</span>
+<span class="n">remote_point</span><span class="o">.</span><span class="n">Behavior</span> <span class="o">=</span> <span class="n">LoadBehavior</span><span class="o">.</span><span class="n">Rigid</span>
+</pre></div>
+</div>
+</section>
+<section id="set-properties-for-the-mesh">
+<h2>Set properties for the mesh<a class="headerlink" href="#set-properties-for-the-mesh" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set the mesh element order and size</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">ElementOrder</span> <span class="o">=</span> <span class="n">ElementOrder</span><span class="o">.</span><span class="n">Linear</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">ElementSize</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;1 [mm]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Create a function to add edge sizing and properties</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add_edge_sizing_and_properties</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="p">:</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">MeshControls</span><span class="o">.</span><span class="n">Mesh</span><span class="p">,</span>
+    <span class="n">location</span><span class="p">,</span>
+    <span class="n">divisions</span><span class="p">,</span>
+    <span class="n">sizing_type</span><span class="o">=</span><span class="n">SizingType</span><span class="o">.</span><span class="n">NumberOfDivisions</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the sizing properties for a given mesh.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mesh : Ansys.Mechanical.DataModel.Mesh</span>
+<span class="sd">        The mesh object to set the properties for.</span>
+<span class="sd">    location : Ansys.Mechanical.DataModel.NamedSelection</span>
+<span class="sd">        The location of the edge to set the sizing for.</span>
+<span class="sd">    divisions : int</span>
+<span class="sd">        The number of divisions for the edge.</span>
+<span class="sd">    sizing_type : SizingType</span>
+<span class="sd">        The type of sizing to apply (default is NumberOfDivisions).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edge_sizing</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">AddSizing</span><span class="p">()</span>
+    <span class="n">edge_sizing</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">location</span>
+    <span class="n">edge_sizing</span><span class="o">.</span><span class="n">Type</span> <span class="o">=</span> <span class="n">sizing_type</span>
+    <span class="n">edge_sizing</span><span class="o">.</span><span class="n">NumberOfDivisions</span> <span class="o">=</span> <span class="n">divisions</span>
+</pre></div>
+</div>
+<p>Add edge sizing and properties to the mesh for each named selection</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">add_edge_sizing_and_properties</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">hor_edge1</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>
+<span class="n">add_edge_sizing_and_properties</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">hor_edge2</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>
+<span class="n">add_edge_sizing_and_properties</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">ver_edge1</span><span class="p">,</span> <span class="mi">35</span><span class="p">)</span>
+<span class="n">add_edge_sizing_and_properties</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">ver_edge2</span><span class="p">,</span> <span class="mi">35</span><span class="p">)</span>
+<span class="n">add_edge_sizing_and_properties</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">dia_named_selection</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="n">add_edge_sizing_and_properties</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">curve_named_selection</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Generate the mesh and display the image</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">mesh</span><span class="o">.</span><span class="n">GenerateMesh</span><span class="p">()</span>
+<span class="n">set_camera_and_display_image</span><span class="p">(</span><span class="n">camera</span><span class="p">,</span> <span class="n">graphics</span><span class="p">,</span> <span class="n">settings_720p</span><span class="p">,</span> <a href="https://docs.python.org/dev/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a><span class="p">,</span> <span class="s2">&quot;mesh.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_contact_wear_simulation_002.png" srcset="../../_images/sphx_glr_contact_wear_simulation_002.png" alt="contact wear simulation" class = "sphx-glr-single-img"/></section>
+<section id="set-the-analysis-settings">
+<h2>Set the analysis settings<a class="headerlink" href="#set-the-analysis-settings" title="Link to this heading">#</a></h2>
+<p>Create a function to set time steps for the analysis settings</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_time_steps</span><span class="p">(</span><span class="n">initial</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">min</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">max</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the time step properties for the analysis settings.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    initial : str</span>
+<span class="sd">        The initial time step value.</span>
+<span class="sd">    min : str</span>
+<span class="sd">        The minimum time step value.</span>
+<span class="sd">    max : str</span>
+<span class="sd">        The maximum time step value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">analysis_settings</span><span class="o">.</span><span class="n">InitialTimeStep</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="n">initial</span><span class="p">)</span>
+    <span class="n">analysis_settings</span><span class="o">.</span><span class="n">MinimumTimeStep</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="nb">min</span><span class="p">)</span>
+    <span class="n">analysis_settings</span><span class="o">.</span><span class="n">MaximumTimeStep</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="nb">max</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set the analysis settings for the static structural analysis</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">analysis_settings</span><span class="o">.</span><span class="n">NumberOfSteps</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">analysis_settings</span><span class="o">.</span><span class="n">CurrentStepNumber</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">analysis_settings</span><span class="o">.</span><span class="n">AutomaticTimeStepping</span> <span class="o">=</span> <span class="n">AutomaticTimeStepping</span><span class="o">.</span><span class="n">On</span>
+<span class="n">analysis_settings</span><span class="o">.</span><span class="n">DefineBy</span> <span class="o">=</span> <span class="n">TimeStepDefineByType</span><span class="o">.</span><span class="n">Time</span>
+<span class="n">set_time_steps</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="s2">&quot;0.1 [s]&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="s2">&quot;0.0001 [s]&quot;</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="s2">&quot;1 [s]&quot;</span><span class="p">)</span>
+<span class="n">analysis_settings</span><span class="o">.</span><span class="n">CurrentStepNumber</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">analysis_settings</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">analysis_settings</span><span class="o">.</span><span class="n">StepEndTime</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;4 [s]&quot;</span><span class="p">)</span>
+<span class="n">analysis_settings</span><span class="o">.</span><span class="n">AutomaticTimeStepping</span> <span class="o">=</span> <span class="n">AutomaticTimeStepping</span><span class="o">.</span><span class="n">On</span>
+<span class="n">analysis_settings</span><span class="o">.</span><span class="n">DefineBy</span> <span class="o">=</span> <span class="n">TimeStepDefineByType</span><span class="o">.</span><span class="n">Time</span>
+<span class="n">set_time_steps</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="s2">&quot;0.01 [s]&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="s2">&quot;0.000001 [s]&quot;</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="s2">&quot;0.02 [s]&quot;</span><span class="p">)</span>
+<span class="n">analysis_settings</span><span class="o">.</span><span class="n">LargeDeflection</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</section>
+<section id="insert-loading-and-boundary-conditions">
+<h2>Insert loading and boundary conditions<a class="headerlink" href="#insert-loading-and-boundary-conditions" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add a fixed support to the model</span>
+<span class="n">fixed_support</span> <span class="o">=</span> <span class="n">static_structural_analysis</span><span class="o">.</span><span class="n">AddFixedSupport</span><span class="p">()</span>
+<span class="c1"># Set the fixed support location to the first horizontal edge</span>
+<span class="n">fixed_support</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">hor_edge1</span>
+
+<span class="c1"># Add a remote displacement to the model</span>
+<span class="n">remote_displacement</span> <span class="o">=</span> <span class="n">static_structural_analysis</span><span class="o">.</span><span class="n">AddRemoteDisplacement</span><span class="p">()</span>
+<span class="c1"># Set the remote displacement location to the remote point</span>
+<span class="n">remote_displacement</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">remote_point</span>
+<span class="c1"># Add the values for the x-component and rotation about the z-axis</span>
+<span class="n">remote_displacement</span><span class="o">.</span><span class="n">XComponent</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[mm]&quot;</span><span class="p">)]</span>
+<span class="n">remote_displacement</span><span class="o">.</span><span class="n">RotationZ</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;0[deg]&quot;</span><span class="p">)]</span>
+
+<span class="c1"># Add a remote force to the model</span>
+<span class="n">remote_force</span> <span class="o">=</span> <span class="n">static_structural_analysis</span><span class="o">.</span><span class="n">AddRemoteForce</span><span class="p">()</span>
+<span class="c1"># Set the remote force location to the remote point</span>
+<span class="n">remote_force</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">remote_point</span>
+<span class="c1"># Set the remote force values for the y-component</span>
+<span class="n">remote_force</span><span class="o">.</span><span class="n">DefineBy</span> <span class="o">=</span> <span class="n">LoadDefineBy</span><span class="o">.</span><span class="n">Components</span>
+<span class="n">remote_force</span><span class="o">.</span><span class="n">YComponent</span><span class="o">.</span><span class="n">Output</span><span class="o">.</span><span class="n">DiscreteValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;-150796320 [N]&quot;</span><span class="p">)]</span>
+
+<span class="c1">#  Nonlinear adaptivity does not support contact criterion yet so a command snippet is used instead</span>
+<a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">nonlinear_adaptivity</span></a> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;NLADAPTIVE,all,add,contact,wear,0.50</span>
+<span class="s2">NLADAPTIVE,all,on,all,all,1,,4</span>
+<span class="s2">NLADAPTIVE,all,list,all,all&quot;&quot;&quot;</span>
+
+<span class="c1"># Add the nonlinear adaptivity command snippet to the static structural analysis</span>
+<span class="n">cmd2</span> <span class="o">=</span> <span class="n">static_structural_analysis</span><span class="o">.</span><span class="n">AddCommandSnippet</span><span class="p">()</span>
+<span class="n">cmd2</span><span class="o">.</span><span class="n">AppendText</span><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">nonlinear_adaptivity</span></a><span class="p">)</span>
+<span class="n">cmd2</span><span class="o">.</span><span class="n">StepSelectionMode</span> <span class="o">=</span> <span class="n">SequenceSelectionType</span><span class="o">.</span><span class="n">All</span>
+
+<span class="c1"># Activate the static structural analysis and display the mesh image</span>
+<span class="n">static_structural_analysis</span><span class="o">.</span><span class="n">Activate</span><span class="p">()</span>
+<span class="n">set_camera_and_display_image</span><span class="p">(</span><span class="n">camera</span><span class="p">,</span> <span class="n">graphics</span><span class="p">,</span> <span class="n">settings_720p</span><span class="p">,</span> <a href="https://docs.python.org/dev/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a><span class="p">,</span> <span class="s2">&quot;mesh.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_contact_wear_simulation_003.png" srcset="../../_images/sphx_glr_contact_wear_simulation_003.png" alt="contact wear simulation" class = "sphx-glr-single-img"/></section>
+<section id="add-results-to-the-solution">
+<h2>Add results to the solution<a class="headerlink" href="#add-results-to-the-solution" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_properties_for_result</span><span class="p">(</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">Results</span><span class="o">.</span><span class="n">StressResults</span><span class="o">.</span><span class="n">StressResult</span><span class="p">,</span>
+    <span class="n">display_time</span><span class="p">,</span>
+    <span class="n">orientation_type</span><span class="o">=</span><span class="n">NormalOrientationType</span><span class="o">.</span><span class="n">YAxis</span><span class="p">,</span>
+    <span class="n">display_option</span><span class="o">=</span><span class="n">ResultAveragingType</span><span class="o">.</span><span class="n">Unaveraged</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the properties for a given result.&quot;&quot;&quot;</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">NormalOrientation</span> <span class="o">=</span> <span class="n">orientation_type</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">DisplayTime</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="n">display_time</span><span class="p">)</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">DisplayOption</span> <span class="o">=</span> <span class="n">display_option</span>
+
+
+<span class="c1"># Add total deformation to the solution</span>
+<span class="n">total_deformation</span> <span class="o">=</span> <span class="n">stat_struct_soln</span><span class="o">.</span><span class="n">AddTotalDeformation</span><span class="p">()</span>
+
+<span class="c1"># Add normal stress to the solution</span>
+<span class="n">normal_stress1</span> <span class="o">=</span> <span class="n">stat_struct_soln</span><span class="o">.</span><span class="n">AddNormalStress</span><span class="p">()</span>
+<span class="n">set_properties_for_result</span><span class="p">(</span><span class="n">normal_stress1</span><span class="p">,</span> <span class="n">display_time</span><span class="o">=</span><span class="s2">&quot;1 [s]&quot;</span><span class="p">)</span>
+<span class="n">normal_stress2</span> <span class="o">=</span> <span class="n">stat_struct_soln</span><span class="o">.</span><span class="n">AddNormalStress</span><span class="p">()</span>
+<span class="n">set_properties_for_result</span><span class="p">(</span><span class="n">normal_stress1</span><span class="p">,</span> <span class="n">display_time</span><span class="o">=</span><span class="s2">&quot;4 [s]&quot;</span><span class="p">)</span>
+
+<span class="c1"># Add a contact tool to the solution</span>
+<span class="n">contact_tool</span> <span class="o">=</span> <span class="n">stat_struct_soln</span><span class="o">.</span><span class="n">AddContactTool</span><span class="p">()</span>
+<span class="n">contact_tool</span><span class="o">.</span><span class="n">ScopingMethod</span> <span class="o">=</span> <span class="n">GeometryDefineByType</span><span class="o">.</span><span class="n">Geometry</span>
+<span class="c1"># Add selections for the contact tool</span>
+<span class="n">selection1</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">ExtAPI</span><span class="o">.</span><span class="n">SelectionManager</span><span class="o">.</span><span class="n">AddSelection</span><span class="p">(</span><span class="n">all_bodies_named_selection</span><span class="p">)</span>
+<span class="n">selection2</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">ExtAPI</span><span class="o">.</span><span class="n">SelectionManager</span><span class="o">.</span><span class="n">CurrentSelection</span>
+<span class="c1"># Set the contact tool location to the current selection</span>
+<span class="n">contact_tool</span><span class="o">.</span><span class="n">Location</span> <span class="o">=</span> <span class="n">selection2</span>
+<span class="c1"># Clear the selection</span>
+<span class="n">app</span><span class="o">.</span><span class="n">ExtAPI</span><span class="o">.</span><span class="n">SelectionManager</span><span class="o">.</span><span class="n">ClearSelection</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Add contact pressure to the contact tool</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add_contact_pressure</span><span class="p">(</span>
+    <span class="n">contact_tool</span><span class="p">:</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">ACT</span><span class="o">.</span><span class="n">Automation</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">PostContactTool</span><span class="p">,</span> <span class="n">display_time</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a contact pressure to the contact tool.&quot;&quot;&quot;</span>
+    <span class="n">contact_pressure</span> <span class="o">=</span> <span class="n">contact_tool</span><span class="o">.</span><span class="n">AddPressure</span><span class="p">()</span>
+    <span class="n">contact_pressure</span><span class="o">.</span><span class="n">DisplayTime</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="n">display_time</span><span class="p">)</span>
+
+
+<span class="c1"># Add pressure to the contact tool</span>
+<span class="n">add_contact_pressure</span><span class="p">(</span><span class="n">contact_tool</span><span class="p">,</span> <span class="n">display_time</span><span class="o">=</span><span class="s2">&quot;0 [s]&quot;</span><span class="p">)</span>
+<span class="n">add_contact_pressure</span><span class="p">(</span><span class="n">contact_tool</span><span class="p">,</span> <span class="n">display_time</span><span class="o">=</span><span class="s2">&quot;4 [s]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="solve-the-solution">
+<h2>Solve the solution<a class="headerlink" href="#solve-the-solution" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">stat_struct_soln</span><span class="o">.</span><span class="n">Solve</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="postprocessing">
+<h2>Postprocessing<a class="headerlink" href="#postprocessing" title="Link to this heading">#</a></h2>
+<p>Activate the first normal stress result and display the image</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">Activate</span><span class="p">([</span><span class="n">normal_stress1</span><span class="p">])</span>
+<span class="n">set_camera_and_display_image</span><span class="p">(</span>
+    <span class="n">camera</span><span class="p">,</span> <span class="n">graphics</span><span class="p">,</span> <span class="n">settings_720p</span><span class="p">,</span> <a href="https://docs.python.org/dev/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a><span class="p">,</span> <span class="s2">&quot;normal_stress.png&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_contact_wear_simulation_004.png" srcset="../../_images/sphx_glr_contact_wear_simulation_004.png" alt="contact wear simulation" class = "sphx-glr-single-img"/><p>Create a function to update the animation frame</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">update_animation</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">mpimg</span><span class="o">.</span><span class="n">AxesImage</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update the animation frame for the GIF.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame : int</span>
+<span class="sd">        The frame number to update the animation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list[mpimg.AxesImage]</span>
+<span class="sd">        A list containing the updated image for the animation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Seeks to the given frame in this sequence file</span>
+    <span class="n">gif</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+    <span class="c1"># Set the image array to the current frame of the GIF</span>
+    <span class="n">image</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">gif</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">))</span>
+    <span class="c1"># Return the updated image</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">image</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Display the total deformation animation</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set the animation export format</span>
+<span class="n">animation_export_format</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">DataModel</span><span class="o">.</span><span class="n">Enums</span><span class="o">.</span><span class="n">GraphicsAnimationExportFormat</span><span class="o">.</span><span class="n">GIF</span>
+<span class="p">)</span>
+<span class="c1"># Set the animation export settings</span>
+<span class="n">settings_720p</span> <span class="o">=</span> <span class="n">Ansys</span><span class="o">.</span><span class="n">Mechanical</span><span class="o">.</span><span class="n">Graphics</span><span class="o">.</span><span class="n">AnimationExportSettings</span><span class="p">()</span>
+<a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">settings_720p</span><span class="o">.</span><span class="n">Width</span></a> <span class="o">=</span> <span class="mi">1280</span>
+<a href="https://docs.python.org/dev/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">settings_720p</span><span class="o">.</span><span class="n">Height</span></a> <span class="o">=</span> <span class="mi">720</span>
+
+<span class="c1"># Export the animation</span>
+<a href="https://docs.python.org/dev/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">total_deformation_gif</span></a> <span class="o">=</span> <a href="https://docs.python.org/dev/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a> <span class="o">/</span> <span class="s2">&quot;total_deformation.gif&quot;</span>
+<span class="n">total_deformation</span><span class="o">.</span><span class="n">ExportAnimation</span><span class="p">(</span>
+    <span class="nb">str</span><span class="p">(</span><a href="https://docs.python.org/dev/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">total_deformation_gif</span></a><span class="p">),</span> <span class="n">animation_export_format</span><span class="p">,</span> <span class="n">settings_720p</span>
+<span class="p">)</span>
+
+<span class="c1"># Open the GIF file and create an animation</span>
+<span class="n">gif</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><a href="https://docs.python.org/dev/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">total_deformation_gif</span></a><span class="p">)</span>
+<span class="c1"># Set the subplots for the animation and turn off the axis</span>
+<span class="n">figure</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+<span class="c1"># Change the color of the image</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">gif</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">))</span>
+
+<span class="c1"># Create the animation using the figure, update_animation function, and the GIF frames</span>
+<span class="c1"># Set the interval between frames to 200 milliseconds and repeat the animation</span>
+<span class="n">FuncAnimation</span><span class="p">(</span>
+    <span class="n">figure</span><span class="p">,</span>
+    <span class="n">update_animation</span><span class="p">,</span>
+    <span class="n">frames</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">gif</span><span class="o">.</span><span class="n">n_frames</span><span class="p">),</span>
+    <span class="n">interval</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">repeat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">blit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Show the animation</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_contact_wear_simulation_005.png" srcset="../../_images/sphx_glr_contact_wear_simulation_005.png" alt="contact wear simulation" class = "sphx-glr-single-img"/></section>
+<section id="print-the-project-tree">
+<h2>Print the project tree<a class="headerlink" href="#print-the-project-tree" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">print_tree</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>├── Project
+|  ├── Model
+|  |  ├── Geometry Imports (✓)
+|  |  |  ├── Geometry Import (✓)
+|  |  ├── Geometry (✓)
+|  |  |  ├── Steel_Ring
+|  |  |  |  ├── Steel_Ring
+|  |  |  ├── Hemispherical_Copper_Ring
+|  |  |  |  ├── Hemispherical_Copper_Ring
+|  |  ├── Materials (✓)
+|  |  |  ├── Structural Steel (✓)
+|  |  |  ├── Copper (✓)
+|  |  |  ├── Steel (✓)
+|  |  ├── Coordinate Systems (✓)
+|  |  |  ├── Global Coordinate System (✓)
+|  |  ├── Remote Points (✓)
+|  |  |  ├── Remote Point (✓)
+|  |  ├── Connections (✓)
+|  |  |  ├── Connection Group (✓)
+|  |  |  |  ├── Contact Region (✓)
+|  |  |  |  |  ├── Commands (APDL) (✓)
+|  |  ├── Mesh (✓)
+|  |  |  ├── Edge Sizing (✓)
+|  |  |  ├── Edge Sizing 2 (✓)
+|  |  |  ├── Edge Sizing 3 (✓)
+|  |  |  ├── Edge Sizing 4 (✓)
+|  |  |  ├── Edge Sizing 5 (✓)
+|  |  |  ├── Edge Sizing 6 (✓)
+|  |  ├── Named Selections
+|  |  |  ├── all_bodies (✓)
+|  |  |  ├── dia (✓)
+|  |  |  ├── h1 (✓)
+|  |  |  ├── h2 (✓)
+|  |  |  ├── v1 (✓)
+|  |  |  ├── v2 (✓)
+|  |  |  ├── curve (✓)
+|  |  ├── Static Structural (✓)
+|  |  |  ├── Analysis Settings (✓)
+|  |  |  ├── Fixed Support (✓)
+|  |  |  ├── Remote Displacement (✓)
+|  |  |  ├── Remote Force (✓)
+|  |  |  ├── Commands (APDL) (✓)
+|  |  |  ├── Solution (✓)
+|  |  |  |  ├── Solution Information (✓)
+|  |  |  |  ├── Total Deformation (✓)
+|  |  |  |  ├── Normal Stress (✓)
+|  |  |  |  ├── Normal Stress 2 (✓)
+|  |  |  |  ├── Contact Tool (✓)
+|  |  |  |  |  ├── Status (✓)
+|  |  |  |  |  ├── Pressure (✓)
+|  |  |  |  |  ├── Pressure 2 (✓)
+</pre></div>
+</div>
+</section>
+<section id="clean-up-the-project">
+<h2>Clean up the project<a class="headerlink" href="#clean-up-the-project" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save the project file</span>
+<a href="https://docs.python.org/dev/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mechdat_file</span></a> <span class="o">=</span> <a href="https://docs.python.org/dev/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a> <span class="o">/</span> <span class="s2">&quot;contact_wear.mechdat&quot;</span>
+<span class="n">app</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><a href="https://docs.python.org/dev/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mechdat_file</span></a><span class="p">))</span>
+
+<span class="c1"># Close the app</span>
+<span class="n">app</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># Delete the downloaded files</span>
+<span class="n">delete_downloads</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 48.319 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-02-technology-showcase-contact-wear-simulation-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/a441924edff8a39caf01ac80b1da1d7c/contact_wear_simulation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">contact_wear_simulation.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/3f4cb9e13d26b9dbcb4c23a13f42182a/contact_wear_simulation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">contact_wear_simulation.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/425af2945c83c2e73c8f6c503e3c5955/contact_wear_simulation.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">contact_wear_simulation.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-the-necessary-libraries">Import the necessary libraries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initialize-the-embedded-application">Initialize the embedded application</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-functions-to-set-camera-and-display-images">Create functions to set camera and display images</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configure-graphics-for-image-export">Configure graphics for image export</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-the-geometry-and-material-files">Download the geometry and material files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-the-geometry">Import the geometry</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-the-materials">Import the materials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-the-analysis">Set up the analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-properties-for-the-mesh">Set properties for the mesh</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-the-analysis-settings">Set the analysis settings</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#insert-loading-and-boundary-conditions">Insert loading and boundary conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-results-to-the-solution">Add results to the solution</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solve-the-solution">Solve the solution</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#postprocessing">Postprocessing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#print-the-project-tree">Print the project tree</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#clean-up-the-project">Clean up the project</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+<!-- If there is no fix edit button function, use the PyData edit-this-button-->
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.4. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
