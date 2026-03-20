@@ -7,7 +7,7 @@ on:
 
 env:
   MAIN_PYTHON_VERSION: '3.12'
-  DEV_MAJOR_REV: '26'
+  DEV_MAJOR_REV: '27'
   DEV_MINOR_REV: '1'
 
 concurrency:
@@ -111,18 +111,18 @@ jobs:
           path: doc/_build/html
           retention-days: 7
 
-  build-failure:
-    name: Teams notify on failure
-    if: failure()
-    needs: [ 'nightly-doc-build', 'display-docker-info']
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Microsoft Teams Notification
-        uses: jdcargile/ms-teams-notification@v1.4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: Nightly build failure on ${{ env.DEV_MAJOR_REV }}.${{ env.DEV_MINOR_REV }}_candidate build at ${{ needs.display-docker-info.outputs.build_info }} , pushed at ${{ needs.display-docker-info.outputs.docker_info }} (UTC)
-          notification-color: dc3545
-          timezone: America/Chicago
+  # build-failure:
+  #   name: Teams notify on failure
+  #   if: failure()
+  #   needs: [ 'nightly-doc-build', 'display-docker-info']
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v6
+  #     - name: Microsoft Teams Notification
+  #       uses: jdcargile/ms-teams-notification@v1.4
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+  #         notification-summary: Nightly build failure on ${{ env.DEV_MAJOR_REV }}.${{ env.DEV_MINOR_REV }}_candidate build at ${{ needs.display-docker-info.outputs.build_info }} , pushed at ${{ needs.display-docker-info.outputs.docker_info }} (UTC)
+  #         notification-color: dc3545
+  #         timezone: America/Chicago
