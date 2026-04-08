@@ -45,7 +45,7 @@ jobs:
       build-info: ${{ steps.capture_info.outputs.build_info }}
     steps:
       - name: Login in Github Container registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
