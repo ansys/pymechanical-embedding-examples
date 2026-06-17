@@ -45,7 +45,7 @@ jobs:
       build-info: ${{ steps.capture_info.outputs.build_info }}
     steps:
       - name: Login in Github Container registry
-        uses: docker/login-action@v4.2.0
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -77,7 +77,7 @@ jobs:
       options: --entrypoint /bin/bash
     steps:
       - name: Install Git and checkout project
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Set up Python
         shell: bash
@@ -105,7 +105,7 @@ jobs:
           xvfb-run mechanical-env make -C doc html
 
       - name: Upload HTML Documentation
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: documentation-html
           path: doc/_build/html
@@ -117,9 +117,9 @@ jobs:
     needs: [ 'nightly-doc-build', 'display-docker-info']
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: Microsoft Teams Notification
-        uses: jdcargile/ms-teams-notification@v1.4
+        uses: jdcargile/ms-teams-notification@28e5ca976c053d54e2b852f3f38da312f35a24fc # v1.4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
