@@ -164,7 +164,7 @@ settings_720p.CurrentGraphicsDisplay = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 geometry_path = download_file(
-    "example_05_td26_Rubber_Boot_Seal.agdb", "pymechanical", "00_basic"
+    "example_05_td26_Rubber_Boot_Seal.pmdb", "pymechanical", "00_basic"
 )
 mat_path = download_file("example_05_Boot_Mat.xml", "pymechanical", "00_basic")
 
