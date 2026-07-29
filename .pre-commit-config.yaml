@@ -47,7 +47,7 @@ repos:
     - --start_year=2023
 
 - repo: https://github.com/ansys/pre-commit-hooks
-  rev: 3dfe982988a9f06a6d33682a45355347ac1425a1
+  rev: 2ea0bc1b8a9230a645e788eb28255938f23f50d6
   hooks:
     - id: ghaction-pin
       args:
