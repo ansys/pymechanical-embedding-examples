@@ -127,7 +127,7 @@ settings_720p.CurrentGraphicsDisplay = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Download the geometry file
-geometry_path = download_file("bracket_model.agdb", "pymechanical", "embedding")
+geometry_path = download_file("bracket_model.pmdb", "pymechanical", "embedding")
 
 # %%
 # Import the geometry
