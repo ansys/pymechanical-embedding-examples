@@ -45,3 +45,10 @@ repos:
   - id: add-license-headers
     args:
     - --start_year=2023
+
+- repo: https://github.com/ansys/pre-commit-hooks
+  rev: 2ea0bc1b8a9230a645e788eb28255938f23f50d6
+  hooks:
+    - id: ghaction-pin
+      args:
+        - .github/workflows
