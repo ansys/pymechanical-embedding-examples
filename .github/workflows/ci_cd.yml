@@ -3,6 +3,7 @@ name: CI
 on:
   workflow_dispatch:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   push:
     tags:
       - "*"
@@ -10,7 +11,7 @@ on:
       - main
 
 env:
-  MAIN_PYTHON_VERSION: '3.12'
+  MAIN_PYTHON_VERSION: '3.14'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -35,6 +36,7 @@ jobs:
 
   doc-style:
     name: Documentation Style Check
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-doc') }}
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys documentation style checks

@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - '../labels.yml'
+      - '.github/labels.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,6 +15,9 @@ jobs:
   label-syncer:
     name: Syncer
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: micnncim/action-label-syncer@v1
