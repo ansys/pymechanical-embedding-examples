@@ -1,2 +1,3 @@
 #PyMechanical
-ansys-mechanical-core[graphics,doc]==0.13.3
+ansys-mechanical-core[doc]==0.13.5
+ansys-mechanical-core[graphics]==0.13.5
